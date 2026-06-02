@@ -1,36 +1,157 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 要件定義レポート — 汎用会員制情報ポータル
 
-## Getting Started
+> **プロジェクト名（仮）**: Modular Member Portal  
+> **最終更新**: 2026-05-31  
+> **ステータス**: サイトマップ確定 / デザイン着手前
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 1. プロジェクト概要
+
+ポートフォリオ・技術検証・将来的な実サービス化を並行して目指す、  
+汎用的な会員制情報ポータルの Web アプリケーション。
+
+コンテンツの種別（記事・資料・投稿など）を限定せず、  
+後から機能・ページを追加・拡張できる骨格を最初から設計する。
+
+---
+
+## 2. 確定した要件
+
+### 2-1. 技術スタック
+
+| 項目 | 決定値 |
+|------|--------|
+| フレームワーク | Next.js（App Router） |
+| 言語 | TypeScript |
+| UI ライブラリ | shadcn/ui |
+| スタイリング | Tailwind CSS |
+| デザインテーマ | ライトテーマ基調 |
+| メインカラー | ティール・シアン系 |
+
+### 2-2. デザインシステムルール
+
+| 項目 | 値 |
+|------|----|
+| スペーシング単位 | 4px / 8px / 12px / 16px / 24px / 32px / 48px |
+| 角丸 | sm: 6px / md: 8px / lg: 12px / full: 9999px |
+| フォント（日本語） | Noto Sans JP |
+| フォント（欧文） | Geist / system-ui |
+| コントラスト基準 | WCAG 2.2 AA 以上 |
+
+---
+
+## 3. サイトマップ
+
+### ゾーン構成
+
+```
+Root
+├── Public Zone      認証不要。集客・認証導線
+├── Member Zone      ログイン必須。情報閲覧・設定
+└── Admin Zone       管理者専用。RBAC で制御
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3-1. Public Zone
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| # | ページ名 | パス | 目的 | MVP |
+|---|---------|------|------|:---:|
+| 1 | トップページ | `/` | サービス概要・ログイン導線 | ✅ |
+| 2 | ログイン | `/login` | メール・パスワード認証 | ✅ |
+| 3 | 新規登録 | `/register` | 会員登録フォーム | ✅ |
+| 4 | パスワードリセット | `/reset-password` | 再設定メール送信 | — |
+| 5 | 利用規約 | `/terms` | 法的ページ（静的） | — |
+| 6 | プライバシーポリシー | `/privacy` | 法的ページ（静的） | — |
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+### 3-2. Member Zone
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+> 表の 7 画面を忠実に実装する。コンテンツの種別は限定しない（汎用）。
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| # | ページ名 | パス | 目的 | MVP |
+|---|---------|------|------|:---:|
+| 1 | ダッシュボード | `/dashboard` | 全体状況の把握 | ✅ |
+| 2 | コンテンツ一覧 | `/contents` | 記事・資料・投稿の一覧 | ✅ |
+| 3 | コンテンツ詳細 | `/contents/[id]` | 情報の閲覧 | ✅ |
+| 4 | お気に入り | `/bookmarks` | 保存済み情報の一覧 | ✅ |
+| 5 | 通知 | `/notifications` | お知らせ・更新情報 | ✅ |
+| 6 | プロフィール設定 | `/settings/profile` | 会員情報管理 | ✅ |
+| 7 | アカウント設定 | `/settings/account` | メール・パスワード・退会 | ✅ |
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 3-3. Admin Zone
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+> MVP は最小構成。汎用 CRUD の実装デモとして機能させる。
+
+| # | ページ名 | パス | 目的 | MVP |
+|---|---------|------|------|:---:|
+| 1 | コンテンツ管理 | `/admin/contents` | 投稿・編集・削除・公開制御 | ✅ |
+| 2 | ユーザー管理 | `/admin/users` | 会員一覧・ロール管理 | — |
+| 3 | お知らせ管理 | `/admin/notifications` | 通知の作成・配信 | — |
+
+---
+
+### 3-4. ページ数サマリ
+
+| ゾーン | MVP | 将来追加 | 合計 |
+|--------|:---:|:--------:|:----:|
+| Public | 3 | 3 | 6 |
+| Member | 7 | 0 | 7 |
+| Admin | 1 | 2 | 3 |
+| **合計** | **11** | **5** | **16** |
+
+---
+
+## 4. 拡張想定機能（将来フェーズ）
+
+MVP 完成後に追加する想定の機能。  
+最初の設計時にデータモデルやルーティングへの影響を考慮しておく。
+
+| カテゴリ | 機能例 | デザイン上の受け皿 |
+|----------|-------|--------------------|
+| 認証拡張 | ソーシャルログイン・MFA | ログイン画面の拡張 |
+| お知らせ配信 | 管理者からの通知送信 | `/admin/notifications` |
+| 検索・絞り込み | 全文検索・タグ絞り込み | コンテンツ一覧の検索バー |
+| AI 機能 | 要約・アシスタント | ダッシュボードパネル |
+| 決済・プラン | プラン比較・Stripe 連携 | `/pricing`・`/settings/billing` |
+| API 連携 | 外部サービス連携ログ | `/admin/api-logs` |
+| 学習コンテンツ | コース一覧・進捗管理 | `/courses`・`/courses/[id]` |
+| 多言語対応 | 日英切り替え（next-intl） | 全ページ |
+| ダークモード | ライト/ダーク切り替え | 全ページ |
+| 監査ログ | 操作履歴の記録・参照 | `/admin/audit-logs` |
+
+---
+
+## 5. 未確定事項
+
+| # | 項目 | 選択肢 | 影響範囲 |
+|---|------|--------|----------|
+| 1 | 認証基盤 | NextAuth.js / Supabase Auth / Clerk | ミドルウェア・ルーティング全体 |
+| 2 | DB・バックエンド | Next.js API Routes のみ / 別途バックエンド | ディレクトリ構成・API 設計 |
+| 3 | ダークモード対応時期 | MVP から両対応 / 後から追加 | デザイントークン管理コスト |
+| 4 | 多言語対応時期 | MVP から構成に含める / 後から追加 | ファイル構成・テキスト管理 |
+
+> **推奨**: 認証基盤の選定を最優先で行う。  
+> 選択によってミドルウェア・セッション管理の書き方が大きく異なるため、  
+> デザインモック完成後・実装着手前に決定する。
+
+---
+
+---
+
+## 6. 評価基準
+
+- **UI 設計力**: 汎用的な骨格として設計されており、特定ユースケースに縛られない
+- **コンポーネント設計**: shadcn/ui ベースの一貫したデザインシステム
+- **情報設計**: 3 層ゾーン構成（Public / Member / Admin）と RBAC の整合性
+- **認証設計**: ロールベースアクセス制御の実装
+- **CRUD 実装**: Admin コンテンツ管理画面でフルサイクルを示す
+- **レスポンシブ対応**: モバイル・タブレット・デスクトップの3ブレークポイント
+- **アクセシビリティ**: WCAG 2.2 AA 準拠（キーボード操作・コントラスト・フォーカス表示）
+- **拡張性**: 将来機能の追加を想定した設計ドキュメントの存在
+
+---
