@@ -5,7 +5,6 @@ import {
   Bookmark02Icon,
   Calendar03Icon,
   Clock01Icon,
-  Comment01Icon,
   Download01Icon,
   File01Icon,
   Pdf01Icon,
@@ -26,7 +25,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 
-/** 著者アバターと名前（記事・投稿カードの共通フッター要素）。 */
+/** 著者アバターと名前（記事カードのフッター要素）。 */
 function AuthorMeta({
   author,
 }: {
@@ -61,7 +60,7 @@ function MetaItem({
 
 /**
  * 種別ごとに異なるフッターのメタ情報を出し分ける。
- * 記事=著者/日付/読了時間、資料=形式/ページ数/DL数、投稿=著者/コメント数/日付。
+ * 記事=著者/日付/読了時間、資料=形式/ページ数/DL数。
  */
 function ContentMeta({ content }: { content: Content }) {
   switch (content.category) {
@@ -98,16 +97,6 @@ function ContentMeta({ content }: { content: Content }) {
         </>
       );
     }
-    case "投稿":
-      return (
-        <>
-          <AuthorMeta author={content.author} />
-          <div className="flex shrink-0 items-center gap-3">
-            <MetaItem icon={Comment01Icon}>{content.commentCount}</MetaItem>
-            <MetaItem icon={Calendar03Icon}>{content.date}</MetaItem>
-          </div>
-        </>
-      );
   }
 }
 

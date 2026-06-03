@@ -8,7 +8,7 @@ import { StatCards } from "@/components/contents/stat-cards";
 
 export const metadata: Metadata = {
   title: "コンテンツ一覧 | Modular Member Portal",
-  description: "記事・資料・投稿などのコンテンツ一覧",
+  description: "記事・資料などのコンテンツ一覧",
 };
 
 /**
@@ -25,7 +25,7 @@ export default function ContentsPage() {
           コンテンツ一覧
         </h1>
         <p className="text-muted-foreground">
-          記事・資料・投稿をまとめて閲覧できます。
+          記事・資料をまとめて閲覧できます。
         </p>
       </div>
 

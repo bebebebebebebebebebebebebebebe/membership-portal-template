@@ -30,36 +30,38 @@ export function CategoryFilter() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <InputGroup className="h-9 w-full lg:max-w-xs">
-          <InputGroupAddon>
-            <HugeiconsIcon icon={Search01Icon} />
-          </InputGroupAddon>
-          <InputGroupInput
-            type="search"
-            placeholder="キーワードで検索"
-            aria-label="キーワードで検索"
-          />
-        </InputGroup>
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+          <InputGroup className="h-9 w-full lg:max-w-xs">
+            <InputGroupAddon>
+              <HugeiconsIcon icon={Search01Icon} />
+            </InputGroupAddon>
+            <InputGroupInput
+              type="search"
+              placeholder="キーワードで検索"
+              aria-label="キーワードで検索"
+            />
+          </InputGroup>
 
-        <Tabs defaultValue="all">
-          <TabsList>
-            <TabsTrigger
-              value="all"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-none"
-            >
-              すべて
-            </TabsTrigger>
-            {contentCategories.map((category) => (
+          <Tabs defaultValue="all">
+            <TabsList>
               <TabsTrigger
-                key={category}
-                value={category}
+                value="all"
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-none"
               >
-                {category}
+                すべて
               </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
+              {contentCategories.map((category) => (
+                <TabsTrigger
+                  key={category}
+                  value={category}
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-none"
+                >
+                  {category}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+        </div>
 
         <Toggle variant="outline" aria-label="ブックマーク済みのみ表示">
           <HugeiconsIcon icon={Bookmark02Icon} />

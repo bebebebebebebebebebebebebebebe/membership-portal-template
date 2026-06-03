@@ -7,9 +7,9 @@ import type { IconSvgElement } from "@hugeicons/react";
 
 /**
  * コンテンツの種別。README の方針どおり種別は限定しない汎用骨格だが、
- * デザイン再現のためのモックとして代表的な 3 種（記事 / 資料 / 投稿）を定義する。
+ * デザイン再現のためのモックとして代表的な 2 種（記事 / 資料）を定義する。
  */
-export type ContentCategory = "記事" | "資料" | "投稿";
+export type ContentCategory = "記事" | "資料";
 
 /** 著者情報。アバター読み込み失敗時は initials を Avatar フォールバックに表示する。 */
 type Author = {
@@ -45,23 +45,15 @@ export type DocumentContent = ContentBase & {
   downloadCount: number;
 };
 
-/** 投稿: 著者・コメント数・投稿日を持つ。 */
-export type PostContent = ContentBase & {
-  category: "投稿";
-  author: Author;
-  date: string;
-  commentCount: number;
-};
-
 /**
  * 一覧カード 1 枚分のコンテンツ。種別ごとにフッターの構成が異なるため、
  * `category` を判別子とする判別ユニオンで表現し、描画側で網羅的に出し分ける。
  */
-export type Content = ArticleContent | DocumentContent | PostContent;
+export type Content = ArticleContent | DocumentContent;
 
 /**
  * カテゴリごとの表示メタ。バッジ色は種別を視覚的に区別するための装飾色で、
- * 記事=ティール（プライマリ）/ 資料=ブルー / 投稿=パープル。
+ * 記事=ティール（プライマリ）/ 資料=ブルー。
  */
 export const categoryMeta: Record<
   ContentCategory,
@@ -74,10 +66,6 @@ export const categoryMeta: Record<
   資料: {
     badgeClass: "bg-blue-500 text-white",
     tagClass: "bg-blue-50 text-blue-700",
-  },
-  投稿: {
-    badgeClass: "bg-purple-500 text-white",
-    tagClass: "bg-green-50 text-green-700",
   },
 };
 
@@ -97,7 +85,7 @@ export const contentStats: ContentStat[] = [
 ];
 
 /** フィルタタブに用いる種別の一覧（タブ先頭の「すべて」は UI 側で付与）。 */
-export const contentCategories: ContentCategory[] = ["記事", "資料", "投稿"];
+export const contentCategories: ContentCategory[] = ["記事", "資料"];
 
 /** 件数表示用の総コンテンツ件数。 */
 export const totalContentCount = 248;
@@ -131,18 +119,6 @@ export const mockContents: Content[] = [
     downloadCount: 1256,
   },
   {
-    id: "3",
-    category: "投稿",
-    title: "リモートワークでのチーム連携のコツ",
-    description:
-      "非同期コミュニケーションを前提に、信頼を保ちながら成果を出す運用の知見を共有します。",
-    thumbnail: "/images/contents/thumb-03.jpg",
-    tags: ["リモートワーク", "チーム運営"],
-    author: { name: "高橋 直樹", avatar: "/images/avatars/avatar-03.jpg", initials: "高橋" },
-    date: "2024/05/08",
-    commentCount: 24,
-  },
-  {
     id: "4",
     category: "記事",
     title: "ゼロから学ぶクラウドインフラ設計",
@@ -167,18 +143,6 @@ export const mockContents: Content[] = [
     downloadCount: 873,
   },
   {
-    id: "6",
-    category: "投稿",
-    title: "データ可視化で意思決定を加速する",
-    description:
-      "ダッシュボード設計の原則と、伝わるグラフ表現のためのデザインテクニックを紹介します。",
-    thumbnail: "/images/contents/thumb-06.jpg",
-    tags: ["データ分析", "可視化"],
-    author: { name: "渡辺 さくら", avatar: "/images/avatars/avatar-01.jpg", initials: "渡辺" },
-    date: "2024/05/04",
-    commentCount: 17,
-  },
-  {
     id: "7",
     category: "記事",
     title: "モダンJavaScript開発の最前線",
@@ -201,17 +165,5 @@ export const mockContents: Content[] = [
     fileFormat: "DOCX",
     pageCount: 24,
     downloadCount: 642,
-  },
-  {
-    id: "9",
-    category: "投稿",
-    title: "新入社員向けオンボーディングの記録",
-    description:
-      "会社のカルチャーと業務フローを短時間で理解してもらうための取り組みを共有します。",
-    thumbnail: "/images/contents/thumb-09.jpg",
-    tags: ["オンボーディング", "組織"],
-    author: { name: "加藤 大輔", avatar: "/images/avatars/avatar-04.jpg", initials: "加藤" },
-    date: "2024/04/30",
-    commentCount: 31,
   },
 ];
