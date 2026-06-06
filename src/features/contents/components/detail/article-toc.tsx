@@ -1,4 +1,4 @@
-import type { TocItem } from "@/features/contents/data/content-detail";
+import type { TocItem } from "@/features/contents/types/content-detail";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 /**

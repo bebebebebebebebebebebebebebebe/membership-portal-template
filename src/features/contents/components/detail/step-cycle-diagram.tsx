@@ -10,7 +10,7 @@ import {
 import type { IconSvgElement } from "@hugeicons/react";
 import { HugeiconsIcon } from "@hugeicons/react";
 
-import type { ArticleStep } from "@/features/contents/data/content-detail";
+import type { ArticleStep } from "@/features/contents/types/content-detail";
 
 /** 各ステップに対応する装飾アイコン（最大 6 ノード）。 */
 const stepIcons: IconSvgElement[] = [

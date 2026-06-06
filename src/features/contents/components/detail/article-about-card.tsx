@@ -1,5 +1,5 @@
-import type { ArticleContent } from "@/features/contents/data/contents";
-import type { ContentDetail } from "@/features/contents/data/content-detail";
+import type { ArticleContent } from "@/features/contents/types/content";
+import type { ContentDetail } from "@/features/contents/types/content-detail";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 /** ラベル（左・muted）と値（右）を両端揃えで並べる 1 行。 */

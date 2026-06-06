@@ -1,6 +1,6 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 
-import { contentStats } from "@/features/contents/data/contents";
+import { contentStats } from "@/features/contents/constants/content-stats";
 import { cn } from "@/lib/utils";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 

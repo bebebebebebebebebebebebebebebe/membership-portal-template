@@ -11,7 +11,8 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
-import { categoryMeta, type Content } from "@/features/contents/data/contents";
+import { categoryMeta } from "@/features/contents/constants/content-category";
+import type { Content } from "@/features/contents/types/content";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";

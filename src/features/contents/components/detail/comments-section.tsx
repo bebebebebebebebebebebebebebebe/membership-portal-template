@@ -1,4 +1,4 @@
-import type { ArticleComment } from "@/features/contents/data/content-detail";
+import type { ArticleComment } from "@/features/contents/types/content-detail";
 import { currentUser } from "@/lib/mock/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";

@@ -9,8 +9,9 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
-import { categoryMeta, type ArticleContent } from "@/features/contents/data/contents";
-import type { ContentDetail } from "@/features/contents/data/content-detail";
+import { categoryMeta } from "@/features/contents/constants/content-category";
+import type { ArticleContent } from "@/features/contents/types/content";
+import type { ContentDetail } from "@/features/contents/types/content-detail";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";

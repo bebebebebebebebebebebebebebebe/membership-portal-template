@@ -1,7 +1,7 @@
 import { Idea01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
-import type { ContentDetail } from "@/features/contents/data/content-detail";
+import type { ContentDetail } from "@/features/contents/types/content-detail";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { StepCycleDiagram } from "@/features/contents/components/detail/step-cycle-diagram";
 

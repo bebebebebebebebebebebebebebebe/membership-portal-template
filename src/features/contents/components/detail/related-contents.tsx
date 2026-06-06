@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
-import type { Content } from "@/features/contents/data/contents";
+import type { Content } from "@/features/contents/types/content";
 import { Button } from "@/components/ui/button";
 import { RelatedContentCard } from "@/features/contents/components/detail/related-content-card";
 

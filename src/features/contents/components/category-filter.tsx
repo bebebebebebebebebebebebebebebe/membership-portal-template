@@ -3,7 +3,8 @@
 import { Bookmark02Icon, Search01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
-import { contentCategories, resultCount } from "@/features/contents/data/contents";
+import { contentCategories } from "@/features/contents/constants/content-category";
+import { resultCount } from "@/features/contents/constants/content-stats";
 import {
   InputGroup,
   InputGroupAddon,

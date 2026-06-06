@@ -1,7 +1,8 @@
 import Image from "next/image";
 
-import { categoryMeta, type ArticleContent, type Content } from "@/features/contents/data/contents";
-import type { ContentDetail } from "@/features/contents/data/content-detail";
+import { categoryMeta } from "@/features/contents/constants/content-category";
+import type { ArticleContent, Content } from "@/features/contents/types/content";
+import type { ContentDetail } from "@/features/contents/types/content-detail";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { ArticleAboutCard } from "@/features/contents/components/detail/article-about-card";

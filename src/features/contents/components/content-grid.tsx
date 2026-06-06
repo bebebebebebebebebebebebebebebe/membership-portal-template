@@ -1,4 +1,4 @@
-import type { Content } from "@/features/contents/data/contents";
+import type { Content } from "@/features/contents/types/content";
 import { ContentCard } from "@/features/contents/components/content-card";
 
 /**

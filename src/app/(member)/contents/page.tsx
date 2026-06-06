@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { mockContents } from "@/features/contents/data/contents";
+import { getContents } from "@/features/contents/api/get-contents";
 import { CategoryFilter } from "@/features/contents/components/category-filter";
 import { ContentGrid } from "@/features/contents/components/content-grid";
 import { ContentPagination } from "@/features/contents/components/content-pagination";
@@ -15,9 +15,11 @@ export const metadata: Metadata = {
  * コンテンツ一覧ページ（/contents）。
  *
  * 見出し → 統計カード → フィルタ → カードグリッド → ページネーション を縦に積む。
- * 認証/DB 未確定のため、データはすべて contents feature のモックを参照する静的 UI。
+ * 認証/DB 未確定のため、データは contents feature の API abstraction から取得する静的 UI。
  */
 export default function ContentsPage() {
+  const contents = getContents();
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-1">
@@ -33,7 +35,7 @@ export default function ContentsPage() {
 
       <CategoryFilter />
 
-      <ContentGrid contents={mockContents} />
+      <ContentGrid contents={contents} />
 
       <ContentPagination />
     </div>
