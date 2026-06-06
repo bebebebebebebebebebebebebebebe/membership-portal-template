@@ -22,6 +22,8 @@ export type MemberNavItem = {
   href: string;
   /** 項目アイコン（hugeicons の IconSvgElement） */
   icon: IconSvgElement;
+  /** 詳細ページなどで同じ項目を active にする pathname prefix */
+  activePathPrefixes?: string[];
 };
 
 /** ラベル付きのナビゲーショングループ（デザインの「メンバーゾーン」「設定」見出しに対応）。 */
@@ -35,7 +37,12 @@ export const memberNavGroups: MemberNavGroup[] = [
     label: "メンバーゾーン",
     items: [
       { title: "ダッシュボード", href: "/dashboard", icon: DashboardSquare01Icon },
-      { title: "コンテンツ一覧", href: "/contents", icon: GridViewIcon },
+      {
+        title: "コンテンツ一覧",
+        href: "/contents",
+        icon: GridViewIcon,
+        activePathPrefixes: ["/contents"],
+      },
       { title: "お気に入り", href: "/bookmarks", icon: Bookmark02Icon },
       { title: "通知", href: "/notifications", icon: Notification03Icon },
     ],
@@ -59,11 +66,40 @@ const memberNavTitleByPath = new Map(
 );
 
 /**
+ * pathname がナビ項目の active 条件に一致するかを返す。
+ *
+ * @param pathname 現在の URL pathname
+ * @param item 判定対象の Member Zone ナビ項目
+ * @returns 完全一致、または segment 境界を保った prefix 一致なら true。
+ */
+export function isMemberNavItemActive(
+  pathname: string,
+  item: MemberNavItem
+): boolean {
+  if (pathname === item.href) {
+    return true;
+  }
+
+  return (item.activePathPrefixes ?? []).some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+  );
+}
+
+/**
  * pathname に対応する Member Zone のページタイトルを返す。
  *
  * @param pathname 現在の URL pathname
  * @returns ナビ定義に一致するタイトル。一致しない場合は "Member Zone"。
  */
-export function getMemberNavTitle(pathname: string) {
-  return memberNavTitleByPath.get(pathname) ?? "Member Zone";
+export function getMemberNavTitle(pathname: string): string {
+  const exactTitle = memberNavTitleByPath.get(pathname);
+
+  if (exactTitle) {
+    return exactTitle;
+  }
+
+  return (
+    memberNavItems.find((item) => isMemberNavItemActive(pathname, item))
+      ?.title ?? "Member Zone"
+  );
 }

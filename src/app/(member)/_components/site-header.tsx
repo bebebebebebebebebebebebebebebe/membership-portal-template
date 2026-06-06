@@ -11,7 +11,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
-import { getMemberNavTitle } from "@/features/member-shell/member-nav";
+import { getMemberNavTitle } from "../_config/member-nav";
 import { currentUser } from "@/lib/mock/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";

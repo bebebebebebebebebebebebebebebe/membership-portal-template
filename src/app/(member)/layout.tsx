@@ -1,7 +1,8 @@
-import { AppSidebar } from "@/features/member-shell/components/app-sidebar";
-import { SiteHeader } from "@/features/member-shell/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
+
+import { AppSidebar } from "./_components/app-sidebar";
+import { SiteHeader } from "./_components/site-header";
 
 /**
  * Member Zone（ログイン必須ゾーン）共通レイアウト。

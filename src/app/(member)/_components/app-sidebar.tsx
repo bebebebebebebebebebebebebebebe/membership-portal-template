@@ -5,7 +5,10 @@ import { usePathname } from "next/navigation";
 import { CubeIcon, HelpCircleIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
-import { memberNavGroups } from "@/features/member-shell/member-nav";
+import {
+  isMemberNavItemActive,
+  memberNavGroups,
+} from "../_config/member-nav";
 import {
   Sidebar,
   SidebarContent,
@@ -65,7 +68,7 @@ export function AppSidebar() {
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton
                       asChild
-                      isActive={pathname === item.href}
+                      isActive={isMemberNavItemActive(pathname, item)}
                       tooltip={item.title}
                       className={activeItemClass}
                     >
