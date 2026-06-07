@@ -88,7 +88,26 @@ Root
 - `features/contents` はコンテンツ機能の UI と mock data を持つ feature として扱う。
 - 現時点では DB・バックエンドが未確定のため、コンテンツ画面は静的モックを使う。
 
-### 3-3. デザインシステムルール
+### 3-3. アーキテクチャ境界
+
+依存方向は `shared -> features -> app` として扱います。
+
+| 層 | 対象 | 依存してよい先 |
+|----|------|----------------|
+| shared | `src/components`, `src/hooks`, `src/lib`, `src/types`, `src/utils` | shared のみ |
+| features | `src/features/*` | 同一 feature、shared |
+| app | `src/app` | app 内部、features、shared |
+
+禁止する import:
+
+- `features -> app`
+- `shared -> features`
+- `shared -> app`
+- feature 間の直接 import
+
+複数 feature の合成は `src/app` で行います。この境界は ESLint で検出します。
+
+### 3-4. デザインシステムルール
 
 | 項目 | 値 |
 |------|----|
