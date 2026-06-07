@@ -192,7 +192,11 @@ Root
 1. README と実装状態の乖離を継続的に更新する。
 2. `features/contents` を `types`、`constants`、`data`、`api` に分割し、page から mock data への直接依存を外す。
 3. `shared -> features -> app` の一方向依存を ESLint で検出できるようにする。
-4. 認証基盤を決定し、`AuthUser` / `UserRole` / session 取得境界を定義する。
+4. 認証基盤未確定を前提に、provider 非依存の認証・認可境界を shared layer に定義する。
+   - `AuthUser` / `UserRole` を `src/types/auth.ts` に定義する。
+   - current user 取得を `src/lib/auth/get-current-user.ts` に集約する。
+   - Member/Admin の認可判定を `src/lib/auth/authorization.ts` に集約する。
+   - 認証基盤の選定は RBAC / Admin CRUD / 実ログイン・登録の本実装前に行う。
 5. Member Zone と Admin Zone のアクセス制御を実装する。
 6. Admin コンテンツ管理の CRUD を実装する。
 7. DB・バックエンド確定後、mock data を API/data layer 経由へ移行する。

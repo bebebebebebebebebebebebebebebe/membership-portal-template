@@ -1,5 +1,5 @@
 import type { ArticleComment } from "@/features/contents/types/content-detail";
-import { currentUser } from "@/lib/mock/user";
+import type { AuthUser } from "@/types/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -33,6 +33,11 @@ function CommentItem({ comment }: { comment: ArticleComment }) {
   );
 }
 
+type CommentsSectionProps = {
+  comments: ArticleComment[];
+  currentUser: AuthUser;
+};
+
 /**
  * 全幅「コメント」セクション。
  *
@@ -40,8 +45,12 @@ function CommentItem({ comment }: { comment: ArticleComment }) {
  * 静的 UI のため投稿処理は持たず、見た目と件数表示のみのモック。
  *
  * @param comments 表示するコメント一覧
+ * @param currentUser コメント入力欄に表示する認証済みユーザー
  */
-export function CommentsSection({ comments }: { comments: ArticleComment[] }) {
+export function CommentsSection({
+  comments,
+  currentUser,
+}: CommentsSectionProps) {
   return (
     <section className="flex flex-col gap-4">
       <h2 className="text-xl font-bold tracking-tight">

@@ -3,6 +3,7 @@ import Image from "next/image";
 import { categoryMeta } from "@/features/contents/constants/content-category";
 import type { ArticleContent, Content } from "@/features/contents/types/content";
 import type { ContentDetail } from "@/features/contents/types/content-detail";
+import type { AuthUser } from "@/types/auth";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { ArticleAboutCard } from "@/features/contents/components/detail/article-about-card";
@@ -24,15 +25,18 @@ import { ShareActionsCard } from "@/features/contents/components/detail/share-ac
  * @param content 記事の一覧用基本データ（タイトル・著者・サムネ・タグ等）
  * @param detail 記事の本文・統計・目次・コメント
  * @param related 関連コンテンツ（現在記事を除外済み）
+ * @param currentUser コメント入力欄に表示する認証済みユーザー
  */
 export function ArticleDetail({
   content,
   detail,
   related,
+  currentUser,
 }: {
   content: ArticleContent;
   detail: ContentDetail;
   related: Content[];
+  currentUser: AuthUser;
 }) {
   return (
     <div className="flex flex-col gap-6">
@@ -81,7 +85,7 @@ export function ArticleDetail({
       </div>
 
       <RelatedContents contents={related} />
-      <CommentsSection comments={detail.comments} />
+      <CommentsSection comments={detail.comments} currentUser={currentUser} />
     </div>
   );
 }

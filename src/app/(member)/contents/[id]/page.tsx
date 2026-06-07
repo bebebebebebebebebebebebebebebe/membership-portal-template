@@ -7,6 +7,8 @@ import {
 } from "@/features/contents/api/get-contents";
 import { getContentDetail } from "@/features/contents/api/get-content-detail";
 import { ArticleDetail } from "@/features/contents/components/detail/article-detail";
+import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { requireAuthenticatedUser } from "@/lib/auth/authorization";
 
 type ContentDetailPageParams = { params: Promise<{ id: string }> };
 
@@ -46,6 +48,14 @@ export default async function ContentDetailPage({
   }
 
   const related = getRelatedContents(id);
+  const currentUser = requireAuthenticatedUser(await getCurrentUser());
 
-  return <ArticleDetail content={content} detail={detail} related={related} />;
+  return (
+    <ArticleDetail
+      content={content}
+      detail={detail}
+      related={related}
+      currentUser={currentUser}
+    />
+  );
 }

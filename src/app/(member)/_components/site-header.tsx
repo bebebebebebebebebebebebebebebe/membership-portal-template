@@ -12,7 +12,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 
 import { getMemberNavTitle } from "../_config/member-nav";
-import { currentUser } from "@/lib/mock/user";
+import type { AuthUser } from "@/types/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -41,14 +41,20 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
+type SiteHeaderProps = {
+  user: AuthUser;
+};
+
 /**
  * Member Zone 共通の上部ヘッダー。
  *
  * パンくず・検索バー・通知・会員メニューで構成する。
  * 現在ページ名は現在パス（usePathname）からナビ定義を引いて決定するため、
- * Member Zone のどのページに置いても追加の props なしで動作する。
+ * Member Zone のどのページに置いても同じ認証ユーザー表示で動作する。
+ *
+ * @param user ヘッダーに表示する認証済みユーザー
  */
-export function SiteHeader() {
+export function SiteHeader({ user }: SiteHeaderProps) {
   const pathname = usePathname();
   const title = getMemberNavTitle(pathname);
 
@@ -101,13 +107,13 @@ export function SiteHeader() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-auto gap-2 px-2 py-1">
               <Avatar className="size-8">
-                <AvatarImage src={currentUser.avatar} alt={currentUser.name} />
-                <AvatarFallback>{currentUser.initials}</AvatarFallback>
+                <AvatarImage src={user.avatar} alt={user.name} />
+                <AvatarFallback>{user.initials}</AvatarFallback>
               </Avatar>
               <span className="hidden flex-col items-start leading-tight sm:flex">
-                <span className="text-sm font-medium">{currentUser.name}</span>
+                <span className="text-sm font-medium">{user.name}</span>
                 <span className="text-xs font-normal text-muted-foreground">
-                  {currentUser.membership}
+                  {user.membership}
                 </span>
               </span>
             </Button>
@@ -115,9 +121,9 @@ export function SiteHeader() {
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>
               <div className="flex flex-col leading-tight">
-                <span className="font-medium">{currentUser.name}</span>
+                <span className="font-medium">{user.name}</span>
                 <span className="text-xs font-normal text-muted-foreground">
-                  {currentUser.email}
+                  {user.email}
                 </span>
               </div>
             </DropdownMenuLabel>
