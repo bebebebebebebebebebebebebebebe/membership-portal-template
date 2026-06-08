@@ -11,8 +11,10 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
+import { ContentAccessIndicator } from "@/features/contents/components/content-access-indicator";
 import { categoryMeta } from "@/features/contents/constants/content-category";
 import type { Content } from "@/features/contents/types/content";
+import { getContentPrimaryActionLabel } from "@/features/contents/utils/content-access-display";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -119,7 +121,8 @@ export type ContentCardProps = {
  * コンテンツ一覧の 1 カード。
  *
  * サムネイル（左上に種別色 Badge、右上にブックマークボタン、資料は形式ラベル）・
- * タイトル・説明・タグ行・種別別フッター・「詳細を見る」リンクで構成する。
+ * タイトル・説明・閲覧条件表示（access indicator）・タグ行・種別別フッター・
+ * 閲覧条件に応じた CTA リンクで構成する。
  * `imageLoading` は一覧先頭など above-the-fold の LCP 候補だけ eager にする。
  */
 export function ContentCard({ content, imageLoading }: ContentCardProps) {
@@ -161,7 +164,9 @@ export function ContentCard({ content, imageLoading }: ContentCardProps) {
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="pt-2">
+      <CardContent className="flex flex-col gap-3 pt-2">
+        <ContentAccessIndicator content={content} />
+
         <div className="flex flex-wrap gap-1.5">
           {content.tags.map((tag) => (
             <Badge
@@ -184,7 +189,7 @@ export function ContentCard({ content, imageLoading }: ContentCardProps) {
         </div>
         <Button variant="outline" className="w-full py-4" asChild>
           <Link href={`/contents/${content.id}`}>
-            詳細を見る
+            {getContentPrimaryActionLabel(content.accessPolicy)}
             <HugeiconsIcon icon={ArrowRight01Icon} data-icon="inline-end" />
           </Link>
         </Button>
