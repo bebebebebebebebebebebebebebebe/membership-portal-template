@@ -1,7 +1,5 @@
-import Link from "next/link";
 import Image from "next/image";
 import {
-  ArrowRight01Icon,
   Bookmark02Icon,
   Calendar03Icon,
   Clock01Icon,
@@ -11,10 +9,9 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
-import { ContentAccessIndicator } from "@/features/contents/components/content-access-indicator";
+import { ContentActionFooter } from "@/features/contents/components/content-action-footer";
 import { categoryMeta } from "@/features/contents/constants/content-category";
 import type { Content } from "@/features/contents/types/content";
-import { getContentPrimaryActionLabel } from "@/features/contents/utils/content-access-display";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -121,13 +118,13 @@ export type ContentCardProps = {
  * コンテンツ一覧の 1 カード。
  *
  * サムネイル（左上に種別色 Badge、右上にブックマークボタン、資料は形式ラベル）・
- * タイトル・説明・閲覧条件表示（access indicator）・タグ行・種別別フッター・
- * 閲覧条件に応じた CTA リンクで構成する。
+ * タイトル・説明・タグ行・種別別フッターで構成する。閲覧条件と CTA は本文から分離し、
+ * footer の `ContentActionFooter` に「閲覧条件 + 行動」として集約する。
  * `imageLoading` は一覧先頭など above-the-fold の LCP 候補だけ eager にする。
  */
 export function ContentCard({ content, imageLoading }: ContentCardProps) {
   return (
-    <Card className="gap-0 overflow-hidden pt-0">
+    <Card className="flex h-full flex-col gap-0 overflow-hidden pt-0">
       <div className="relative aspect-video">
         <Image
           src={content.thumbnail}
@@ -164,9 +161,7 @@ export function ContentCard({ content, imageLoading }: ContentCardProps) {
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="flex flex-col gap-3 pt-2">
-        <ContentAccessIndicator content={content} />
-
+      <CardContent className="pt-2">
         <div className="flex flex-wrap gap-1.5">
           {content.tags.map((tag) => (
             <Badge
@@ -187,12 +182,7 @@ export function ContentCard({ content, imageLoading }: ContentCardProps) {
         <div className="flex items-center justify-between gap-2 text-sm text-muted-foreground">
           <ContentMeta content={content} />
         </div>
-        <Button variant="outline" className="w-full py-4" asChild>
-          <Link href={`/contents/${content.id}`}>
-            {getContentPrimaryActionLabel(content.accessPolicy)}
-            <HugeiconsIcon icon={ArrowRight01Icon} data-icon="inline-end" />
-          </Link>
-        </Button>
+        <ContentActionFooter content={content} />
       </CardFooter>
     </Card>
   );
