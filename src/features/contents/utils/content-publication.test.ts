@@ -5,7 +5,10 @@ import type {
   Discoverability,
   PublicationStatus,
 } from "@/features/contents/types/content-publication";
-import { isListedPublishedContent } from "@/features/contents/utils/content-publication";
+import {
+  isListedPublishedContent,
+  isPubliclyAccessibleContentMetadata,
+} from "@/features/contents/utils/content-publication";
 
 function makeContent(
   publicationStatus: PublicationStatus,
@@ -39,5 +42,20 @@ describe("isListedPublishedContent", () => {
     expect(isListedPublishedContent(makeContent(status, discoverability))).toBe(
       expected
     );
+  });
+});
+
+describe("isPubliclyAccessibleContentMetadata", () => {
+  it.each<[PublicationStatus, Discoverability, boolean]>([
+    ["published", "listed", true],
+    ["published", "unlisted", true],
+    ["published", "hidden", false],
+    ["draft", "listed", false],
+    ["scheduled", "unlisted", false],
+    ["archived", "listed", false],
+  ])("%s + %s は %s", (status, discoverability, expected) => {
+    expect(
+      isPubliclyAccessibleContentMetadata(makeContent(status, discoverability))
+    ).toBe(expected);
   });
 });

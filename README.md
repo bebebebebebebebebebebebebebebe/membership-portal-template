@@ -1,6 +1,6 @@
 # Modular Member Portal
 
-最終確認日: 2026-06-07
+最終確認日: 2026-06-10
 
 ## 1. プロジェクト概要
 
@@ -25,15 +25,16 @@
 
 | 項目 | パス | 現状 |
 |------|------|------|
-| トップページ | `/` | `src/app/page.tsx` に実体がある Public Zone の入口画面 |
+| トップページ | `/` | `(public)/page.tsx` の Public Home。サービス概要・閲覧条件・ゾーン構成・機能・アーキテクチャを紹介する入口画面 |
+| Public Zone layout | `(public)` route group | `(public)/layout.tsx` がロゴ＋公開導線（コンテンツ/ログイン/新規登録）のヘッダーと中央寄せ main コンテナを提供。認証境界・サイドバーは持たない |
 
 ### 2-3. 部分実装
 
 | 項目 | パス | 現状 |
 |------|------|------|
-| Member Zone layout | `(member)` route group | sidebar/header/nav config は実装済み。ただし認証境界は未実装 |
-| コンテンツ一覧 | `/contents` | `mockContents` を直接参照する静的 UI。DB/API/認証連携は未実装 |
-| コンテンツ詳細 | `/contents/[id]` | `mockContents` と `getContentDetail(id)` を使う静的詳細 UI。記事以外や存在しない ID は `notFound()` |
+| Member Zone layout | `(member)` route group | sidebar/header/nav config と認証必須 layout（`requireAuthenticatedUser`）は実装済み。認証基盤はモック |
+| コンテンツカタログ | `/contents` | `(public)` 配下の公開カタログ。非会員も閲覧できる。データは `getContents()`（published+listed）経由。DB/API は未実装 |
+| コンテンツ詳細 | `/contents/[id]` | `(public)` 配下。`accessPolicy` を `canViewContent()` で判定し、閲覧可なら本文、不可なら `ContentAccessGate` を表示する Content Gate 付き。記事以外・hidden・未作成 ID は `notFound()` |
 
 ### 2-4. 未実装
 
@@ -78,14 +79,17 @@ pnpm run lint
 
 ```txt
 Root
-├── Public Zone      認証不要。集客・認証導線
-├── Member Zone      ログイン必須想定。情報閲覧・設定
-└── Admin Zone       管理者専用想定。RBAC で制御
+├── Public Zone        認証不要。集客・認証導線・公開カタログ
+│   └── Content Catalog  /contents・/contents/[id]（非会員も閲覧可、本文は Content Gate で制御）
+├── Member Zone        ログイン必須。dashboard / bookmarks / notifications / settings
+└── Admin Zone         管理者専用想定。RBAC で制御
 ```
 
-- `src/app/(member)` は Member Zone の route group として扱う。
-- Member Zone の sidebar/header/nav config は `src/app/(member)` 配下の内部実装として管理する。
-- `features/contents` はコンテンツ機能の UI と mock data を持つ feature として扱う。
+- `src/app/(public)` は Public Zone の route group として扱い、`(public)/layout.tsx` が公開 shell（ヘッダー・背景・main コンテナ）を提供する。
+- `/contents` と `/contents/[id]` は Member Zone 専用ではなく、`(public)` 配下の公開条件つきカタログとして扱う。
+- `src/app/(member)` は Member Zone の route group として扱い、`(member)/layout.tsx` が認証必須 shell（sidebar/header）を提供する。`/contents` への導線は Member sidebar にも「コンテンツカタログ」として残す。
+- 領域への入場制御（Route Guard）と本文の閲覧制御（Content Gate）を分離する。`/dashboard` などは Route Guard、`/contents/[id]` の本文は `accessPolicy` ベースの Content Gate で制御する。
+- `features/contents` はコンテンツ機能の UI・型・API・ロジックと mock data を持つ feature として扱う。
 - 現時点では DB・バックエンドが未確定のため、コンテンツ画面は静的モックを使う。
 
 ### 3-3. アーキテクチャ境界
@@ -116,6 +120,16 @@ Root
 | フォント（日本語） | Noto Sans JP |
 | フォント（欧文） | Geist / system-ui |
 | コントラスト基準 | WCAG 2.2 AA 以上 |
+
+### 3-5. アクセス制御とデータ境界
+
+コンテンツの閲覧制御は次の方針で `features/contents` に閉じて実装する。詳細は [docs/content-access.md](docs/content-access.md) を参照。
+
+- **accessPolicy と価格の分離**: `ContentAccessPolicy` は閲覧条件の判定に必要な情報だけを持ち、表示文言や価格を持たない。価格は `ProductOffer`（`getProductOffer()` 経由）から取得する。
+- **閲覧可否判定**: `canViewContent(policy, viewer)` が allowed / denied と理由を返す。admin は常に allowed。
+- **Route Guard と Content Gate の分離**: 領域への入場は Route Guard（`requireAuthenticatedUser` など）、本文の閲覧は Content Gate（`canViewContent`）で制御する。
+- **データ境界**: metadata（`getContentMetadata`）と preview（`getContentPreview`）は認可前に取得してよい。full body を含む detail（`getContentDetail`）は `canViewContent()` の allowed に通った後でのみ取得する。
+- **ページの脱モック依存**: page は `mockContents` などを直接 import せず、API abstraction（`features/contents/api`）経由で取得する。
 
 ## 4. 未確定事項
 
@@ -152,8 +166,8 @@ Root
 | # | ページ名 | パス | 目的 | MVP | 実装状態 |
 |---|---------|------|------|:---:|----------|
 | 1 | ダッシュボード | `/dashboard` | 全体状況の把握 | ✅ | 未実装 |
-| 2 | コンテンツ一覧 | `/contents` | 記事・資料・投稿の一覧 | ✅ | 部分実装 |
-| 3 | コンテンツ詳細 | `/contents/[id]` | 情報の閲覧 | ✅ | 部分実装 |
+| 2 | コンテンツ一覧 | `/contents` | 記事・資料・投稿の一覧 | ✅ | 部分実装（`(public)` で公開カタログ化。非会員も閲覧可） |
+| 3 | コンテンツ詳細 | `/contents/[id]` | 情報の閲覧 | ✅ | 部分実装（`(public)`。本文は accessPolicy ベースの Content Gate で制御） |
 | 4 | お気に入り | `/bookmarks` | 保存済み情報の一覧 | ✅ | 未実装 |
 | 5 | 通知 | `/notifications` | お知らせ・更新情報 | ✅ | 未実装 |
 | 6 | プロフィール設定 | `/settings/profile` | 会員情報管理 | ✅ | 未実装 |

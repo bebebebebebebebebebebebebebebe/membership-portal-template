@@ -25,7 +25,7 @@ import { ShareActionsCard } from "@/features/contents/components/detail/share-ac
  * @param content 記事の一覧用基本データ（タイトル・著者・サムネ・タグ等）
  * @param detail 記事の本文・統計・目次・コメント
  * @param related 関連コンテンツ（現在記事を除外済み）
- * @param currentUser コメント入力欄に表示する認証済みユーザー
+ * @param currentUser コメント入力欄に表示する認証済みユーザー。非会員（free 閲覧）では `null`
  */
 export function ArticleDetail({
   content,
@@ -36,7 +36,7 @@ export function ArticleDetail({
   content: ArticleContent;
   detail: ContentDetail;
   related: Content[];
-  currentUser: AuthUser;
+  currentUser: AuthUser | null;
 }) {
   return (
     <div className="flex flex-col gap-6">
