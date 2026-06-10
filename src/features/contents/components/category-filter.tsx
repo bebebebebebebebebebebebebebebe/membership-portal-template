@@ -4,7 +4,6 @@ import { Bookmark02Icon, Search01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
 import { contentCategories } from "@/features/contents/constants/content-category";
-import { resultCount } from "@/features/contents/constants/content-stats";
 import {
   InputGroup,
   InputGroupAddon,
@@ -21,17 +20,22 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toggle } from "@/components/ui/toggle";
 
+const resultCount = 24;
+
 /**
  * 種別タブ・キーワード検索・絞り込み Select・件数表示をまとめたフィルタ領域。
  *
  * 認証/DB 未確定のため実フィルタリングは行わず、見た目と基本操作のみのモック。
- * デザインの 2 行構成（行1=検索/タブ/トグル、行2=タグ/更新日/並び順/件数）を再現する。
+ * 左に検索とカテゴリ、右に詳細フィルターとブックマーク切替を置く。
  */
 export function CategoryFilter() {
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+    <div className="rounded-xl border bg-card p-4">
+      <div className="grid gap-4 lg:grid-cols-[minmax(320px,1fr)_auto] items-center">
+        <div
+          className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-center"
+          data-filter-region="primary"
+        >
           <InputGroup className="h-9 w-full lg:max-w-xs">
             <InputGroupAddon>
               <HugeiconsIcon icon={Search01Icon} />
@@ -44,7 +48,7 @@ export function CategoryFilter() {
           </InputGroup>
 
           <Tabs defaultValue="all">
-            <TabsList>
+            <TabsList className="w-full sm:w-auto">
               <TabsTrigger
                 value="all"
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-none"
@@ -64,14 +68,10 @@ export function CategoryFilter() {
           </Tabs>
         </div>
 
-        <Toggle variant="outline" aria-label="ブックマーク済みのみ表示">
-          <HugeiconsIcon icon={Bookmark02Icon} />
-          ブックマーク済みのみ
-        </Toggle>
-      </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-3">
+        <div
+          className="flex flex-wrap items-center justify-start gap-3 lg:justify-end"
+          data-filter-region="refinements"
+        >
           <Select defaultValue="all">
             <SelectTrigger className="w-[150px]">
               <span className="mr-1 text-muted-foreground">タグ</span>
@@ -114,11 +114,16 @@ export function CategoryFilter() {
               </SelectGroup>
             </SelectContent>
           </Select>
-        </div>
 
-        <span className="text-sm text-muted-foreground tabular-nums">
-          検索結果 {resultCount}件
-        </span>
+          <Toggle variant="outline" aria-label="ブックマーク済みのみ表示">
+            <HugeiconsIcon icon={Bookmark02Icon} />
+            ブックマーク済みのみ
+          </Toggle>
+
+          <span className="text-sm text-muted-foreground tabular-nums">
+            検索結果 {resultCount}件
+          </span>
+        </div>
       </div>
     </div>
   );

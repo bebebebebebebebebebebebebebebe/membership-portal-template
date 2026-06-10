@@ -4,7 +4,6 @@ import { getContents } from "@/features/contents/api/get-contents";
 import { CategoryFilter } from "@/features/contents/components/category-filter";
 import { ContentGrid } from "@/features/contents/components/content-grid";
 import { ContentPagination } from "@/features/contents/components/content-pagination";
-import { StatCards } from "@/features/contents/components/stat-cards";
 
 export const metadata: Metadata = {
   title: "コンテンツカタログ | Modular Member Portal",
@@ -15,7 +14,7 @@ export const metadata: Metadata = {
 /**
  * コンテンツカタログページ（公開・/contents）。
  *
- * 非会員も閲覧できる公開カタログ。見出し → 統計カード → フィルタ → カードグリッド →
+ * 非会員も閲覧できる公開カタログ。見出し → フィルタ → カードグリッド →
  * ページネーションを縦に積む。本文の閲覧可否は詳細ページの Content Gate で別途判定するため、
  * ここでは accessPolicy に依存しない一覧表示に徹する。データは API abstraction から取得する。
  */
@@ -32,8 +31,6 @@ export default function ContentsPage() {
           無料公開・ログイン限定・有料プラン・単品購入のコンテンツをまとめて確認できます。
         </p>
       </div>
-
-      <StatCards />
 
       <CategoryFilter />
 
