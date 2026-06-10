@@ -18,6 +18,7 @@
 |------|------|
 | 実装済み | route/page が存在し、画面として確認できるもの |
 | 部分実装 | 静的 UI や mock data で成立しているが、認証・DB・CRUD などが未実装のもの |
+| Coming Soon | route/page は存在し、未実装であることと将来の役割を表示する placeholder |
 | 未実装 | README 上の MVP/将来構想にはあるが、現時点で route/page がないもの |
 | 未確定 | 実装方式や採用技術の決定が必要なもの |
 
@@ -36,28 +37,31 @@
 | コンテンツカタログ | `/contents` | `(public)` 配下の公開カタログ。非会員も閲覧できる。データは `getContents()`（published+listed）経由。DB/API は未実装 |
 | コンテンツ詳細 | `/contents/[id]` | `(public)` 配下。`accessPolicy` を `canViewContent()` で判定し、閲覧可なら本文、不可なら `ContentAccessGate` を表示する Content Gate 付き。記事以外・hidden・未作成 ID は `notFound()` |
 
-### 2-4. 未実装
+### 2-4. Coming Soon
 
 | 項目 | パス | 備考 |
 |------|------|------|
-| ログイン | `/login` | 認証基盤未確定 |
-| 新規登録 | `/register` | 認証基盤未確定 |
-| ダッシュボード | `/dashboard` | route/page なし |
-| お気に入り | `/bookmarks` | route/page なし |
-| 通知 | `/notifications` | route/page なし |
-| プロフィール設定 | `/settings/profile` | route/page なし |
-| アカウント設定 | `/settings/account` | route/page なし |
-| Admin コンテンツ管理 | `/admin/contents` | route/page なし。CRUD/RBAC は未実装 |
+| ログイン | `/login` | 認証基盤未確定。Coming Soon 表示 |
+| 新規登録 | `/register` | 認証基盤未確定。Coming Soon 表示 |
+| ダッシュボード | `/dashboard` | Member Zone の placeholder。Coming Soon 表示 |
+| お気に入り | `/bookmarks` | Member Zone の placeholder。Coming Soon 表示 |
+| 通知 | `/notifications` | Member Zone の placeholder。Coming Soon 表示 |
+| プロフィール設定 | `/settings/profile` | Member Zone の placeholder。Coming Soon 表示 |
+| アカウント設定 | `/settings/account` | Member Zone の placeholder。Coming Soon 表示 |
+| Admin コンテンツ管理 | `/admin/contents` | Coming Soon 表示。CRUD/RBAC は未実装 |
 
 ### 2-5. 利用可能な scripts
 
-`package.json` で確認できる scripts は次の 4 つです。`test`、`typecheck`、`e2e` は現時点では定義されていません。
+`package.json` で確認できる scripts は次の 7 つです。`e2e` は現時点では定義されていません。
 
 ```bash
 pnpm run dev
 pnpm run build
 pnpm run start
 pnpm run lint
+pnpm run typecheck
+pnpm run test
+pnpm run test:watch
 ```
 
 ## 3. 確定している設計方針
@@ -155,8 +159,8 @@ Root
 | # | ページ名 | パス | 目的 | MVP | 実装状態 |
 |---|---------|------|------|:---:|----------|
 | 1 | トップページ | `/` | サービス概要・ログイン導線 | ✅ | 実装済み |
-| 2 | ログイン | `/login` | メール・パスワード認証 | ✅ | 未実装 |
-| 3 | 新規登録 | `/register` | 会員登録フォーム | ✅ | 未実装 |
+| 2 | ログイン | `/login` | メール・パスワード認証 | ✅ | Coming Soon |
+| 3 | 新規登録 | `/register` | 会員登録フォーム | ✅ | Coming Soon |
 | 4 | パスワードリセット | `/reset-password` | 再設定メール送信 | — | 未実装 |
 | 5 | 利用規約 | `/terms` | 法的ページ（静的） | — | 未実装 |
 | 6 | プライバシーポリシー | `/privacy` | 法的ページ（静的） | — | 未実装 |
@@ -165,30 +169,30 @@ Root
 
 | # | ページ名 | パス | 目的 | MVP | 実装状態 |
 |---|---------|------|------|:---:|----------|
-| 1 | ダッシュボード | `/dashboard` | 全体状況の把握 | ✅ | 未実装 |
+| 1 | ダッシュボード | `/dashboard` | 全体状況の把握 | ✅ | Coming Soon |
 | 2 | コンテンツ一覧 | `/contents` | 記事・資料・投稿の一覧 | ✅ | 部分実装（`(public)` で公開カタログ化。非会員も閲覧可） |
 | 3 | コンテンツ詳細 | `/contents/[id]` | 情報の閲覧 | ✅ | 部分実装（`(public)`。本文は accessPolicy ベースの Content Gate で制御） |
-| 4 | お気に入り | `/bookmarks` | 保存済み情報の一覧 | ✅ | 未実装 |
-| 5 | 通知 | `/notifications` | お知らせ・更新情報 | ✅ | 未実装 |
-| 6 | プロフィール設定 | `/settings/profile` | 会員情報管理 | ✅ | 未実装 |
-| 7 | アカウント設定 | `/settings/account` | メール・パスワード・退会 | ✅ | 未実装 |
+| 4 | お気に入り | `/bookmarks` | 保存済み情報の一覧 | ✅ | Coming Soon |
+| 5 | 通知 | `/notifications` | お知らせ・更新情報 | ✅ | Coming Soon |
+| 6 | プロフィール設定 | `/settings/profile` | 会員情報管理 | ✅ | Coming Soon |
+| 7 | アカウント設定 | `/settings/account` | メール・パスワード・退会 | ✅ | Coming Soon |
 
 ### 5-3. Admin Zone
 
 | # | ページ名 | パス | 目的 | MVP | 実装状態 |
 |---|---------|------|------|:---:|----------|
-| 1 | コンテンツ管理 | `/admin/contents` | 投稿・編集・削除・公開制御 | ✅ | 未実装 |
+| 1 | コンテンツ管理 | `/admin/contents` | 投稿・編集・削除・公開制御 | ✅ | Coming Soon（CRUD/RBAC は未実装） |
 | 2 | ユーザー管理 | `/admin/users` | 会員一覧・ロール管理 | — | 未実装 |
 | 3 | お知らせ管理 | `/admin/notifications` | 通知の作成・配信 | — | 未実装 |
 
 ### 5-4. ページ数サマリ
 
-| ゾーン | MVP 要求 | 現在の実装済み | 現在の部分実装 | 将来追加 | 合計 |
-|--------|:--------:|:--------------:|:--------------:|:--------:|:----:|
-| Public | 3 | 1 | 0 | 3 | 6 |
-| Member | 7 | 0 | 2 | 0 | 7 |
-| Admin | 1 | 0 | 0 | 2 | 3 |
-| **合計** | **11** | **1** | **2** | **5** | **16** |
+| ゾーン | MVP 要求 | 現在の実装済み | 現在の部分実装 | Coming Soon | 未実装/将来追加 | 合計 |
+|--------|:--------:|:--------------:|:--------------:|:-----------:|:---------------:|:----:|
+| Public | 3 | 1 | 0 | 2 | 3 | 6 |
+| Member | 7 | 0 | 2 | 5 | 0 | 7 |
+| Admin | 1 | 0 | 0 | 1 | 2 | 3 |
+| **合計** | **11** | **1** | **2** | **8** | **5** | **16** |
 
 ## 6. 評価基準
 

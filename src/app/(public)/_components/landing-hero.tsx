@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
  * 公開トップのヒーローセクション。
  *
  * サービスの位置づけ（公開・会員・購入型ポータル）を示し、カタログ閲覧・ログイン・新規登録の
- * 主要導線を提示する。`/login` `/register` は未実装ルートだが、将来の認証実装に向けた導線として
- * 先行配置する。
+ * 主要導線を提示する。`/login` `/register` は Coming Soon page として受け、将来の認証実装に
+ * 差し替えられる状態にしている。
  */
 export function LandingHero() {
   return (

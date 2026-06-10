@@ -10,6 +10,7 @@ import { ContentAccessGate } from "@/features/contents/components/content-access
 import { ArticleDetail } from "@/features/contents/components/detail/article-detail";
 import { canViewContent } from "@/features/contents/utils/content-access";
 import { isPubliclyAccessibleContentMetadata } from "@/features/contents/utils/content-publication";
+import { ComingSoonPage } from "@/components/coming-soon-page";
 
 type ContentDetailPageParams = { params: Promise<{ id: string }> };
 
@@ -34,9 +35,10 @@ export async function generateMetadata({
  * コンテンツ詳細ページ（公開・/contents/[id]）。
  *
  * Route Guard ではなく Content Gate で本文の閲覧可否を制御する公開ページ。
- * metadata → 公開可否 → viewer → 閲覧可否判定の順に評価し、`getContentDetail()`（full body）は
- * 認可（allowed）に通った後でだけ呼ぶ。閲覧不可なら preview と Content Gate を表示する。
- * 記事以外（資料）や直アクセス不可（hidden/未公開）・未作成 id は 404。
+ * metadata → 公開可否 → content kind → viewer → 閲覧可否判定の順に評価し、
+ * `getContentDetail()`（full body）は認可（allowed）に通った後でだけ呼ぶ。
+ * 閲覧不可なら preview と Content Gate を表示する。資料は詳細 UI 未実装のため Coming Soon を返し、
+ * 直アクセス不可（hidden/未公開）・未作成 id は 404。
  */
 export default async function ContentDetailPage({
   params,
@@ -50,7 +52,21 @@ export default async function ContentDetailPage({
   }
 
   if (content.category !== "記事") {
-    notFound();
+    return (
+      <ComingSoonPage
+        eyebrow="Content Catalog"
+        title="資料ページは準備中です"
+        description={`${content.title} は現在、資料閲覧ページの準備中です。資料ファイルのプレビュー、購入導線、ダウンロード体験を整備してから公開します。`}
+        plannedItems={[
+          "資料ファイルのプレビュー表示",
+          "閲覧条件に応じた購入・プラン導線",
+          "ダウンロード数やページ数などの資料メタ情報表示",
+          "資料カテゴリに最適化した関連コンテンツ導線",
+        ]}
+        primaryHref="/contents"
+        primaryLabel="コンテンツカタログを見る"
+      />
+    );
   }
 
   const viewer = await getContentViewer();

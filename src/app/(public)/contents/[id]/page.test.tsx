@@ -1,3 +1,4 @@
+import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Content } from "@/features/contents/types/content";
@@ -61,6 +62,23 @@ function makeContent(accessPolicy: Content["accessPolicy"]): Content {
   };
 }
 
+function makeDocumentContent(accessPolicy: Content["accessPolicy"]): Content {
+  return {
+    id: "2",
+    category: "資料",
+    title: "サンプル資料",
+    description: "説明",
+    thumbnail: "/images/contents/sample.png",
+    tags: ["タグ"],
+    publicationStatus: "published",
+    discoverability: "listed",
+    accessPolicy,
+    fileFormat: "PDF",
+    pageCount: 12,
+    downloadCount: 120,
+  };
+}
+
 const anonymousViewer: ContentViewer = {
   user: null,
   plan: null,
@@ -97,6 +115,19 @@ describe("ContentDetailPage の認可フロー", () => {
     await renderPage();
 
     expect(mocks.getContentDetail).toHaveBeenCalledWith("1");
+  });
+
+  it("資料カテゴリは full detail を取得せず Coming Soon を表示する", async () => {
+    mocks.getContentMetadata.mockReturnValue(
+      makeDocumentContent({ kind: "free" })
+    );
+
+    render(await renderPage("2"));
+
+    expect(screen.getByText("資料ページは準備中です")).toBeInTheDocument();
+    expect(screen.getByText(/サンプル資料 は現在/)).toBeInTheDocument();
+    expect(mocks.getContentViewer).not.toHaveBeenCalled();
+    expect(mocks.getContentDetail).not.toHaveBeenCalled();
   });
 
   it("存在しないコンテンツは notFound に到達する", async () => {
