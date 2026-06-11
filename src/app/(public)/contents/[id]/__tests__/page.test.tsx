@@ -43,7 +43,7 @@ vi.mock("@/features/contents/components/detail/article-detail", () => ({
   ArticleDetail: () => null,
 }));
 
-import ContentDetailPage from "./page";
+import ContentDetailPage from "../page";
 
 function makeContent(accessPolicy: Content["accessPolicy"]): Content {
   return {
