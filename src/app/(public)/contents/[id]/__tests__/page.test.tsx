@@ -92,14 +92,14 @@ function renderPage(id = "1") {
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.getContentViewer.mockResolvedValue(anonymousViewer);
-  mocks.getRelatedContents.mockReturnValue([]);
-  mocks.getContentPreview.mockReturnValue({ id: "1", introduction: "概要" });
-  mocks.getContentDetail.mockReturnValue({ sections: [], comments: [] });
+  mocks.getRelatedContents.mockResolvedValue([]);
+  mocks.getContentPreview.mockResolvedValue({ id: "1", introduction: "概要" });
+  mocks.getContentDetail.mockResolvedValue({ sections: [], comments: [] });
 });
 
 describe("ContentDetailPage の認可フロー", () => {
   it("denied 時に getContentDetail を呼ばず gate を返す", async () => {
-    mocks.getContentMetadata.mockReturnValue(
+    mocks.getContentMetadata.mockResolvedValue(
       makeContent({ kind: "loginRequired" })
     );
 
@@ -110,7 +110,7 @@ describe("ContentDetailPage の認可フロー", () => {
   });
 
   it("allowed 時に getContentDetail を呼ぶ", async () => {
-    mocks.getContentMetadata.mockReturnValue(makeContent({ kind: "free" }));
+    mocks.getContentMetadata.mockResolvedValue(makeContent({ kind: "free" }));
 
     await renderPage();
 
@@ -118,7 +118,7 @@ describe("ContentDetailPage の認可フロー", () => {
   });
 
   it("資料カテゴリは full detail を取得せず Coming Soon を表示する", async () => {
-    mocks.getContentMetadata.mockReturnValue(
+    mocks.getContentMetadata.mockResolvedValue(
       makeDocumentContent({ kind: "free" })
     );
 
@@ -131,14 +131,14 @@ describe("ContentDetailPage の認可フロー", () => {
   });
 
   it("存在しないコンテンツは notFound に到達する", async () => {
-    mocks.getContentMetadata.mockReturnValue(undefined);
+    mocks.getContentMetadata.mockResolvedValue(undefined);
 
     await expect(renderPage("missing")).rejects.toThrow("NEXT_NOT_FOUND");
     expect(mocks.getContentDetail).not.toHaveBeenCalled();
   });
 
   it("hidden コンテンツは notFound に到達する", async () => {
-    mocks.getContentMetadata.mockReturnValue({
+    mocks.getContentMetadata.mockResolvedValue({
       ...makeContent({ kind: "free" }),
       discoverability: "hidden",
     });

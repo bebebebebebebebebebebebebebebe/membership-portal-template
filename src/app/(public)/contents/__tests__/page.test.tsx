@@ -4,8 +4,8 @@ import { describe, expect, it } from "vitest";
 import ContentsPage from "@/app/(public)/contents/page";
 
 describe("ContentsPage", () => {
-  it("統計カードを表示せず、一覧フィルターとコンテンツ一覧を表示する", () => {
-    render(<ContentsPage />);
+  it("統計カードを表示せず、一覧フィルターとコンテンツ一覧を表示する", async () => {
+    render(await ContentsPage());
 
     expect(screen.queryByText("総コンテンツ")).not.toBeInTheDocument();
     expect(screen.queryByText("お気に入り")).not.toBeInTheDocument();

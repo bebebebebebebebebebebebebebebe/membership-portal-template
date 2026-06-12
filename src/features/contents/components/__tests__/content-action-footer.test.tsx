@@ -28,55 +28,60 @@ function makeContent(accessPolicy: ContentAccessPolicy): Content {
 }
 
 describe("ContentActionFooter", () => {
-  it("free は閲覧条件を出さず詳細導線の CTA だけ表示する", () => {
-    render(<ContentActionFooter content={makeContent({ kind: "free" })} />);
+  it("free は閲覧条件を出さず詳細導線の CTA だけ表示する", async () => {
+    render(await ContentActionFooter({ content: makeContent({ kind: "free" }) }));
 
     expect(screen.queryByText("閲覧条件")).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: /詳細を見る/ })).toBeInTheDocument();
   });
 
-  it("loginRequired は閲覧条件と無料・ログインの文言を表示する", () => {
+  it("loginRequired は閲覧条件と無料・ログインの文言を表示する", async () => {
     render(
-      <ContentActionFooter content={makeContent({ kind: "loginRequired" })} />
+      await ContentActionFooter({
+        content: makeContent({ kind: "loginRequired" }),
+      })
     );
 
     expect(screen.getByText("閲覧条件")).toBeInTheDocument();
     expect(screen.getByText("無料・ログインで閲覧")).toBeInTheDocument();
   });
 
-  it("planRequired は有料プランの閲覧条件を表示する", () => {
+  it("planRequired は有料プランの閲覧条件を表示する", async () => {
     render(
-      <ContentActionFooter
-        content={makeContent({ kind: "planRequired", requiredPlans: ["premium"] })}
-      />
+      await ContentActionFooter({
+        content: makeContent({
+          kind: "planRequired",
+          requiredPlans: ["premium"],
+        }),
+      })
     );
 
     expect(screen.getByText("閲覧条件")).toBeInTheDocument();
     expect(screen.getByText("有料プラン加入で閲覧")).toBeInTheDocument();
   });
 
-  it("purchaseRequired は ProductOffer 由来の価格を表示する", () => {
+  it("purchaseRequired は ProductOffer 由来の価格を表示する", async () => {
     render(
-      <ContentActionFooter
-        content={makeContent({
+      await ContentActionFooter({
+        content: makeContent({
           kind: "purchaseRequired",
           productId: "product-security-checklist",
-        })}
-      />
+        }),
+      })
     );
 
     expect(screen.getByText("1,980円")).toBeInTheDocument();
   });
 
-  it("planOrPurchase は価格込みの閲覧条件を表示する", () => {
+  it("planOrPurchase は価格込みの閲覧条件を表示する", async () => {
     render(
-      <ContentActionFooter
-        content={makeContent({
+      await ContentActionFooter({
+        content: makeContent({
           kind: "planOrPurchase",
           requiredPlans: ["standard", "premium"],
           productId: "product-modern-javascript",
-        })}
-      />
+        }),
+      })
     );
 
     expect(screen.getByText("有料プランまたは2,480円")).toBeInTheDocument();

@@ -28,12 +28,12 @@ function makeContent(accessPolicy: ContentAccessPolicy): Content {
 }
 
 describe("ContentAccessGate", () => {
-  it("loginRequired はログイン導線を表示する", () => {
+  it("loginRequired はログイン導線を表示する", async () => {
     render(
-      <ContentAccessGate
-        content={makeContent({ kind: "loginRequired" })}
-        reason="loginRequired"
-      />
+      await ContentAccessGate({
+        content: makeContent({ kind: "loginRequired" }),
+        reason: "loginRequired",
+      })
     );
 
     expect(screen.getByText("ログインが必要です")).toBeInTheDocument();
@@ -42,12 +42,15 @@ describe("ContentAccessGate", () => {
     ).toHaveAttribute("href", "/login");
   });
 
-  it("planRequired はプラン確認導線を表示する", () => {
+  it("planRequired はプラン確認導線を表示する", async () => {
     render(
-      <ContentAccessGate
-        content={makeContent({ kind: "planRequired", requiredPlans: ["premium"] })}
-        reason="planRequired"
-      />
+      await ContentAccessGate({
+        content: makeContent({
+          kind: "planRequired",
+          requiredPlans: ["premium"],
+        }),
+        reason: "planRequired",
+      })
     );
 
     expect(screen.getByText("対象プランへの加入が必要です")).toBeInTheDocument();
@@ -57,15 +60,15 @@ describe("ContentAccessGate", () => {
     );
   });
 
-  it("purchaseRequired は ProductOffer 価格の購入導線を表示する", () => {
+  it("purchaseRequired は ProductOffer 価格の購入導線を表示する", async () => {
     render(
-      <ContentAccessGate
-        content={makeContent({
+      await ContentAccessGate({
+        content: makeContent({
           kind: "purchaseRequired",
           productId: "product-security-checklist",
-        })}
-        reason="purchaseRequired"
-      />
+        }),
+        reason: "purchaseRequired",
+      })
     );
 
     expect(screen.getByText("単品購入で閲覧できます")).toBeInTheDocument();
@@ -74,16 +77,16 @@ describe("ContentAccessGate", () => {
     ).toHaveAttribute("href", "/contents/purchase/product-security-checklist");
   });
 
-  it("planOrPurchaseRequired は購入とプランの両導線を表示する", () => {
+  it("planOrPurchaseRequired は購入とプランの両導線を表示する", async () => {
     render(
-      <ContentAccessGate
-        content={makeContent({
+      await ContentAccessGate({
+        content: makeContent({
           kind: "planOrPurchase",
           requiredPlans: ["standard", "premium"],
           productId: "product-modern-javascript",
-        })}
-        reason="planOrPurchaseRequired"
-      />
+        }),
+        reason: "planOrPurchaseRequired",
+      })
     );
 
     expect(
@@ -98,22 +101,22 @@ describe("ContentAccessGate", () => {
     );
   });
 
-  it("preview があるときだけ概要を表示する", () => {
+  it("preview があるときだけ概要を表示する", async () => {
     const { rerender } = render(
-      <ContentAccessGate
-        content={makeContent({ kind: "loginRequired" })}
-        reason="loginRequired"
-      />
+      await ContentAccessGate({
+        content: makeContent({ kind: "loginRequired" }),
+        reason: "loginRequired",
+      })
     );
 
     expect(screen.queryByText("プレビュー")).not.toBeInTheDocument();
 
     rerender(
-      <ContentAccessGate
-        content={makeContent({ kind: "loginRequired" })}
-        preview={{ id: "fixture", introduction: "導入の概要テキスト" }}
-        reason="loginRequired"
-      />
+      await ContentAccessGate({
+        content: makeContent({ kind: "loginRequired" }),
+        preview: { id: "fixture", introduction: "導入の概要テキスト" },
+        reason: "loginRequired",
+      })
     );
 
     expect(screen.getByText("プレビュー")).toBeInTheDocument();

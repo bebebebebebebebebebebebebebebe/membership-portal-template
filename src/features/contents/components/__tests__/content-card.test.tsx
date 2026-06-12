@@ -23,11 +23,11 @@ function makeContent(accessPolicy: ContentAccessPolicy): Content {
 }
 
 describe("ContentCard", () => {
-  it("タグは CardContent に表示し、本文側に閲覧条件を残さない", () => {
+  it("タグは CardContent に表示し、本文側に閲覧条件を残さない", async () => {
     render(
-      <ContentCard
-        content={makeContent({ kind: "planRequired", requiredPlans: ["premium"] })}
-      />
+      await ContentCard({
+        content: makeContent({ kind: "planRequired", requiredPlans: ["premium"] }),
+      })
     );
 
     const tag = screen.getByText("セキュリティ");
@@ -39,11 +39,11 @@ describe("ContentCard", () => {
     expect(cardContent).not.toHaveTextContent("有料プラン");
   });
 
-  it("閲覧条件と CTA は CardFooter に表示する", () => {
+  it("閲覧条件と CTA は CardFooter に表示する", async () => {
     render(
-      <ContentCard
-        content={makeContent({ kind: "planRequired", requiredPlans: ["premium"] })}
-      />
+      await ContentCard({
+        content: makeContent({ kind: "planRequired", requiredPlans: ["premium"] }),
+      })
     );
 
     const footer = screen
@@ -55,8 +55,8 @@ describe("ContentCard", () => {
     expect(footer).toHaveTextContent("プランを確認");
   });
 
-  it("free は閲覧条件を出さず CTA だけ表示する", () => {
-    render(<ContentCard content={makeContent({ kind: "free" })} />);
+  it("free は閲覧条件を出さず CTA だけ表示する", async () => {
+    render(await ContentCard({ content: makeContent({ kind: "free" }) }));
 
     expect(screen.queryByText("閲覧条件")).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: /詳細を見る/ })).toBeInTheDocument();

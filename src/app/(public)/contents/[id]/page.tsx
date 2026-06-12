@@ -14,6 +14,8 @@ import { ComingSoonPage } from "@/components/coming-soon-page";
 
 type ContentDetailPageParams = { params: Promise<{ id: string }> };
 
+export const dynamic = "force-dynamic";
+
 /**
  * 記事詳細ルートのメタデータ。認可前に取得してよい metadata だけを使い、記事タイトルを
  * `<title>` に反映する。記事が見つからない場合は汎用タイトルにフォールバックする。
@@ -22,7 +24,7 @@ export async function generateMetadata({
   params,
 }: ContentDetailPageParams): Promise<Metadata> {
   const { id } = await params;
-  const content = getContentMetadata(id);
+  const content = await getContentMetadata(id);
 
   return {
     title: content
@@ -45,7 +47,7 @@ export default async function ContentDetailPage({
 }: ContentDetailPageParams) {
   const { id } = await params;
 
-  const content = getContentMetadata(id);
+  const content = await getContentMetadata(id);
 
   if (!content || !isPubliclyAccessibleContentMetadata(content)) {
     notFound();
@@ -73,22 +75,20 @@ export default async function ContentDetailPage({
   const decision = canViewContent(content.accessPolicy, viewer);
 
   if (!decision.allowed) {
-    return (
-      <ContentAccessGate
-        content={content}
-        preview={getContentPreview(id)}
-        reason={decision.reason}
-      />
-    );
+    return ContentAccessGate({
+      content,
+      preview: await getContentPreview(id),
+      reason: decision.reason,
+    });
   }
 
-  const detail = getContentDetail(id);
+  const detail = await getContentDetail(id);
 
   if (!detail) {
     notFound();
   }
 
-  const related = getRelatedContents(id);
+  const related = await getRelatedContents(id);
 
   return (
     <ArticleDetail

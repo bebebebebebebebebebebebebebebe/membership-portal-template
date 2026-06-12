@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter, Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { MswProvider } from "@/testing/mocks/msw-provider";
 
 const notoSansJp = Noto_Sans_JP({
   subsets: ["latin"],
@@ -32,6 +33,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const shouldEnableMsw =
+    process.env.NODE_ENV === "development" &&
+    process.env.NEXT_PUBLIC_API_MOCKING === "enabled";
+
   return (
     <html
       lang="ja"
@@ -45,7 +50,9 @@ export default function RootLayout({
         geistMono.variable
       )}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {shouldEnableMsw ? <MswProvider>{children}</MswProvider> : children}
+      </body>
     </html>
   );
 }

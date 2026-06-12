@@ -28,8 +28,8 @@ export type ContentPurchaseCtaProps = {
  *
  * @param policy 単品購入を含む閲覧条件
  */
-export function ContentPurchaseCta({ policy }: ContentPurchaseCtaProps) {
-  const offer = getProductOffer(policy.productId);
+export async function ContentPurchaseCta({ policy }: ContentPurchaseCtaProps) {
+  const offer = await getProductOffer(policy.productId);
   const priceLabel = offer ? formatPrice(offer) : "購入";
 
   return (

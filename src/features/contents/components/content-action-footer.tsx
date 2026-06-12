@@ -44,9 +44,9 @@ function getProductIdForAccess(policy: Content["accessPolicy"]): string | null {
  * panel（枠・背景）を出し、`free` は CTA だけを置いて本文・footer をすっきりさせる。
  * CTA 色は category / access kind で分岐させず `variant="outline"` に統一する。
  */
-export function ContentActionFooter({ content }: ContentActionFooterProps) {
+export async function ContentActionFooter({ content }: ContentActionFooterProps) {
   const productId = getProductIdForAccess(content.accessPolicy);
-  const offer = productId ? getProductOffer(productId) : undefined;
+  const offer = productId ? await getProductOffer(productId) : undefined;
   const display = getContentActionDisplay(content.accessPolicy, offer);
 
   const hasCondition = Boolean(display.conditionLabel);

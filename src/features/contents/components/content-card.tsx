@@ -122,7 +122,9 @@ export type ContentCardProps = {
  * footer の `ContentActionFooter` に「閲覧条件 + 行動」として集約する。
  * `imageLoading` は一覧先頭など above-the-fold の LCP 候補だけ eager にする。
  */
-export function ContentCard({ content, imageLoading }: ContentCardProps) {
+export async function ContentCard({ content, imageLoading }: ContentCardProps) {
+  const actionFooter = await ContentActionFooter({ content });
+
   return (
     <Card className="flex h-full flex-col gap-0 overflow-hidden pt-0">
       <div className="relative aspect-video">
@@ -182,7 +184,7 @@ export function ContentCard({ content, imageLoading }: ContentCardProps) {
         <div className="flex items-center justify-between gap-2 text-sm text-muted-foreground">
           <ContentMeta content={content} />
         </div>
-        <ContentActionFooter content={content} />
+        {actionFooter}
       </CardFooter>
     </Card>
   );

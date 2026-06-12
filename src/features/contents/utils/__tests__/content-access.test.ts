@@ -180,8 +180,8 @@ describe("canViewContent", () => {
 });
 
 describe("content data boundaries", () => {
-  it("returns preview data without full detail fields", () => {
-    const preview = getContentPreview("1");
+  it("returns preview data without full detail fields", async () => {
+    const preview = await getContentPreview("1");
 
     expect(preview).toEqual({
       id: "1",
@@ -194,8 +194,8 @@ describe("content data boundaries", () => {
     expect(preview).not.toHaveProperty("conclusion");
   });
 
-  it("returns pricing from product offers instead of access policies", () => {
-    expect(getProductOffer("product-security-checklist")).toMatchObject({
+  it("returns pricing from product offers instead of access policies", async () => {
+    await expect(getProductOffer("product-security-checklist")).resolves.toMatchObject({
       productId: "product-security-checklist",
       price: 1980,
       currency: "JPY",

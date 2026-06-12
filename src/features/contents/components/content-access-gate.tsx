@@ -60,7 +60,7 @@ const deniedCopy: Record<DeniedReason, { heading: string; description: string }>
  * プラン確認導線（/pricing）を出す。`planOrPurchaseRequired` は購入とプランの両導線を並べる。
  * login が必要な理由では /login へ誘導する。価格・productId は accessPolicy から narrowing する。
  */
-function GateActions({
+async function GateActions({
   reason,
   policy,
 }: {
@@ -83,19 +83,23 @@ function GateActions({
       );
 
     case "purchaseRequired":
-      return policy.kind === "purchaseRequired" ? (
-        <ContentPurchaseCta policy={policy} />
-      ) : null;
+      return policy.kind === "purchaseRequired"
+        ? ContentPurchaseCta({ policy })
+        : null;
 
     case "planOrPurchaseRequired":
-      return policy.kind === "planOrPurchase" ? (
+      if (policy.kind !== "planOrPurchase") {
+        return null;
+      }
+
+      return (
         <>
-          <ContentPurchaseCta policy={policy} />
+          {await ContentPurchaseCta({ policy })}
           <Button asChild variant="outline">
             <Link href="/pricing">プランを確認</Link>
           </Button>
         </>
-      ) : null;
+      );
   }
 }
 
@@ -110,12 +114,13 @@ function GateActions({
  * @param preview 認可前に表示可能な概要（任意）
  * @param reason `canViewContent()` が返した denied 理由
  */
-export function ContentAccessGate({
+export async function ContentAccessGate({
   content,
   preview,
   reason,
 }: ContentAccessGateProps) {
   const copy = deniedCopy[reason];
+  const actions = await GateActions({ reason, policy: content.accessPolicy });
 
   return (
     <Card className="mx-auto w-full max-w-2xl">
@@ -142,7 +147,7 @@ export function ContentAccessGate({
       </CardContent>
 
       <CardFooter className="flex flex-wrap gap-2">
-        <GateActions reason={reason} policy={content.accessPolicy} />
+        {actions}
       </CardFooter>
     </Card>
   );

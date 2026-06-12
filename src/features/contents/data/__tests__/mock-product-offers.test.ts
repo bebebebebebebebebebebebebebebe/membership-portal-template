@@ -24,8 +24,8 @@ describe("mockContents と mockProductOffers の整合性", () => {
 
   it.each(purchasableProductIds)(
     "%s は ProductOffer に存在する",
-    (productId) => {
-      expect(getProductOffer(productId)).toBeDefined();
+    async (productId) => {
+      await expect(getProductOffer(productId)).resolves.toBeDefined();
     }
   );
 });
