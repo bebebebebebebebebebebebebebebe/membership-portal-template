@@ -3,25 +3,12 @@ import { http, HttpResponse } from "msw";
 import { mockContentDetails } from "@/features/contents/data/mock-content-details";
 import { mockContents } from "@/features/contents/data/mock-contents";
 import { mockProductOffers } from "@/features/contents/data/mock-product-offers";
-import type { ContentViewer } from "@/features/contents/types/content-viewer";
 import { canViewContent } from "@/features/contents/utils/content-access";
 import {
   isListedPublishedContent,
   isPubliclyAccessibleContentMetadata,
 } from "@/features/contents/utils/content-publication";
-
-const browserMockViewer: ContentViewer = {
-  user: {
-    name: "山田 太郎",
-    email: "taro.yamada@example.com",
-    avatar: "/images/avatars/avatar-06.jpg",
-    initials: "山田",
-    membership: "プレミアム会員",
-    role: "member",
-  },
-  plan: "premium",
-  purchasedProductIds: [],
-};
+import { getBrowserMockViewer } from "@/testing/mocks/auth-scenario";
 
 /**
  * browser worker 用の client-safe contents handlers。
@@ -71,7 +58,10 @@ export const browserContentHandlers = [
       );
     }
 
-    const decision = canViewContent(metadata.accessPolicy, browserMockViewer);
+    const decision = canViewContent(
+      metadata.accessPolicy,
+      getBrowserMockViewer()
+    );
 
     if (!decision.allowed) {
       return HttpResponse.json({ error: "Forbidden" }, { status: 403 });

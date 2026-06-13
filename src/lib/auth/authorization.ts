@@ -3,6 +3,10 @@ import { forbidden, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import type { AuthUser, UserRole } from "@/types/auth";
 
+type CurrentRouteGuardOptions = {
+  nextPath: string;
+};
+
 /**
  * 認証済みユーザーが存在しない場合のエラー。
  *
@@ -102,6 +106,31 @@ export async function requireCurrentAdmin(): Promise<AuthUser> {
 
   if (user.role !== "admin") {
     forbidden();
+  }
+
+  return user;
+}
+
+/**
+ * Admin route 表示に必要な現在 request の admin ユーザーを要求する。
+ *
+ * 未ログイン時は login route に復帰先を付けて遷移し、非 admin ユーザーは安定した
+ * `/forbidden` route へ遷移する。Admin layout などの route guard から利用する。
+ *
+ * @param options.nextPath ログイン後に戻す Admin route path。
+ * @returns `admin` ロールを持つ認証済みユーザー。
+ */
+export async function requireCurrentAdminForRoute({
+  nextPath,
+}: CurrentRouteGuardOptions): Promise<AuthUser> {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect(`/login?next=${encodeURIComponent(nextPath)}`);
+  }
+
+  if (user.role !== "admin") {
+    redirect("/forbidden");
   }
 
   return user;

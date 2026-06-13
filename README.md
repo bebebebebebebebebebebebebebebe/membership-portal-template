@@ -33,7 +33,7 @@
 
 | 項目 | パス | 現状 |
 |------|------|------|
-| Member Zone layout | `(member)` route group | sidebar/header/nav config と認証必須 layout（`requireAuthenticatedUser`）は実装済み。認証基盤はモック |
+| Member Zone layout | `(member)` route group | sidebar/header/nav config と認証必須 layout（`requireCurrentUser`）は実装済み。認証基盤はモック |
 | コンテンツカタログ | `/contents` | `(public)` 配下の公開カタログ。非会員も閲覧できる。データは `getContents()`（published+listed）経由。DB/API は未実装 |
 | コンテンツ詳細 | `/contents/[id]` | `(public)` 配下。`accessPolicy` を `canViewContent()` で判定し、閲覧可なら本文、不可なら `ContentAccessGate` を表示する Content Gate 付き。記事以外・hidden・未作成 ID は `notFound()` |
 
@@ -48,7 +48,7 @@
 | 通知 | `/notifications` | Member Zone の placeholder。Coming Soon 表示 |
 | プロフィール設定 | `/settings/profile` | Member Zone の placeholder。Coming Soon 表示 |
 | アカウント設定 | `/settings/account` | Member Zone の placeholder。Coming Soon 表示 |
-| Admin コンテンツ管理 | `/admin/contents` | Coming Soon 表示。CRUD/RBAC は未実装 |
+| Admin コンテンツ管理 | `/admin/contents` | Coming Soon 表示 + Admin Guard。CRUD と実認証 provider は未実装 |
 
 ### 2-5. 利用可能な scripts
 
@@ -86,12 +86,13 @@ Root
 ├── Public Zone        認証不要。集客・認証導線・公開カタログ
 │   └── Content Catalog  /contents・/contents/[id]（非会員も閲覧可、本文は Content Gate で制御）
 ├── Member Zone        ログイン必須。dashboard / bookmarks / notifications / settings
-└── Admin Zone         管理者専用想定。RBAC で制御
+└── Admin Zone         管理者専用。Admin Guard で制御し、CRUD は未実装
 ```
 
 - `src/app/(public)` は Public Zone の route group として扱い、`(public)/layout.tsx` が公開 shell（ヘッダー・背景・main コンテナ）を提供する。
 - `/contents` と `/contents/[id]` は Member Zone 専用ではなく、`(public)` 配下の公開条件つきカタログとして扱う。
 - `src/app/(member)` は Member Zone の route group として扱い、`(member)/layout.tsx` が認証必須 shell（sidebar/header）を提供する。`/contents` への導線は Member sidebar にも「コンテンツカタログ」として残す。
+- `src/app/admin` は Admin Zone として扱い、`admin/layout.tsx` が `requireCurrentAdminForRoute()` で admin role を要求する。未ログインは `/login?next=...`、非 admin は `/forbidden` へ遷移する。
 - 領域への入場制御（Route Guard）と本文の閲覧制御（Content Gate）を分離する。`/dashboard` などは Route Guard、`/contents/[id]` の本文は `accessPolicy` ベースの Content Gate で制御する。
 - `features/contents` はコンテンツ機能の UI・型・API・ロジックと mock data を持つ feature として扱う。
 - 現時点では DB・バックエンドが未確定のため、コンテンツ画面は静的モックを使う。
@@ -134,6 +135,7 @@ Root
 - **Route Guard と Content Gate の分離**: 領域への入場は Route Guard（`requireAuthenticatedUser` など）、本文の閲覧は Content Gate（`canViewContent`）で制御する。
 - **データ境界**: metadata（`getContentMetadata`）と preview（`getContentPreview`）は認可前に取得してよい。full body を含む detail（`getContentDetail`）は `canViewContent()` の allowed に通った後でのみ取得する。
 - **ページの脱モック依存**: page は `mockContents` などを直接 import せず、API abstraction（`features/contents/api`）経由で取得する。
+- **mock auth scenario**: server 側は `AUTH_PROVIDER=mock` と `MOCK_AUTH_SCENARIO=admin` などで切り替える。browser MSW 側は `NEXT_PUBLIC_API_MOCKING=enabled` と `NEXT_PUBLIC_AUTH_MOCK_SCENARIO=admin` で表示確認用 viewer を切り替える。
 
 ## 4. 未確定事項
 
@@ -181,7 +183,7 @@ Root
 
 | # | ページ名 | パス | 目的 | MVP | 実装状態 |
 |---|---------|------|------|:---:|----------|
-| 1 | コンテンツ管理 | `/admin/contents` | 投稿・編集・削除・公開制御 | ✅ | Coming Soon（CRUD/RBAC は未実装） |
+| 1 | コンテンツ管理 | `/admin/contents` | 投稿・編集・削除・公開制御 | ✅ | Coming Soon + Admin Guard（CRUD と実認証 provider は未実装） |
 | 2 | ユーザー管理 | `/admin/users` | 会員一覧・ロール管理 | — | 未実装 |
 | 3 | お知らせ管理 | `/admin/notifications` | 通知の作成・配信 | — | 未実装 |
 
@@ -199,7 +201,7 @@ Root
 - **UI 設計力**: 汎用的な骨格として設計されており、特定ユースケースに縛られない
 - **コンポーネント設計**: shadcn/ui ベースの一貫したデザインシステム
 - **情報設計**: 3 層ゾーン構成（Public / Member / Admin）と RBAC の整合性
-- **認証設計**: ロールベースアクセス制御の実装。現時点では未実装
+- **認証設計**: provider 非依存の mock auth service と Member/Admin Guard は部分実装。実認証 provider は未実装
 - **CRUD 実装**: Admin コンテンツ管理画面でフルサイクルを示す。現時点では未実装
 - **レスポンシブ対応**: モバイル・タブレット・デスクトップの 3 ブレークポイント
 - **アクセシビリティ**: WCAG 2.2 AA 準拠（キーボード操作・コントラスト・フォーカス表示）
@@ -215,7 +217,7 @@ Root
    - current user 取得を `src/lib/auth/get-current-user.ts` に集約する。
    - Member/Admin の認可判定を `src/lib/auth/authorization.ts` に集約する。
    - 認証基盤の選定は RBAC / Admin CRUD / 実ログイン・登録の本実装前に行う。
-5. Member Zone と Admin Zone のアクセス制御を実装する。
+5. 実認証 provider と session 管理を導入し、mock auth service を置き換える。
 6. Admin コンテンツ管理の CRUD を実装する。
 7. DB・バックエンド確定後、mock data を API/data layer 経由へ移行する。
 

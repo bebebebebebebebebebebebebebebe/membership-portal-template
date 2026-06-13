@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   ForbiddenError,
   requireAdmin,
+  requireCurrentAdminForRoute,
   requireAuthenticatedUser,
   requireCurrentAdmin,
   requireCurrentUser,
@@ -85,5 +86,37 @@ describe("authorization guards", () => {
     setTestAuthState({ user: adminUser, purchasedProductIds: [] });
 
     await expect(requireCurrentAdmin()).resolves.toEqual(adminUser);
+  });
+
+  it("requireCurrentAdminForRoute は admin user を返す", async () => {
+    vi.stubEnv("AUTH_PROVIDER", "test");
+    setTestAuthState({ user: adminUser, purchasedProductIds: [] });
+
+    await expect(
+      requireCurrentAdminForRoute({ nextPath: "/admin/contents" })
+    ).resolves.toEqual(adminUser);
+    expect(navigationMocks.redirect).not.toHaveBeenCalled();
+  });
+
+  it("requireCurrentAdminForRoute は未ログイン時に next 付き login へ redirect する", async () => {
+    vi.stubEnv("AUTH_PROVIDER", "test");
+    setTestAuthState({ user: null, purchasedProductIds: [] });
+
+    await expect(
+      requireCurrentAdminForRoute({ nextPath: "/admin/contents" })
+    ).rejects.toThrow("redirect:/login?next=%2Fadmin%2Fcontents");
+    expect(navigationMocks.redirect).toHaveBeenCalledWith(
+      "/login?next=%2Fadmin%2Fcontents"
+    );
+  });
+
+  it("requireCurrentAdminForRoute は非 admin user を /forbidden へ redirect する", async () => {
+    vi.stubEnv("AUTH_PROVIDER", "test");
+    setTestAuthState({ user: memberUser, purchasedProductIds: [] });
+
+    await expect(
+      requireCurrentAdminForRoute({ nextPath: "/admin/contents" })
+    ).rejects.toThrow("redirect:/forbidden");
+    expect(navigationMocks.redirect).toHaveBeenCalledWith("/forbidden");
   });
 });
