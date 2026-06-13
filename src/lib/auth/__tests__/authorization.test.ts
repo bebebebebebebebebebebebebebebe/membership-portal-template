@@ -7,6 +7,7 @@ import {
   requireAuthenticatedUser,
   requireCurrentAdmin,
   requireCurrentUser,
+  requireCurrentUserForRoute,
   requireRole,
   UnauthorizedError,
 } from "@/lib/auth/authorization";
@@ -71,6 +72,27 @@ describe("authorization guards", () => {
     setTestAuthState({ user: memberUser, purchasedProductIds: [] });
 
     await expect(requireCurrentUser()).resolves.toEqual(memberUser);
+  });
+
+  it("requireCurrentUserForRoute は未ログイン時に next 付き login へ redirect する", async () => {
+    vi.stubEnv("AUTH_PROVIDER", "test");
+    setTestAuthState({ user: null, purchasedProductIds: [] });
+
+    await expect(
+      requireCurrentUserForRoute({ nextPath: "/bookmarks" })
+    ).rejects.toThrow("redirect:/login?next=%2Fbookmarks");
+    expect(navigationMocks.redirect).toHaveBeenCalledWith(
+      "/login?next=%2Fbookmarks"
+    );
+  });
+
+  it("requireCurrentUserForRoute はログイン済み user を返す", async () => {
+    vi.stubEnv("AUTH_PROVIDER", "test");
+    setTestAuthState({ user: memberUser, purchasedProductIds: [] });
+
+    await expect(
+      requireCurrentUserForRoute({ nextPath: "/dashboard" })
+    ).resolves.toEqual(memberUser);
   });
 
   it("requireCurrentAdmin は非 admin で forbidden にする", async () => {

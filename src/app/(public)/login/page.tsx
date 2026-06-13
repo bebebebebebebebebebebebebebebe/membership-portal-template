@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { ComingSoonPage } from "@/components/coming-soon-page";
+import { normalizeInternalNextPath } from "@/lib/auth/auth-redirect";
 
 export const metadata: Metadata = {
   title: "ログイン | Modular Member Portal",
@@ -10,12 +11,19 @@ export const metadata: Metadata = {
 /**
  * ログイン route の Coming Soon ページ。
  */
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const { next } = await searchParams;
+  const nextPath = normalizeInternalNextPath(next);
+
   return (
     <ComingSoonPage
       eyebrow="Public Zone"
       title="ログイン機能は準備中です"
-      description="認証基盤を導入後、会員アカウントでログインできる入口になります。"
+      description={`認証基盤を導入後、ログイン完了後に ${nextPath} へ戻れる入口になります。`}
       plannedItems={[
         "メールアドレスとパスワードによるログイン",
         "認証 provider との接続",

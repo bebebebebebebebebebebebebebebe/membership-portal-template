@@ -8,8 +8,8 @@ import LoginPage from "@/app/(public)/login/page";
 import RegisterPage from "@/app/(public)/register/page";
 
 describe("Coming Soon route pages", () => {
-  it("/login は Public Zone の Coming Soon と新規登録導線を表示する", () => {
-    render(<LoginPage />);
+  it("/login は Public Zone の Coming Soon と新規登録導線を表示する", async () => {
+    render(await LoginPage({ searchParams: Promise.resolve({}) }));
 
     expect(screen.getByText("Public Zone")).toBeInTheDocument();
     expect(screen.getByText("ログイン機能は準備中です")).toBeInTheDocument();
@@ -17,6 +17,20 @@ describe("Coming Soon route pages", () => {
       "href",
       "/register"
     );
+  });
+
+  it("/login は安全化した next path を Coming Soon 文言に反映する", async () => {
+    render(
+      await LoginPage({
+        searchParams: Promise.resolve({ next: "/bookmarks" }),
+      })
+    );
+
+    expect(
+      screen.getByText(
+        "認証基盤を導入後、ログイン完了後に /bookmarks へ戻れる入口になります。"
+      )
+    ).toBeInTheDocument();
   });
 
   it("/register は Public Zone の Coming Soon とログイン導線を表示する", () => {

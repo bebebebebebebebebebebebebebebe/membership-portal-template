@@ -1,5 +1,6 @@
 import { forbidden, redirect } from "next/navigation";
 
+import { createLoginRedirectPath } from "@/lib/auth/auth-redirect";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import type { AuthUser, UserRole } from "@/types/auth";
 
@@ -93,6 +94,27 @@ export async function requireCurrentUser(): Promise<AuthUser> {
 }
 
 /**
+ * Member route 表示に必要な現在 request の認証済みユーザーを要求する。
+ *
+ * 未ログイン時は login route に復帰先を付けて遷移する。Member layout などの
+ * route guard から利用する。
+ *
+ * @param options.nextPath ログイン後に戻す Member route path。
+ * @returns 認証済みユーザー。
+ */
+export async function requireCurrentUserForRoute({
+  nextPath,
+}: CurrentRouteGuardOptions): Promise<AuthUser> {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect(createLoginRedirectPath(nextPath));
+  }
+
+  return user;
+}
+
+/**
  * 現在 request の admin ユーザーを要求する。
  *
  * @returns `admin` ロールを持つ認証済みユーザー。
@@ -126,7 +148,7 @@ export async function requireCurrentAdminForRoute({
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect(`/login?next=${encodeURIComponent(nextPath)}`);
+    redirect(createLoginRedirectPath(nextPath));
   }
 
   if (user.role !== "admin") {

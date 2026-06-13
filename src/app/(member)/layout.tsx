@@ -1,7 +1,7 @@
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/components/providers/auth-provider";
-import { requireCurrentUser } from "@/lib/auth/authorization";
+import { requireCurrentUserForRoute } from "@/lib/auth/authorization";
 
 import { AppSidebar } from "./_components/app-sidebar";
 import { SiteHeader } from "./_components/site-header";
@@ -20,7 +20,7 @@ export default async function MemberLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await requireCurrentUser();
+  const user = await requireCurrentUserForRoute({ nextPath: "/dashboard" });
 
   return (
     <AuthProvider initialUser={user}>
