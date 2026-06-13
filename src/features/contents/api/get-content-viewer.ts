@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { getCurrentAuthState } from "@/lib/auth/get-current-auth-state";
 import type { MembershipPlan } from "@/features/contents/types/content-access";
 import type { ContentViewer } from "@/features/contents/types/content-viewer";
 
@@ -21,11 +21,11 @@ function toMembershipPlan(membership: string | undefined): MembershipPlan | null
  * @returns 正規化済みの会員プランと購入済み productId を含む閲覧者情報。
  */
 export async function getContentViewer(): Promise<ContentViewer> {
-  const user = await getCurrentUser();
+  const authState = await getCurrentAuthState();
 
   return {
-    user,
-    plan: toMembershipPlan(user?.membership),
-    purchasedProductIds: [],
+    user: authState.user,
+    plan: toMembershipPlan(authState.user?.membership),
+    purchasedProductIds: authState.purchasedProductIds,
   };
 }
