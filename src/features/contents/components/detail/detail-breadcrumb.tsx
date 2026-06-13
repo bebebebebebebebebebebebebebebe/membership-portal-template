@@ -12,9 +12,9 @@ import {
 /**
  * 記事詳細ページ上部のパンくず。
  *
- * 共有ヘッダー（SiteHeader）は現在パスから 2 階層しか生成できないため、
- * 詳細ページの 3 階層（Member Zone › コンテンツ一覧 › 記事詳細）はページ内に描画する。
- * 先頭はメンバーゾーンのホーム（/dashboard）、中間は一覧（/contents）へのリンク。
+ * 詳細ページは公開カタログ（(public) route group）配下にあり非会員も到達するため、
+ * 3 階層（ホーム › コンテンツカタログ › 記事詳細）を公開文脈で描画する。
+ * 先頭は公開トップ（/）、中間は公開カタログ（/contents）へのリンク。
  */
 export function DetailBreadcrumb() {
   return (
@@ -22,13 +22,13 @@ export function DetailBreadcrumb() {
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link href="/dashboard">Member Zone</Link>
+            <Link href="/">ホーム</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link href="/contents">コンテンツ一覧</Link>
+            <Link href="/contents">コンテンツカタログ</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />

@@ -1,10 +1,12 @@
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { getCurrentUser } from "@/lib/auth/get-current-user";
-import { requireAuthenticatedUser } from "@/lib/auth/authorization";
+import { AuthProvider } from "@/components/providers/auth-provider";
+import { requireCurrentUserForRoute } from "@/lib/auth/authorization";
 
 import { AppSidebar } from "./_components/app-sidebar";
 import { SiteHeader } from "./_components/site-header";
+
+export const dynamic = "force-dynamic";
 
 /**
  * Member Zone（ログイン必須ゾーン）共通レイアウト。
@@ -18,19 +20,21 @@ export default async function MemberLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = requireAuthenticatedUser(await getCurrentUser());
+  const user = await requireCurrentUserForRoute({ nextPath: "/dashboard" });
 
   return (
-    <TooltipProvider>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset>
-          <SiteHeader user={user} />
-          <main className="flex flex-1 flex-col gap-6 bg-muted/40 p-4 md:p-6">
-            {children}
-          </main>
-        </SidebarInset>
-      </SidebarProvider>
-    </TooltipProvider>
+    <AuthProvider initialUser={user}>
+      <TooltipProvider>
+        <SidebarProvider>
+          <AppSidebar />
+          <SidebarInset>
+            <SiteHeader user={user} />
+            <main className="flex flex-1 flex-col gap-6 bg-muted/40 p-4 md:p-6">
+              {children}
+            </main>
+          </SidebarInset>
+        </SidebarProvider>
+      </TooltipProvider>
+    </AuthProvider>
   );
 }

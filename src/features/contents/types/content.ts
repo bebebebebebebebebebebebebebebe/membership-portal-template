@@ -1,3 +1,9 @@
+import type { ContentAccessPolicy } from "@/features/contents/types/content-access";
+import type {
+  Discoverability,
+  PublicationStatus,
+} from "@/features/contents/types/content-publication";
+
 /**
  * コンテンツの種別。
  *
@@ -26,6 +32,12 @@ export type ContentBase = {
   thumbnail: string;
   /** カードに表示するカテゴリタグ（カラーチップ）。 */
   tags: string[];
+  /** 本文の公開ライフサイクル状態。 */
+  publicationStatus: PublicationStatus;
+  /** 一覧や検索などでの発見可能性。 */
+  discoverability: Discoverability;
+  /** コンテンツ本文の閲覧条件。 */
+  accessPolicy: ContentAccessPolicy;
 };
 
 /** 記事コンテンツ。著者・公開日・読了時間を持つ。 */

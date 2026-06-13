@@ -38,7 +38,7 @@ export const memberNavGroups: MemberNavGroup[] = [
     items: [
       { title: "ダッシュボード", href: "/dashboard", icon: DashboardSquare01Icon },
       {
-        title: "コンテンツ一覧",
+        title: "コンテンツカタログ",
         href: "/contents",
         icon: GridViewIcon,
         activePathPrefixes: ["/contents"],

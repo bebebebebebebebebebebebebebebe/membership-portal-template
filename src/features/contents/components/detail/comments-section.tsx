@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import type { ArticleComment } from "@/features/contents/types/content-detail";
 import type { AuthUser } from "@/types/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -35,7 +37,7 @@ function CommentItem({ comment }: { comment: ArticleComment }) {
 
 type CommentsSectionProps = {
   comments: ArticleComment[];
-  currentUser: AuthUser;
+  currentUser: AuthUser | null;
 };
 
 /**
@@ -43,9 +45,11 @@ type CommentsSectionProps = {
  *
  * コメント入力欄（Textarea＋投稿ボタン）とコメント一覧で構成する。
  * 静的 UI のため投稿処理は持たず、見た目と件数表示のみのモック。
+ * 投稿欄はログイン済みユーザー前提のため、非会員（`currentUser` が `null`）には
+ * 入力欄を出さずログイン誘導を表示する。コメント一覧の表示は認証状態に依存しない。
  *
  * @param comments 表示するコメント一覧
- * @param currentUser コメント入力欄に表示する認証済みユーザー
+ * @param currentUser コメント入力欄に表示する認証済みユーザー。非会員では `null`
  */
 export function CommentsSection({
   comments,
@@ -60,18 +64,34 @@ export function CommentsSection({
         </span>
       </h2>
 
-      <Card>
-        <CardContent className="flex gap-3">
-          <Avatar className="size-9">
-            <AvatarImage src={currentUser.avatar} alt={currentUser.name} />
-            <AvatarFallback>{currentUser.initials}</AvatarFallback>
-          </Avatar>
-          <div className="flex flex-1 flex-col items-end gap-2">
-            <Textarea placeholder="コメントを入力..." aria-label="コメントを入力" />
-            <Button>投稿する</Button>
-          </div>
-        </CardContent>
-      </Card>
+      {currentUser ? (
+        <Card>
+          <CardContent className="flex gap-3">
+            <Avatar className="size-9">
+              <AvatarImage src={currentUser.avatar} alt={currentUser.name} />
+              <AvatarFallback>{currentUser.initials}</AvatarFallback>
+            </Avatar>
+            <div className="flex flex-1 flex-col items-end gap-2">
+              <Textarea
+                placeholder="コメントを入力..."
+                aria-label="コメントを入力"
+              />
+              <Button>投稿する</Button>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardContent className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-muted-foreground">
+              コメントするにはログインしてください。
+            </p>
+            <Button asChild>
+              <Link href="/login">ログインして見る</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="flex flex-col gap-6">
         {comments.map((comment, index) => (

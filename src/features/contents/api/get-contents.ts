@@ -1,35 +1,41 @@
-import { mockContents } from "@/features/contents/data/mock-contents";
 import type { Content } from "@/features/contents/types/content";
+import { fetchJson, fetchOptionalJson } from "@/lib/api/fetch-json";
 
 /**
- * コンテンツ一覧を返す。
+ * 一覧（カタログ）に掲載するコンテンツを取得する。
  *
- * DB・バックエンド未確定のため、現時点では静的モックを返す。ページ側が
- * モックデータの所在を直接知らないようにするための API abstraction。
+ * mock data の所在を直接 import せず、HTTP API 境界から取得する。
  *
- * @returns コンテンツ一覧
+ * @returns 掲載対象のコンテンツ一覧。
  */
-export function getContents(): Content[] {
-  return mockContents;
+export async function getContents(): Promise<Content[]> {
+  return fetchJson<Content[]>("/api/contents");
 }
 
 /**
- * id に一致するコンテンツを返す。
+ * id に一致するコンテンツ metadata を取得する。
  *
- * @param id コンテンツ id
- * @returns 一致するコンテンツ。存在しなければ `undefined`
+ * @param id コンテンツ id。
+ * @returns 一致するコンテンツ。存在しなければ `undefined`。
  */
-export function getContentById(id: string): Content | undefined {
-  return mockContents.find((item) => item.id === id);
+export async function getContentById(id: string): Promise<Content | undefined> {
+  return fetchOptionalJson<Content>(
+    `/api/contents/${encodeURIComponent(id)}/metadata`
+  );
 }
 
 /**
- * 指定 id を除外した関連コンテンツを返す。
+ * 指定 id を除外した関連コンテンツを取得する。
  *
- * @param id 現在表示中のコンテンツ id
- * @param limit 返却件数の上限
- * @returns 関連コンテンツ一覧
+ * @param id 現在表示中のコンテンツ id。
+ * @param limit 返却件数の上限。
+ * @returns 関連コンテンツ一覧。
  */
-export function getRelatedContents(id: string, limit = 4): Content[] {
-  return mockContents.filter((item) => item.id !== id).slice(0, limit);
+export async function getRelatedContents(
+  id: string,
+  limit = 4
+): Promise<Content[]> {
+  return fetchJson<Content[]>(
+    `/api/contents/${encodeURIComponent(id)}/related?limit=${limit}`
+  );
 }

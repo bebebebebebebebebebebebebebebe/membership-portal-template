@@ -1,6 +1,6 @@
 # Modular Member Portal
 
-最終確認日: 2026-06-07
+最終確認日: 2026-06-10
 
 ## 1. プロジェクト概要
 
@@ -18,6 +18,7 @@
 |------|------|
 | 実装済み | route/page が存在し、画面として確認できるもの |
 | 部分実装 | 静的 UI や mock data で成立しているが、認証・DB・CRUD などが未実装のもの |
+| Coming Soon | route/page は存在し、未実装であることと将来の役割を表示する placeholder |
 | 未実装 | README 上の MVP/将来構想にはあるが、現時点で route/page がないもの |
 | 未確定 | 実装方式や採用技術の決定が必要なもの |
 
@@ -25,38 +26,42 @@
 
 | 項目 | パス | 現状 |
 |------|------|------|
-| トップページ | `/` | `src/app/page.tsx` に実体がある Public Zone の入口画面 |
+| トップページ | `/` | `(public)/page.tsx` の Public Home。サービス概要・閲覧条件・ゾーン構成・機能・アーキテクチャを紹介する入口画面 |
+| Public Zone layout | `(public)` route group | `(public)/layout.tsx` がロゴ＋公開導線（コンテンツ/ログイン/新規登録）のヘッダーと中央寄せ main コンテナを提供。認証境界・サイドバーは持たない |
 
 ### 2-3. 部分実装
 
 | 項目 | パス | 現状 |
 |------|------|------|
-| Member Zone layout | `(member)` route group | sidebar/header/nav config は実装済み。ただし認証境界は未実装 |
-| コンテンツ一覧 | `/contents` | `mockContents` を直接参照する静的 UI。DB/API/認証連携は未実装 |
-| コンテンツ詳細 | `/contents/[id]` | `mockContents` と `getContentDetail(id)` を使う静的詳細 UI。記事以外や存在しない ID は `notFound()` |
+| Member Zone layout | `(member)` route group | sidebar/header/nav config と認証必須 layout（`requireCurrentUserForRoute`）は実装済み。未ログイン時は `/login?next=<original-path>` へ遷移。認証基盤はモック |
+| コンテンツカタログ | `/contents` | `(public)` 配下の公開カタログ。非会員も閲覧できる。データは `getContents()`（published+listed）経由。DB/API は未実装 |
+| コンテンツ詳細 | `/contents/[id]` | `(public)` 配下。`accessPolicy` を `canViewContent()` で判定し、閲覧可なら本文、不可なら `ContentAccessGate` を表示する Content Gate 付き。記事以外・hidden・未作成 ID は `notFound()` |
 
-### 2-4. 未実装
+### 2-4. Coming Soon
 
 | 項目 | パス | 備考 |
 |------|------|------|
-| ログイン | `/login` | 認証基盤未確定 |
-| 新規登録 | `/register` | 認証基盤未確定 |
-| ダッシュボード | `/dashboard` | route/page なし |
-| お気に入り | `/bookmarks` | route/page なし |
-| 通知 | `/notifications` | route/page なし |
-| プロフィール設定 | `/settings/profile` | route/page なし |
-| アカウント設定 | `/settings/account` | route/page なし |
-| Admin コンテンツ管理 | `/admin/contents` | route/page なし。CRUD/RBAC は未実装 |
+| ログイン | `/login` | 認証基盤未確定。Coming Soon 表示 |
+| 新規登録 | `/register` | 認証基盤未確定。Coming Soon 表示 |
+| ダッシュボード | `/dashboard` | Member Zone の placeholder。Coming Soon 表示 |
+| お気に入り | `/bookmarks` | Member Zone の placeholder。Coming Soon 表示 |
+| 通知 | `/notifications` | Member Zone の placeholder。Coming Soon 表示 |
+| プロフィール設定 | `/settings/profile` | Member Zone の placeholder。Coming Soon 表示 |
+| アカウント設定 | `/settings/account` | Member Zone の placeholder。Coming Soon 表示 |
+| Admin コンテンツ管理 | `/admin/contents` | Coming Soon 表示 + Admin Guard。CRUD と実認証 provider は未実装 |
 
 ### 2-5. 利用可能な scripts
 
-`package.json` で確認できる scripts は次の 4 つです。`test`、`typecheck`、`e2e` は現時点では定義されていません。
+`package.json` で確認できる scripts は次の 7 つです。`e2e` は現時点では定義されていません。
 
 ```bash
 pnpm run dev
 pnpm run build
 pnpm run start
 pnpm run lint
+pnpm run typecheck
+pnpm run test
+pnpm run test:watch
 ```
 
 ## 3. 確定している設計方針
@@ -78,14 +83,18 @@ pnpm run lint
 
 ```txt
 Root
-├── Public Zone      認証不要。集客・認証導線
-├── Member Zone      ログイン必須想定。情報閲覧・設定
-└── Admin Zone       管理者専用想定。RBAC で制御
+├── Public Zone        認証不要。集客・認証導線・公開カタログ
+│   └── Content Catalog  /contents・/contents/[id]（非会員も閲覧可、本文は Content Gate で制御）
+├── Member Zone        ログイン必須。dashboard / bookmarks / notifications / settings
+└── Admin Zone         管理者専用。Admin Guard で制御し、CRUD は未実装
 ```
 
-- `src/app/(member)` は Member Zone の route group として扱う。
-- Member Zone の sidebar/header/nav config は `src/app/(member)` 配下の内部実装として管理する。
-- `features/contents` はコンテンツ機能の UI と mock data を持つ feature として扱う。
+- `src/app/(public)` は Public Zone の route group として扱い、`(public)/layout.tsx` が公開 shell（ヘッダー・背景・main コンテナ）を提供する。
+- `/contents` と `/contents/[id]` は Member Zone 専用ではなく、`(public)` 配下の公開条件つきカタログとして扱う。
+- `src/app/(member)` は Member Zone の route group として扱い、`(member)/layout.tsx` が認証必須 shell（sidebar/header）を提供する。`proxy.ts` は未ログイン時の早期 redirect を担当し、Server Component の layout guard が最終確認を行う。`/contents` への導線は Member sidebar にも「コンテンツカタログ」として残す。
+- `src/app/admin` は Admin Zone として扱い、`admin/layout.tsx` が `requireCurrentAdminForRoute()` で admin role を要求する。未ログインは `/login?next=...`、非 admin は `/forbidden` へ遷移する。
+- 領域への入場制御（Route Guard）と本文の閲覧制御（Content Gate）を分離する。`/dashboard` などは Route Guard、`/contents/[id]` の本文は `accessPolicy` ベースの Content Gate で制御する。
+- `features/contents` はコンテンツ機能の UI・型・API・ロジックと mock data を持つ feature として扱う。
 - 現時点では DB・バックエンドが未確定のため、コンテンツ画面は静的モックを使う。
 
 ### 3-3. アーキテクチャ境界
@@ -117,6 +126,17 @@ Root
 | フォント（欧文） | Geist / system-ui |
 | コントラスト基準 | WCAG 2.2 AA 以上 |
 
+### 3-5. アクセス制御とデータ境界
+
+コンテンツの閲覧制御は次の方針で `features/contents` に閉じて実装する。詳細は [docs/content-access.md](docs/content-access.md) を参照。
+
+- **accessPolicy と価格の分離**: `ContentAccessPolicy` は閲覧条件の判定に必要な情報だけを持ち、表示文言や価格を持たない。価格は `ProductOffer`（`getProductOffer()` 経由）から取得する。
+- **閲覧可否判定**: `canViewContent(policy, viewer)` が allowed / denied と理由を返す。admin は常に allowed。
+- **Route Guard と Content Gate の分離**: 領域への入場は Route Guard（`requireCurrentUserForRoute` など）、本文の閲覧は Content Gate（`canViewContent`）で制御する。Member Zone の未ログイン access は `/login?next=<original-path>` へ遷移する。
+- **データ境界**: metadata（`getContentMetadata`）と preview（`getContentPreview`）は認可前に取得してよい。full body を含む detail（`getContentDetail`）は `canViewContent()` の allowed に通った後でのみ取得する。
+- **ページの脱モック依存**: page は `mockContents` などを直接 import せず、API abstraction（`features/contents/api`）経由で取得する。
+- **mock auth scenario**: server 側は `AUTH_PROVIDER=mock` と `MOCK_AUTH_SCENARIO=anonymous` / `premium-member` / `admin` などで切り替える。browser MSW 側は `NEXT_PUBLIC_API_MOCKING=enabled` と `NEXT_PUBLIC_AUTH_MOCK_SCENARIO=admin` で表示確認用 viewer を切り替える。
+
 ## 4. 未確定事項
 
 ### 4-1. 実装ブロッカー
@@ -141,8 +161,8 @@ Root
 | # | ページ名 | パス | 目的 | MVP | 実装状態 |
 |---|---------|------|------|:---:|----------|
 | 1 | トップページ | `/` | サービス概要・ログイン導線 | ✅ | 実装済み |
-| 2 | ログイン | `/login` | メール・パスワード認証 | ✅ | 未実装 |
-| 3 | 新規登録 | `/register` | 会員登録フォーム | ✅ | 未実装 |
+| 2 | ログイン | `/login` | メール・パスワード認証 | ✅ | Coming Soon |
+| 3 | 新規登録 | `/register` | 会員登録フォーム | ✅ | Coming Soon |
 | 4 | パスワードリセット | `/reset-password` | 再設定メール送信 | — | 未実装 |
 | 5 | 利用規約 | `/terms` | 法的ページ（静的） | — | 未実装 |
 | 6 | プライバシーポリシー | `/privacy` | 法的ページ（静的） | — | 未実装 |
@@ -151,37 +171,37 @@ Root
 
 | # | ページ名 | パス | 目的 | MVP | 実装状態 |
 |---|---------|------|------|:---:|----------|
-| 1 | ダッシュボード | `/dashboard` | 全体状況の把握 | ✅ | 未実装 |
-| 2 | コンテンツ一覧 | `/contents` | 記事・資料・投稿の一覧 | ✅ | 部分実装 |
-| 3 | コンテンツ詳細 | `/contents/[id]` | 情報の閲覧 | ✅ | 部分実装 |
-| 4 | お気に入り | `/bookmarks` | 保存済み情報の一覧 | ✅ | 未実装 |
-| 5 | 通知 | `/notifications` | お知らせ・更新情報 | ✅ | 未実装 |
-| 6 | プロフィール設定 | `/settings/profile` | 会員情報管理 | ✅ | 未実装 |
-| 7 | アカウント設定 | `/settings/account` | メール・パスワード・退会 | ✅ | 未実装 |
+| 1 | ダッシュボード | `/dashboard` | 全体状況の把握 | ✅ | Coming Soon |
+| 2 | コンテンツ一覧 | `/contents` | 記事・資料・投稿の一覧 | ✅ | 部分実装（`(public)` で公開カタログ化。非会員も閲覧可） |
+| 3 | コンテンツ詳細 | `/contents/[id]` | 情報の閲覧 | ✅ | 部分実装（`(public)`。本文は accessPolicy ベースの Content Gate で制御） |
+| 4 | お気に入り | `/bookmarks` | 保存済み情報の一覧 | ✅ | Coming Soon |
+| 5 | 通知 | `/notifications` | お知らせ・更新情報 | ✅ | Coming Soon |
+| 6 | プロフィール設定 | `/settings/profile` | 会員情報管理 | ✅ | Coming Soon |
+| 7 | アカウント設定 | `/settings/account` | メール・パスワード・退会 | ✅ | Coming Soon |
 
 ### 5-3. Admin Zone
 
 | # | ページ名 | パス | 目的 | MVP | 実装状態 |
 |---|---------|------|------|:---:|----------|
-| 1 | コンテンツ管理 | `/admin/contents` | 投稿・編集・削除・公開制御 | ✅ | 未実装 |
+| 1 | コンテンツ管理 | `/admin/contents` | 投稿・編集・削除・公開制御 | ✅ | Coming Soon + Admin Guard（CRUD と実認証 provider は未実装） |
 | 2 | ユーザー管理 | `/admin/users` | 会員一覧・ロール管理 | — | 未実装 |
 | 3 | お知らせ管理 | `/admin/notifications` | 通知の作成・配信 | — | 未実装 |
 
 ### 5-4. ページ数サマリ
 
-| ゾーン | MVP 要求 | 現在の実装済み | 現在の部分実装 | 将来追加 | 合計 |
-|--------|:--------:|:--------------:|:--------------:|:--------:|:----:|
-| Public | 3 | 1 | 0 | 3 | 6 |
-| Member | 7 | 0 | 2 | 0 | 7 |
-| Admin | 1 | 0 | 0 | 2 | 3 |
-| **合計** | **11** | **1** | **2** | **5** | **16** |
+| ゾーン | MVP 要求 | 現在の実装済み | 現在の部分実装 | Coming Soon | 未実装/将来追加 | 合計 |
+|--------|:--------:|:--------------:|:--------------:|:-----------:|:---------------:|:----:|
+| Public | 3 | 1 | 0 | 2 | 3 | 6 |
+| Member | 7 | 0 | 2 | 5 | 0 | 7 |
+| Admin | 1 | 0 | 0 | 1 | 2 | 3 |
+| **合計** | **11** | **1** | **2** | **8** | **5** | **16** |
 
 ## 6. 評価基準
 
 - **UI 設計力**: 汎用的な骨格として設計されており、特定ユースケースに縛られない
 - **コンポーネント設計**: shadcn/ui ベースの一貫したデザインシステム
 - **情報設計**: 3 層ゾーン構成（Public / Member / Admin）と RBAC の整合性
-- **認証設計**: ロールベースアクセス制御の実装。現時点では未実装
+- **認証設計**: provider 非依存の mock auth service と Member/Admin Guard は部分実装。実認証 provider は未実装
 - **CRUD 実装**: Admin コンテンツ管理画面でフルサイクルを示す。現時点では未実装
 - **レスポンシブ対応**: モバイル・タブレット・デスクトップの 3 ブレークポイント
 - **アクセシビリティ**: WCAG 2.2 AA 準拠（キーボード操作・コントラスト・フォーカス表示）
@@ -197,7 +217,7 @@ Root
    - current user 取得を `src/lib/auth/get-current-user.ts` に集約する。
    - Member/Admin の認可判定を `src/lib/auth/authorization.ts` に集約する。
    - 認証基盤の選定は RBAC / Admin CRUD / 実ログイン・登録の本実装前に行う。
-5. Member Zone と Admin Zone のアクセス制御を実装する。
+5. 実認証 provider と session 管理を導入し、mock auth service を置き換える。
 6. Admin コンテンツ管理の CRUD を実装する。
 7. DB・バックエンド確定後、mock data を API/data layer 経由へ移行する。
 
