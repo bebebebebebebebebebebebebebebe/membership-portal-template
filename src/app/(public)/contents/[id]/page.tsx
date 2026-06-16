@@ -1,46 +1,27 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { ComingSoonPage } from "@/components/coming-soon-page";
-import { getContentMetadata } from "@/features/contents/api/get-content-metadata";
-import { getContentViewer } from "@/features/contents/api/get-content-viewer";
 import { ContentAccessFallback } from "@/features/contents/components/content-access-fallback";
 import { ContentRouteGuardSlot } from "@/features/contents/components/detail/content-route-guard-slot";
-import { PersonalizedContentAccess } from "@/features/contents/components/detail/personalized-content-access";
-import type { Content } from "@/features/contents/types/content";
-import type { ContentViewer } from "@/features/contents/types/content-viewer";
-import { canAccessContentRoute } from "@/features/contents/utils/content-route-access";
-import { isPubliclyAccessibleContentMetadata } from "@/features/contents/utils/content-publication";
-import { createLoginRedirectPath } from "@/lib/auth/auth-redirect";
+import {
+  getPrerenderableContentIds,
+  getPublicContentMetadata,
+} from "@/features/contents/server/content-read-service";
 
 type ContentDetailPageParams = { params: Promise<{ id: string }> };
 
 /**
- * loginRequired content だけ、Suspense fallback を返す前に URL 到達条件を最終確認する。
+ * static shell を prerender する対象 id を返す。
  *
- * redirect を Suspense 内で実行すると fallback が先に stream され得るため、
- * route-level protected content では page 本体で viewer を解決する。
+ * listed-published のみを対象にし、本文 detail は含めない。unlisted-published の
+ * URL 直アクセスは on-demand（PPR）で解決する。
  */
-async function getRouteGuardedViewer(
-  id: string,
-  content: Content
-): Promise<ContentViewer | null> {
-  if (content.routeAccessPolicy.kind !== "loginRequired") {
-    return null;
-  }
+export async function generateStaticParams() {
+  const ids = await getPrerenderableContentIds();
 
-  const viewer = await getContentViewer();
-  const routeDecision = canAccessContentRoute(
-    content.routeAccessPolicy,
-    viewer.user
-  );
-
-  if (!routeDecision.allowed) {
-    redirect(createLoginRedirectPath(`/contents/${encodeURIComponent(id)}`));
-  }
-
-  return viewer;
+  return ids.map((id) => ({ id }));
 }
 
 /**
@@ -51,7 +32,7 @@ export async function generateMetadata({
   params,
 }: ContentDetailPageParams): Promise<Metadata> {
   const { id } = await params;
-  const content = await getContentMetadata(id);
+  const content = await getPublicContentMetadata(id);
 
   return {
     title: content
@@ -63,23 +44,21 @@ export async function generateMetadata({
 /**
  * コンテンツ詳細ページ（公開・/contents/[id]）。
  *
- * metadata → 公開可否 → loginRequired route guard までは Suspense より前で評価する。
- * route-level protected content では fallback を返す前に redirect を完了し、public content の
- * viewer 取得・accessPolicy・full detail 取得だけを Suspense 内の Server Component に閉じる。
- * 資料は詳細 UI 未実装のため Coming Soon を返し、hidden/未公開・未作成 id は 404。
+ * page 本体は認可前 metadata だけで static shell を構成する。viewer 取得・route guard・
+ * accessPolicy 判定・full detail 取得は Suspense 内の `ContentRouteGuardSlot` 以下に隔離し、
+ * request time に stream する。資料は詳細 UI 未実装のため Coming Soon を返し、
+ * hidden/未公開・未作成 id は 404。
  */
 export default async function ContentDetailPage({
   params,
 }: ContentDetailPageParams) {
   const { id } = await params;
 
-  const content = await getContentMetadata(id);
+  const content = await getPublicContentMetadata(id);
 
-  if (!content || !isPubliclyAccessibleContentMetadata(content)) {
+  if (!content) {
     notFound();
   }
-
-  const routeGuardedViewer = await getRouteGuardedViewer(id, content);
 
   if (content.category !== "記事") {
     return (
@@ -101,15 +80,7 @@ export default async function ContentDetailPage({
 
   return (
     <Suspense fallback={<ContentAccessFallback content={content} />}>
-      {routeGuardedViewer ? (
-        <PersonalizedContentAccess
-          id={id}
-          content={content}
-          viewer={routeGuardedViewer}
-        />
-      ) : (
-        <ContentRouteGuardSlot id={id} content={content} />
-      )}
+      <ContentRouteGuardSlot id={id} content={content} />
     </Suspense>
   );
 }

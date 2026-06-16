@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { getContentViewer } from "@/features/contents/api/get-content-viewer";
+import { getContentViewer } from "@/features/contents/server/content-viewer";
 import { PersonalizedContentAccess } from "@/features/contents/components/detail/personalized-content-access";
 import type { ArticleContent } from "@/features/contents/types/content";
 import { canAccessContentRoute } from "@/features/contents/utils/content-route-access";

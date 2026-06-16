@@ -2,43 +2,35 @@ import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Content } from "@/features/contents/types/content";
-import type { ContentViewer } from "@/features/contents/types/content-viewer";
 
 /**
- * page 本体の公開 shell 分岐を、依存 API を差し替えて検証する。
- * 認可 slot の中身は別テストに分け、ここでは metadata の早期分岐と slot への受け渡しを見る。
+ * page 本体の公開 shell 分岐を、server data access を差し替えて検証する。
+ * viewer 取得・route guard・accessPolicy 判定・full detail 取得は Suspense 内の
+ * `ContentRouteGuardSlot` 以下へ隔離したため、ここでは metadata の早期分岐と slot への
+ * 受け渡しだけを見る。redirect 判定は guard slot 側のテストで担保する。
  */
 const mocks = vi.hoisted(() => ({
-  getContentMetadata: vi.fn(),
-  getContentViewer: vi.fn(),
+  getPublicContentMetadata: vi.fn(),
+  getPrerenderableContentIds: vi.fn(),
   ContentRouteGuardSlot: vi.fn(() => null),
-  PersonalizedContentAccess: vi.fn(() => null),
   notFound: vi.fn(() => {
     throw new Error("NEXT_NOT_FOUND");
   }),
-  redirect: vi.fn((path: string) => {
-    throw new Error(`NEXT_REDIRECT:${path}`);
-  }),
 }));
 
-vi.mock("@/features/contents/api/get-content-metadata", () => ({
-  getContentMetadata: mocks.getContentMetadata,
-}));
-vi.mock("@/features/contents/api/get-content-viewer", () => ({
-  getContentViewer: mocks.getContentViewer,
+vi.mock("@/features/contents/server/content-read-service", () => ({
+  getPublicContentMetadata: mocks.getPublicContentMetadata,
+  getPrerenderableContentIds: mocks.getPrerenderableContentIds,
 }));
 vi.mock("next/navigation", () => ({
   notFound: mocks.notFound,
-  redirect: mocks.redirect,
 }));
 vi.mock("@/features/contents/components/detail/content-route-guard-slot", () => ({
   ContentRouteGuardSlot: mocks.ContentRouteGuardSlot,
 }));
-vi.mock("@/features/contents/components/detail/personalized-content-access", () => ({
-  PersonalizedContentAccess: mocks.PersonalizedContentAccess,
-}));
 
-import ContentDetailPage, * as pageModule from "../page";
+import ContentDetailPage, { generateStaticParams } from "../page";
+import * as pageModule from "../page";
 
 function makeContent(accessPolicy: Content["accessPolicy"]): Content {
   return {
@@ -55,16 +47,6 @@ function makeContent(accessPolicy: Content["accessPolicy"]): Content {
     author: { name: "著者", avatar: "/images/avatar.png", initials: "AB" },
     date: "2026-06-01",
     readMinutes: 5,
-  };
-}
-
-function makeRouteLoginRequiredContent(
-  accessPolicy: Content["accessPolicy"]
-): Content {
-  return {
-    ...makeContent(accessPolicy),
-    id: "member-only-blueprint",
-    routeAccessPolicy: { kind: "loginRequired" },
   };
 }
 
@@ -90,37 +72,27 @@ function renderPage(id = "1") {
   return ContentDetailPage({ params: Promise.resolve({ id }) });
 }
 
-const anonymousViewer: ContentViewer = {
-  user: null,
-  plan: null,
-  purchasedProductIds: [],
-};
-
-const memberViewer: ContentViewer = {
-  user: {
-    name: "一般 会員",
-    email: "member@example.com",
-    avatar: "/images/avatars/avatar-01.jpg",
-    initials: "一般",
-    membership: "無料会員",
-    role: "member",
-  },
-  plan: "free",
-  purchasedProductIds: [],
-};
-
 beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe("ContentDetailPage の認可フロー", () => {
+describe("ContentDetailPage の static shell 分岐", () => {
   it("route 全体を force-dynamic に固定しない", () => {
     expect("dynamic" in pageModule).toBe(false);
   });
 
+  it("generateStaticParams は prerender 対象 id を params 形に変換する", async () => {
+    mocks.getPrerenderableContentIds.mockResolvedValue(["1", "member-only"]);
+
+    await expect(generateStaticParams()).resolves.toEqual([
+      { id: "1" },
+      { id: "member-only" },
+    ]);
+  });
+
   it("記事 metadata を route guard slot に渡す", async () => {
     const content = makeContent({ kind: "free" });
-    mocks.getContentMetadata.mockResolvedValue(content);
+    mocks.getPublicContentMetadata.mockResolvedValue(content);
 
     render(await renderPage());
 
@@ -130,38 +102,8 @@ describe("ContentDetailPage の認可フロー", () => {
     );
   });
 
-  it("loginRequired content は Suspense fallback 前に anonymous user を redirect する", async () => {
-    const content = makeRouteLoginRequiredContent({ kind: "free" });
-    mocks.getContentMetadata.mockResolvedValue(content);
-    mocks.getContentViewer.mockResolvedValue(anonymousViewer);
-
-    await expect(renderPage("member-only-blueprint")).rejects.toThrow(
-      "NEXT_REDIRECT:/login?next=%2Fcontents%2Fmember-only-blueprint"
-    );
-    expect(mocks.ContentRouteGuardSlot).not.toHaveBeenCalled();
-    expect(mocks.PersonalizedContentAccess).not.toHaveBeenCalled();
-  });
-
-  it("loginRequired content は authenticated user だけ personalized access へ進める", async () => {
-    const content = makeRouteLoginRequiredContent({ kind: "free" });
-    mocks.getContentMetadata.mockResolvedValue(content);
-    mocks.getContentViewer.mockResolvedValue(memberViewer);
-
-    render(await renderPage("member-only-blueprint"));
-
-    expect(mocks.ContentRouteGuardSlot).not.toHaveBeenCalled();
-    expect(mocks.PersonalizedContentAccess).toHaveBeenCalledWith(
-      {
-        id: "member-only-blueprint",
-        content,
-        viewer: memberViewer,
-      },
-      undefined
-    );
-  });
-
   it("資料カテゴリは full detail を取得せず Coming Soon を表示する", async () => {
-    mocks.getContentMetadata.mockResolvedValue(
+    mocks.getPublicContentMetadata.mockResolvedValue(
       makeDocumentContent({ kind: "free" })
     );
 
@@ -172,20 +114,10 @@ describe("ContentDetailPage の認可フロー", () => {
     expect(mocks.ContentRouteGuardSlot).not.toHaveBeenCalled();
   });
 
-  it("存在しないコンテンツは notFound に到達する", async () => {
-    mocks.getContentMetadata.mockResolvedValue(undefined);
+  it("到達不可（hidden・未公開・不在）の metadata は notFound に到達する", async () => {
+    mocks.getPublicContentMetadata.mockResolvedValue(undefined);
 
     await expect(renderPage("missing")).rejects.toThrow("NEXT_NOT_FOUND");
-    expect(mocks.ContentRouteGuardSlot).not.toHaveBeenCalled();
-  });
-
-  it("hidden コンテンツは notFound に到達する", async () => {
-    mocks.getContentMetadata.mockResolvedValue({
-      ...makeContent({ kind: "free" }),
-      discoverability: "hidden",
-    });
-
-    await expect(renderPage()).rejects.toThrow("NEXT_NOT_FOUND");
     expect(mocks.ContentRouteGuardSlot).not.toHaveBeenCalled();
   });
 });

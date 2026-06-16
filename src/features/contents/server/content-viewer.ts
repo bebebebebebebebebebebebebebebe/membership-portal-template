@@ -1,6 +1,8 @@
-import { getCurrentAuthState } from "@/lib/auth/get-current-auth-state";
+import "server-only";
+
 import type { MembershipPlan } from "@/features/contents/types/content-access";
 import type { ContentViewer } from "@/features/contents/types/content-viewer";
+import { getCurrentAuthState } from "@/lib/auth/get-current-auth-state";
 
 function toMembershipPlan(membership: string | undefined): MembershipPlan | null {
   switch (membership) {

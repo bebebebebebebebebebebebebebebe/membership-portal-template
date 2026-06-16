@@ -1,7 +1,5 @@
-import { getContentViewer } from "@/features/contents/api/get-content-viewer";
+import { getContentViewer } from "@/features/contents/server/content-viewer";
 import { getMockContentDetailForViewer } from "@/features/contents/server/mock-content-repository";
-
-export const dynamic = "force-dynamic";
 
 type ContentDetailRouteContext = {
   params: Promise<{ id: string }>;

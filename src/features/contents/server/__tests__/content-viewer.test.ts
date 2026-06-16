@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { getContentViewer } from "@/features/contents/api/get-content-viewer";
+import { getContentViewer } from "@/features/contents/server/content-viewer";
 import { setTestAuthState } from "@/lib/auth/testing/test-auth-state";
 import type { AuthUser } from "@/types/auth";
 

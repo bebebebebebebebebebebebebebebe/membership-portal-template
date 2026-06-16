@@ -12,6 +12,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { ContentActionFooter } from "@/features/contents/components/content-action-footer";
 import { categoryMeta } from "@/features/contents/constants/content-category";
 import type { Content } from "@/features/contents/types/content";
+import type { ProductOffer } from "@/features/contents/types/product-offer";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -107,10 +108,12 @@ export type ContentCardImageLoading = "eager" | "lazy";
  * コンテンツ一覧カードの入力。
  *
  * @param content 表示するコンテンツ本文・メタ情報
+ * @param offer 価格表示に使う解決済み販売 offer（不要な kind では undefined）
  * @param imageLoading 初期表示内の LCP 候補だけ即時読み込みするための画像読み込み方針
  */
 export type ContentCardProps = {
   content: Content;
+  offer?: ProductOffer;
   imageLoading?: ContentCardImageLoading;
 };
 
@@ -122,9 +125,7 @@ export type ContentCardProps = {
  * footer の `ContentActionFooter` に「閲覧条件 + 行動」として集約する。
  * `imageLoading` は一覧先頭など above-the-fold の LCP 候補だけ eager にする。
  */
-export async function ContentCard({ content, imageLoading }: ContentCardProps) {
-  const actionFooter = await ContentActionFooter({ content });
-
+export function ContentCard({ content, offer, imageLoading }: ContentCardProps) {
   return (
     <Card className="flex h-full flex-col gap-0 overflow-hidden pt-0">
       <div className="relative aspect-video">
@@ -184,7 +185,7 @@ export async function ContentCard({ content, imageLoading }: ContentCardProps) {
         <div className="flex items-center justify-between gap-2 text-sm text-muted-foreground">
           <ContentMeta content={content} />
         </div>
-        {actionFooter}
+        <ContentActionFooter content={content} offer={offer} />
       </CardFooter>
     </Card>
   );

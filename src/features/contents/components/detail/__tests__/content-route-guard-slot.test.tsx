@@ -13,7 +13,7 @@ const mocks = vi.hoisted(() => ({
   }),
 }));
 
-vi.mock("@/features/contents/api/get-content-viewer", () => ({
+vi.mock("@/features/contents/server/content-viewer", () => ({
   getContentViewer: mocks.getContentViewer,
 }));
 vi.mock("@/features/contents/components/detail/personalized-content-access", () => ({

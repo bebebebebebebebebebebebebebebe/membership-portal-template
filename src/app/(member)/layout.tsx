@@ -1,40 +1,35 @@
+import { Suspense } from "react";
+
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { AuthProvider } from "@/components/providers/auth-provider";
-import { requireCurrentUserForRoute } from "@/lib/auth/authorization";
 
 import { AppSidebar } from "./_components/app-sidebar";
-import { SiteHeader } from "./_components/site-header";
-
-export const dynamic = "force-dynamic";
+import { MemberAuthSlot } from "./_components/member-auth-slot";
+import { MemberHeaderFallback } from "./_components/member-header-fallback";
 
 /**
  * Member Zone（ログイン必須ゾーン）共通レイアウト。
  *
- * 左サイドバー（AppSidebar）と上部ヘッダー（SiteHeader）を全ページで共有し、
- * 本文は薄いグレー背景のメイン領域に流し込む。将来の Member Zone 全 7 ページが
- * このシェルを再利用する。TooltipProvider はサイドバーの折りたたみ時ツールチップに必要。
+ * 左サイドバー（AppSidebar）とシェル枠は static shell として prerender し、ユーザー依存部
+ * （認証 guard・ヘッダー・本文）は `<Suspense>` 内の `MemberAuthSlot` で request time に stream する。
+ * これにより layout 全体の dynamic 化を避けつつ、認証解決前は fallback ヘッダーを表示する。
+ * TooltipProvider はサイドバーの折りたたみ時ツールチップに必要。
  */
-export default async function MemberLayout({
+export default function MemberLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const user = await requireCurrentUserForRoute({ nextPath: "/dashboard" });
-
   return (
-    <AuthProvider initialUser={user}>
-      <TooltipProvider>
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>
-            <SiteHeader user={user} />
-            <main className="flex flex-1 flex-col gap-6 bg-muted/40 p-4 md:p-6">
-              {children}
-            </main>
-          </SidebarInset>
-        </SidebarProvider>
-      </TooltipProvider>
-    </AuthProvider>
+    <TooltipProvider>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <Suspense fallback={<MemberHeaderFallback />}>
+            <MemberAuthSlot nextPath="/dashboard">{children}</MemberAuthSlot>
+          </Suspense>
+        </SidebarInset>
+      </SidebarProvider>
+    </TooltipProvider>
   );
 }

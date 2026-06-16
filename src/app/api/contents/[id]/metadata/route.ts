@@ -1,7 +1,5 @@
 import { getMockContentMetadata } from "@/features/contents/server/mock-content-repository";
 
-export const dynamic = "force-dynamic";
-
 type ContentMetadataRouteContext = {
   params: Promise<{ id: string }>;
 };

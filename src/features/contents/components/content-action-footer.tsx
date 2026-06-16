@@ -2,8 +2,8 @@ import Link from "next/link";
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
-import { getProductOffer } from "@/features/contents/api/get-product-offer";
 import type { Content } from "@/features/contents/types/content";
+import type { ProductOffer } from "@/features/contents/types/product-offer";
 import { getContentActionDisplay } from "@/features/contents/utils/content-access-display";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -12,41 +12,26 @@ import { Button } from "@/components/ui/button";
 /**
  * action footer の入力。
  *
- * policy だけでなく content 全体を受け取るのは、id（CTA リンク先）や
- * productId（価格解決）など複数フィールドを使うため。
+ * policy だけでなく content 全体を受け取るのは、id（CTA リンク先）など複数フィールドを
+ * 使うため。価格は呼び出し側で解決済みの `offer` を受け取り、component からはデータ取得しない。
  *
  * @param content 表示対象コンテンツ
+ * @param offer 単品購入を含む kind で解決済みの販売 offer（不要な kind では undefined）
  */
 export type ContentActionFooterProps = {
   content: Content;
+  offer?: ProductOffer;
 };
-
-/**
- * accessPolicy から販売オファー解決に使う productId を取り出す。
- *
- * 価格表示が必要なのは単品購入を含む kind だけなので、それ以外は `null` を返す。
- */
-function getProductIdForAccess(policy: Content["accessPolicy"]): string | null {
-  switch (policy.kind) {
-    case "purchaseRequired":
-    case "planOrPurchase":
-      return policy.productId;
-    default:
-      return null;
-  }
-}
 
 /**
  * 一覧カード下部の「閲覧条件 + CTA」アクション領域。
  *
- * 価格は `accessPolicy` ではなく `getProductOffer()` 経由の `ProductOffer` から導出する
- * （component から mock を直接 import しない）。`conditionLabel` がある kind だけ
- * panel（枠・背景）を出し、`free` は CTA だけを置いて本文・footer をすっきりさせる。
- * CTA 色は category / access kind で分岐させず `variant="outline"` に統一する。
+ * 価格は解決済みの `offer`（`ProductOffer`）から導出する（component からデータ取得しない）。
+ * `conditionLabel` がある kind だけ panel（枠・背景）を出し、`free` は CTA だけを置いて
+ * 本文・footer をすっきりさせる。CTA 色は category / access kind で分岐させず
+ * `variant="outline"` に統一する。
  */
-export async function ContentActionFooter({ content }: ContentActionFooterProps) {
-  const productId = getProductIdForAccess(content.accessPolicy);
-  const offer = productId ? await getProductOffer(productId) : undefined;
+export function ContentActionFooter({ content, offer }: ContentActionFooterProps) {
   const display = getContentActionDisplay(content.accessPolicy, offer);
 
   const hasCondition = Boolean(display.conditionLabel);

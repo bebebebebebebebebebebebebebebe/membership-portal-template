@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw";
 
-import { getContentViewer } from "@/features/contents/api/get-content-viewer";
+import { getContentViewer } from "@/features/contents/server/content-viewer";
 import {
   getMockContentDetailForViewer,
   getMockContentMetadata,

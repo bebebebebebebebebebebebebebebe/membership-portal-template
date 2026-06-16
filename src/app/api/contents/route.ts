@@ -1,7 +1,5 @@
 import { getMockContents } from "@/features/contents/server/mock-content-repository";
 
-export const dynamic = "force-dynamic";
-
 /**
  * コンテンツカタログ API。
  *

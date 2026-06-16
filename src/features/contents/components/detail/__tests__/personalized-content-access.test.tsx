@@ -2,12 +2,13 @@ import { render } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { ArticleContent } from "@/features/contents/types/content";
+import type { ContentDetail } from "@/features/contents/types/content-detail";
 import type { ContentViewer } from "@/features/contents/types/content-viewer";
 
 const mocks = vi.hoisted(() => ({
-  getContentDetail: vi.fn(),
-  getContentPreview: vi.fn(),
-  getRelatedContents: vi.fn(),
+  getAuthorizedContentDetail: vi.fn(),
+  getPublicContentPreview: vi.fn(),
+  getPublicRelatedContents: vi.fn(),
   ArticleDetail: vi.fn(() => null),
   ContentAccessGate: vi.fn(() => null),
   notFound: vi.fn(() => {
@@ -15,14 +16,10 @@ const mocks = vi.hoisted(() => ({
   }),
 }));
 
-vi.mock("@/features/contents/api/get-content-detail", () => ({
-  getContentDetail: mocks.getContentDetail,
-}));
-vi.mock("@/features/contents/api/get-content-preview", () => ({
-  getContentPreview: mocks.getContentPreview,
-}));
-vi.mock("@/features/contents/api/get-contents", () => ({
-  getRelatedContents: mocks.getRelatedContents,
+vi.mock("@/features/contents/server/content-read-service", () => ({
+  getAuthorizedContentDetail: mocks.getAuthorizedContentDetail,
+  getPublicContentPreview: mocks.getPublicContentPreview,
+  getPublicRelatedContents: mocks.getPublicRelatedContents,
 }));
 vi.mock("@/features/contents/components/content-access-gate", () => ({
   ContentAccessGate: mocks.ContentAccessGate,
@@ -53,6 +50,19 @@ const premiumViewer: ContentViewer = {
   purchasedProductIds: [],
 };
 
+const detailFixture: ContentDetail = {
+  sections: [],
+  comments: [],
+  summary: { title: "要点", body: "本文" },
+  steps: [],
+  conclusion: "まとめ",
+  cycleLabel: "サイクル",
+  toc: [],
+  viewCount: 1,
+  publishedDate: "2026/06/01",
+  updatedDate: "2026/06/01",
+};
+
 function makeContent(accessPolicy: ArticleContent["accessPolicy"]): ArticleContent {
   return {
     id: "member-only-blueprint",
@@ -74,22 +84,14 @@ function makeContent(accessPolicy: ArticleContent["accessPolicy"]): ArticleConte
 describe("PersonalizedContentAccess", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.getContentPreview.mockResolvedValue({
+    mocks.getPublicContentPreview.mockResolvedValue({
       id: "member-only-blueprint",
       introduction: "概要",
     });
-    mocks.getRelatedContents.mockResolvedValue([]);
-    mocks.getContentDetail.mockResolvedValue({
-      sections: [],
-      comments: [],
-      summary: { title: "要点", body: "本文" },
-      steps: [],
-      conclusion: "まとめ",
-      cycleLabel: "サイクル",
-      toc: [],
-      viewCount: 1,
-      publishedDate: "2026/06/01",
-      updatedDate: "2026/06/01",
+    mocks.getPublicRelatedContents.mockResolvedValue([]);
+    mocks.getAuthorizedContentDetail.mockResolvedValue({
+      status: "ok",
+      detail: detailFixture,
     });
   });
 
@@ -107,8 +109,8 @@ describe("PersonalizedContentAccess", () => {
       })
     );
 
-    expect(mocks.getContentDetail).not.toHaveBeenCalled();
-    expect(mocks.getContentPreview).toHaveBeenCalledWith(
+    expect(mocks.getAuthorizedContentDetail).not.toHaveBeenCalled();
+    expect(mocks.getPublicContentPreview).toHaveBeenCalledWith(
       "member-only-blueprint"
     );
     expect(mocks.ContentAccessGate).toHaveBeenCalledWith(
@@ -119,11 +121,12 @@ describe("PersonalizedContentAccess", () => {
           introduction: "概要",
         },
         reason: "planRequired",
-      }
+      },
+      undefined
     );
   });
 
-  it("accessPolicy allowed 時に full detail を取得して ArticleDetail を返す", async () => {
+  it("accessPolicy allowed 時に認可済み full detail を取得して ArticleDetail を返す", async () => {
     const content = makeContent({
       kind: "planRequired",
       requiredPlans: ["premium"],
@@ -137,12 +140,14 @@ describe("PersonalizedContentAccess", () => {
       })
     );
 
-    expect(mocks.getContentDetail).toHaveBeenCalledWith(
-      "member-only-blueprint"
+    expect(mocks.getAuthorizedContentDetail).toHaveBeenCalledWith(
+      "member-only-blueprint",
+      premiumViewer
     );
     expect(mocks.ArticleDetail).toHaveBeenCalledWith(
       expect.objectContaining({
         content,
+        detail: detailFixture,
         related: [],
         currentUser: premiumViewer.user,
       }),
@@ -150,9 +155,35 @@ describe("PersonalizedContentAccess", () => {
     );
   });
 
-  it("allowed 後に detail が存在しない場合は notFound に到達する", async () => {
+  it("認可結果が forbidden の場合は full detail を返さず Content Gate を表示する", async () => {
     const content = makeContent({ kind: "free" });
-    mocks.getContentDetail.mockResolvedValue(undefined);
+    mocks.getAuthorizedContentDetail.mockResolvedValue({ status: "forbidden" });
+
+    render(
+      await PersonalizedContentAccess({
+        id: "member-only-blueprint",
+        content,
+        viewer: premiumViewer,
+      })
+    );
+
+    expect(mocks.ArticleDetail).not.toHaveBeenCalled();
+    expect(mocks.ContentAccessGate).toHaveBeenCalledWith(
+      {
+        content,
+        preview: {
+          id: "member-only-blueprint",
+          introduction: "概要",
+        },
+        reason: "loginRequired",
+      },
+      undefined
+    );
+  });
+
+  it("認可結果が notFound の場合は notFound に到達する", async () => {
+    const content = makeContent({ kind: "free" });
+    mocks.getAuthorizedContentDetail.mockResolvedValue({ status: "notFound" });
 
     await expect(
       PersonalizedContentAccess({

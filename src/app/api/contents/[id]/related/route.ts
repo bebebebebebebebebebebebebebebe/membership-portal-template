@@ -1,7 +1,5 @@
 import { getMockRelatedContents } from "@/features/contents/server/mock-content-repository";
 
-export const dynamic = "force-dynamic";
-
 type RelatedContentsRouteContext = {
   params: Promise<{ id: string }>;
 };

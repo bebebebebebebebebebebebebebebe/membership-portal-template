@@ -4,12 +4,14 @@ import { describe, expect, it } from "vitest";
 import AdminContentsPage from "@/app/admin/contents/page";
 import DashboardPage from "@/app/(member)/dashboard/page";
 import ForbiddenPage from "@/app/(public)/forbidden/page";
+import { LoginNextNotice } from "@/app/(public)/login/_components/login-next-notice";
 import LoginPage from "@/app/(public)/login/page";
 import RegisterPage from "@/app/(public)/register/page";
 
 describe("Coming Soon route pages", () => {
-  it("/login は Public Zone の Coming Soon と新規登録導線を表示する", async () => {
-    render(await LoginPage({ searchParams: Promise.resolve({}) }));
+  it("/login は searchParams を await せず Public Zone の Coming Soon と新規登録導線を表示する", () => {
+    // page 本体は同期 component。next の案内は Suspense 内 slot に隔離されている。
+    render(LoginPage({ searchParams: Promise.resolve({}) }));
 
     expect(screen.getByText("Public Zone")).toBeInTheDocument();
     expect(screen.getByText("ログイン機能は準備中です")).toBeInTheDocument();
@@ -19,17 +21,15 @@ describe("Coming Soon route pages", () => {
     );
   });
 
-  it("/login は安全化した next path を Coming Soon 文言に反映する", async () => {
+  it("LoginNextNotice は安全化した next path を案内文言に反映する", async () => {
     render(
-      await LoginPage({
+      await LoginNextNotice({
         searchParams: Promise.resolve({ next: "/bookmarks" }),
       })
     );
 
     expect(
-      screen.getByText(
-        "認証基盤を導入後、ログイン完了後に /bookmarks へ戻れる入口になります。"
-      )
+      screen.getByText("ログイン完了後は /bookmarks に戻れます。")
     ).toBeInTheDocument();
   });
 

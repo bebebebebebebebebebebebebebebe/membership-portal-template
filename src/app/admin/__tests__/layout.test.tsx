@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import AdminLayout from "@/app/admin/layout";
+import { AdminAuthSlot } from "@/app/admin/_components/admin-auth-slot";
 import { setTestAuthState } from "@/lib/auth/testing/test-auth-state";
 import type { AuthUser } from "@/types/auth";
 
@@ -27,18 +28,33 @@ const adminUser: AuthUser = {
   role: "admin",
 };
 
-describe("AdminLayout", () => {
-  afterEach(() => {
-    vi.unstubAllEnvs();
-    navigationMocks.redirect.mockClear();
-  });
+afterEach(() => {
+  vi.unstubAllEnvs();
+  navigationMocks.redirect.mockClear();
+});
 
+describe("AdminLayout", () => {
+  it("layout 自体は auth を await せず shell を同期的に返す", () => {
+    vi.stubEnv("AUTH_PROVIDER", "test");
+    setTestAuthState({ user: null, purchasedProductIds: [] });
+
+    // admin guard は Suspense 内の AdminAuthSlot に隔離されているため、
+    // layout 本体は未ログイン state でも redirect しない。
+    expect(AdminLayout({ children: <div>Admin content</div> })).toBeDefined();
+    expect(navigationMocks.redirect).not.toHaveBeenCalled();
+  });
+});
+
+describe("AdminAuthSlot", () => {
   it("admin user には children を返す", async () => {
     vi.stubEnv("AUTH_PROVIDER", "test");
     setTestAuthState({ user: adminUser, purchasedProductIds: [] });
 
     await expect(
-      AdminLayout({ children: <div>Admin content</div> })
+      AdminAuthSlot({
+        nextPath: "/admin/contents",
+        children: <div>Admin content</div>,
+      })
     ).resolves.toEqual(<div>Admin content</div>);
     expect(navigationMocks.redirect).not.toHaveBeenCalled();
   });
@@ -48,7 +64,10 @@ describe("AdminLayout", () => {
     setTestAuthState({ user: null, purchasedProductIds: [] });
 
     await expect(
-      AdminLayout({ children: <div>Admin content</div> })
+      AdminAuthSlot({
+        nextPath: "/admin/contents",
+        children: <div>Admin content</div>,
+      })
     ).rejects.toThrow("redirect:/login?next=%2Fadmin%2Fcontents");
   });
 
@@ -57,7 +76,10 @@ describe("AdminLayout", () => {
     setTestAuthState({ user: memberUser, purchasedProductIds: [] });
 
     await expect(
-      AdminLayout({ children: <div>Admin content</div> })
+      AdminAuthSlot({
+        nextPath: "/admin/contents",
+        children: <div>Admin content</div>,
+      })
     ).rejects.toThrow("redirect:/forbidden");
   });
 });

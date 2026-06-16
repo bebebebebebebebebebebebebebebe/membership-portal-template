@@ -1,16 +1,21 @@
 import { notFound } from "next/navigation";
 
-import { getContentDetail } from "@/features/contents/api/get-content-detail";
-import { getContentPreview } from "@/features/contents/api/get-content-preview";
-import { getRelatedContents } from "@/features/contents/api/get-contents";
 import { ContentAccessGate } from "@/features/contents/components/content-access-gate";
 import { ArticleDetail } from "@/features/contents/components/detail/article-detail";
+import {
+  getAuthorizedContentDetail,
+  getPublicContentPreview,
+  getPublicRelatedContents,
+} from "@/features/contents/server/content-read-service";
 import type { ArticleContent } from "@/features/contents/types/content";
 import type { ContentViewer } from "@/features/contents/types/content-viewer";
 import { canViewContent } from "@/features/contents/utils/content-access";
 
 /**
  * 認証済み viewer に合わせて本文または Content Gate を返す Server Component。
+ *
+ * full body は accessPolicy allowed のときだけ `getAuthorizedContentDetail` で取得し、
+ * denied や認可 forbidden では本文を取得せず Content Gate（preview のみ）を返す。
  *
  * @param id コンテンツ ID。
  * @param content 認可前に取得済みの記事 metadata。
@@ -29,25 +34,37 @@ export async function PersonalizedContentAccess({
   const decision = canViewContent(content.accessPolicy, viewer);
 
   if (!decision.allowed) {
-    return ContentAccessGate({
-      content,
-      preview: await getContentPreview(id),
-      reason: decision.reason,
-    });
+    return (
+      <ContentAccessGate
+        content={content}
+        preview={await getPublicContentPreview(id)}
+        reason={decision.reason}
+      />
+    );
   }
 
-  const detail = await getContentDetail(id);
+  const result = await getAuthorizedContentDetail(id, viewer);
 
-  if (!detail) {
+  if (result.status === "notFound") {
     notFound();
   }
 
-  const related = await getRelatedContents(id);
+  if (result.status === "forbidden") {
+    return (
+      <ContentAccessGate
+        content={content}
+        preview={await getPublicContentPreview(id)}
+        reason="loginRequired"
+      />
+    );
+  }
+
+  const related = await getPublicRelatedContents(id);
 
   return (
     <ArticleDetail
       content={content}
-      detail={detail}
+      detail={result.detail}
       related={related}
       currentUser={viewer.user}
     />

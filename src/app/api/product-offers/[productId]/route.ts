@@ -1,7 +1,5 @@
 import { getMockProductOffer } from "@/features/contents/server/mock-content-repository";
 
-export const dynamic = "force-dynamic";
-
 type ProductOfferRouteContext = {
   params: Promise<{ productId: string }>;
 };

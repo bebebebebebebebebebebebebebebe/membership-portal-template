@@ -1,20 +1,21 @@
-import { requireCurrentAdminForRoute } from "@/lib/auth/authorization";
+import { Suspense } from "react";
 
-export const dynamic = "force-dynamic";
+import { AdminAuthSlot } from "./_components/admin-auth-slot";
 
 /**
  * Admin Zone 共通の route guard layout。
  *
- * `/admin/*` 配下の入口で admin role を要求し、認証状態が build 時に固定されないよう
- * dynamic rendering として扱う。将来の CRUD / Route Handler / Server Action では
- * data source 近くでも admin check を行う。
+ * admin role の確認は request-time の `AdminAuthSlot` に隔離し、`<Suspense>` で包むことで
+ * layout 全体を dynamic 化せずに済ませる。Admin shell はほぼ無いため fallback は null。
  */
-export default async function AdminLayout({
+export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  await requireCurrentAdminForRoute({ nextPath: "/admin/contents" });
-
-  return children;
+  return (
+    <Suspense fallback={null}>
+      <AdminAuthSlot nextPath="/admin/contents">{children}</AdminAuthSlot>
+    </Suspense>
+  );
 }

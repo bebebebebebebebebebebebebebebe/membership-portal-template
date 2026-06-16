@@ -1,7 +1,5 @@
 import { getMockContentPreview } from "@/features/contents/server/mock-content-repository";
 
-export const dynamic = "force-dynamic";
-
 type ContentPreviewRouteContext = {
   params: Promise<{ id: string }>;
 };
