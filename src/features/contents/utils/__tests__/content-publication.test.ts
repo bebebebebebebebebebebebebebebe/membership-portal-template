@@ -23,6 +23,7 @@ function makeContent(
     tags: ["確認用"],
     publicationStatus,
     discoverability,
+    routeAccessPolicy: { kind: "public" },
     accessPolicy: { kind: "free" },
     author: { name: "管理者", avatar: "/images/avatars/avatar-02.jpg", initials: "管" },
     date: "2024/05/20",

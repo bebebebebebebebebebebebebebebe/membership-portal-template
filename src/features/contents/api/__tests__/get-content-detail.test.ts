@@ -69,6 +69,24 @@ describe("getContentDetail", () => {
     });
   });
 
+  it("anonymous viewer は loginRequired route の detail API で 403 になる", async () => {
+    vi.stubEnv("AUTH_PROVIDER", "test");
+    setTestAuthState({ user: null, purchasedProductIds: [] });
+
+    await expect(getContentDetail("member-only-blueprint")).rejects.toMatchObject({
+      status: 403,
+    });
+  });
+
+  it("free-member viewer は route 通過後も premium detail API で 403 になる", async () => {
+    vi.stubEnv("AUTH_PROVIDER", "test");
+    setTestAuthState({ user: freeUser, purchasedProductIds: [] });
+
+    await expect(getContentDetail("member-only-blueprint")).rejects.toMatchObject({
+      status: 403,
+    });
+  });
+
   it("premium-member viewer は premium planRequired detail を取得できる", async () => {
     vi.stubEnv("AUTH_PROVIDER", "test");
     setTestAuthState({ user: premiumUser, purchasedProductIds: [] });
@@ -76,6 +94,15 @@ describe("getContentDetail", () => {
     const detail = await getContentDetail("4");
 
     expect(detail?.summary.body).toContain("クラウドインフラ設計");
+  });
+
+  it("premium-member viewer は loginRequired route の premium detail を取得できる", async () => {
+    vi.stubEnv("AUTH_PROVIDER", "test");
+    setTestAuthState({ user: premiumUser, purchasedProductIds: [] });
+
+    const detail = await getContentDetail("member-only-blueprint");
+
+    expect(detail?.summary.body).toContain("会員限定コンテンツ");
   });
 
   it("purchased-member viewer は購入済み productId の planOrPurchase detail を取得できる", async () => {

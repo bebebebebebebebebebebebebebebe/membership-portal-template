@@ -10,6 +10,7 @@ const appLayer = `${sourceRoot}/app`;
 const featuresLayer = `${sourceRoot}/features`;
 const sharedLayers = [
   `${sourceRoot}/components`,
+  `${sourceRoot}/config`,
   `${sourceRoot}/hooks`,
   `${sourceRoot}/lib`,
   `${sourceRoot}/types`,

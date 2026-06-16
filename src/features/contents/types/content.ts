@@ -3,6 +3,7 @@ import type {
   Discoverability,
   PublicationStatus,
 } from "@/features/contents/types/content-publication";
+import type { ContentRouteAccessPolicy } from "@/features/contents/types/content-route-access";
 
 /**
  * コンテンツの種別。
@@ -36,6 +37,8 @@ export type ContentBase = {
   publicationStatus: PublicationStatus;
   /** 一覧や検索などでの発見可能性。 */
   discoverability: Discoverability;
+  /** コンテンツ詳細 URL 自体への到達条件。 */
+  routeAccessPolicy: ContentRouteAccessPolicy;
   /** コンテンツ本文の閲覧条件。 */
   accessPolicy: ContentAccessPolicy;
 };

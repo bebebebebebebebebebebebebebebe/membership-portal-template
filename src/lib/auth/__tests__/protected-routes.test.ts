@@ -16,4 +16,10 @@ describe("isMemberProtectedRoute", () => {
       expect(isMemberProtectedRoute(pathname)).toBe(false);
     }
   );
+
+  it("/contents/member-only-blueprint を content route access により保護対象にする", () => {
+    expect(isMemberProtectedRoute("/contents/member-only-blueprint")).toBe(
+      true
+    );
+  });
 });

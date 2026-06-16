@@ -7,6 +7,7 @@ import type { ContentPreview } from "@/features/contents/types/content-preview";
 import type { ContentViewer } from "@/features/contents/types/content-viewer";
 import type { ProductOffer } from "@/features/contents/types/product-offer";
 import { canViewContent } from "@/features/contents/utils/content-access";
+import { canAccessContentRoute } from "@/features/contents/utils/content-route-access";
 import {
   isListedPublishedContent,
   isPubliclyAccessibleContentMetadata,
@@ -109,6 +110,15 @@ export function getMockContentDetailForViewer(
 
   if (!metadata || !isPubliclyAccessibleContentMetadata(metadata)) {
     return { status: "notFound" };
+  }
+
+  const routeDecision = canAccessContentRoute(
+    metadata.routeAccessPolicy,
+    viewer.user
+  );
+
+  if (!routeDecision.allowed) {
+    return { status: "forbidden" };
   }
 
   const decision = canViewContent(metadata.accessPolicy, viewer);

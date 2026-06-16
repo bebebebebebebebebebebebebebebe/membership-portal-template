@@ -4,6 +4,7 @@ import { mockContentDetails } from "@/features/contents/data/mock-content-detail
 import { mockContents } from "@/features/contents/data/mock-contents";
 import { mockProductOffers } from "@/features/contents/data/mock-product-offers";
 import { canViewContent } from "@/features/contents/utils/content-access";
+import { canAccessContentRoute } from "@/features/contents/utils/content-route-access";
 import {
   isListedPublishedContent,
   isPubliclyAccessibleContentMetadata,
@@ -58,10 +59,17 @@ export const browserContentHandlers = [
       );
     }
 
-    const decision = canViewContent(
-      metadata.accessPolicy,
-      getBrowserMockViewer()
+    const viewer = getBrowserMockViewer();
+    const routeDecision = canAccessContentRoute(
+      metadata.routeAccessPolicy,
+      viewer.user
     );
+
+    if (!routeDecision.allowed) {
+      return HttpResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const decision = canViewContent(metadata.accessPolicy, viewer);
 
     if (!decision.allowed) {
       return HttpResponse.json({ error: "Forbidden" }, { status: 403 });

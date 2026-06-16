@@ -18,6 +18,10 @@ describe("proxy", () => {
       "/settings/profile",
       "https://example.test/login?next=%2Fsettings%2Fprofile",
     ],
+    [
+      "/contents/member-only-blueprint",
+      "https://example.test/login?next=%2Fcontents%2Fmember-only-blueprint",
+    ],
   ])("anonymous user の %s を next 付き login へ redirect する", (pathname, location) => {
     vi.stubEnv("AUTH_PROVIDER", "mock");
     vi.stubEnv("MOCK_AUTH_SCENARIO", "anonymous");
@@ -42,12 +46,15 @@ describe("proxy", () => {
     expect(response.headers.get("location")).toBeNull();
   });
 
-  it("認証済み mock scenario は Member Zone を通過させる", () => {
-    vi.stubEnv("AUTH_PROVIDER", "mock");
-    vi.stubEnv("MOCK_AUTH_SCENARIO", "premium-member");
+  it.each(["/bookmarks", "/contents/member-only-blueprint"])(
+    "認証済み mock scenario は %s を通過させる",
+    (pathname) => {
+      vi.stubEnv("AUTH_PROVIDER", "mock");
+      vi.stubEnv("MOCK_AUTH_SCENARIO", "premium-member");
 
-    const response = proxy(makeRequest("/bookmarks"));
+      const response = proxy(makeRequest(pathname));
 
-    expect(response.headers.get("location")).toBeNull();
-  });
+      expect(response.headers.get("location")).toBeNull();
+    }
+  );
 });

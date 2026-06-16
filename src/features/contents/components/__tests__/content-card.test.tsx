@@ -14,6 +14,7 @@ function makeContent(accessPolicy: ContentAccessPolicy): Content {
     tags: ["セキュリティ"],
     publicationStatus: "published",
     discoverability: "listed",
+    routeAccessPolicy: { kind: "public" },
     accessPolicy,
     category: "記事",
     author: { name: "著者", avatar: "/images/avatar.png", initials: "AB" },

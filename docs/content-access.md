@@ -4,13 +4,27 @@
 
 ## 1. 基本方針
 
-- `/contents`・`/contents/[id]` は Member Zone 専用ではなく、`(public)` route group の **公開条件つきカタログ**として扱う。非会員も一覧と無料公開コンテンツを閲覧できる。
-- 本文の閲覧可否は `content.accessPolicy` で判定する。
+- `/contents` は常に Public Zone の公開カタログとして扱う。非会員も一覧と無料公開コンテンツを閲覧できる。
+- `/contents/[id]` は `(public)` route group に置いたまま、content 単位の `routeAccessPolicy` で URL 自体への到達可否を判定する。
+- 本文 full detail の閲覧可否は `content.accessPolicy` で判定する。
 - **Route Guard**（領域への入場制御）と **Content Gate**（本文の閲覧制御）を分離する。
-  - Route Guard: `/dashboard`・`/bookmarks`・`/notifications`・`/settings/*` などの Member Zone。`(member)/layout.tsx` が `requireAuthenticatedUser()` で保護する。
+  - Route Guard: `/dashboard`・`/bookmarks`・`/notifications`・`/settings/*` などの Member Zone と、`routeAccessPolicy=loginRequired` の `/contents/[id]`。`proxy.ts` は早期 redirect、Server Component / API は最終確認を担当する。
   - Content Gate: `/contents/[id]` の本文。`canViewContent()` の結果で本文 or `ContentAccessGate` を出し分ける。
 
-## 2. accessPolicy（閲覧条件）
+## 2. routeAccessPolicy（URL 到達条件）
+
+`ContentRouteAccessPolicy`（[content-route-access.ts](../src/features/contents/types/content-route-access.ts)）は URL 自体への到達条件だけを表す。
+
+| kind | 意味 |
+|------|------|
+| `public` | 匿名でも `/contents/[id]` を開ける |
+| `loginRequired` | 匿名は `/login?next=<content-path>` へ redirect する |
+
+`canAccessContentRoute(policy, user)`（[content-route-access.ts](../src/features/contents/utils/content-route-access.ts)）は `AuthUser | null` だけを使う。プラン・購入状態は見ない。
+
+Proxy は [content-route-access-manifest.ts](../src/config/content-route-access-manifest.ts) の軽量 manifest だけを読み、DB / repository / Route Handler を呼ばない。これは早期 redirect 用の optimistic check であり、最終認可は Server Component と detail API 側で再確認する。
+
+## 3. accessPolicy（本文閲覧条件）
 
 `ContentAccessPolicy`（[content-access.ts](../src/features/contents/types/content-access.ts)）は判別ユニオン。表示文言や価格は持たせず、判定に必要な情報だけを保持する。
 
@@ -24,7 +38,7 @@
 
 価格は accessPolicy ではなく `ProductOffer`（`getProductOffer()`）から取得し、閲覧条件と販売条件を分離する。
 
-## 3. 閲覧可否判定
+## 4. 本文閲覧可否判定
 
 `canViewContent(policy, viewer)`（[content-access.ts](../src/features/contents/utils/content-access.ts)）が `ContentAccessDecision` を返す。
 
@@ -34,28 +48,30 @@
 
 `ContentAccessGate`（[content-access-gate.tsx](../src/features/contents/components/content-access-gate.tsx)）は denied 理由に応じた説明と CTA（ログイン / プラン確認 / 単品購入）を表示する。単品購入 CTA は `ContentPurchaseCta` が `ProductOffer` 由来の価格で描画する。
 
-## 4. データ境界
+## 5. データ境界
 
 | データ | 取得 API | 認可前に取得してよいか |
 |--------|----------|:----------------------:|
-| metadata（title/description/tags/accessPolicy 等） | `getContentMetadata()` | ○ |
+| metadata（title/description/tags/routeAccessPolicy/accessPolicy 等） | `getContentMetadata()` | ○ |
 | preview（概要のみ。本文・URL を含まない） | `getContentPreview()` | ○ |
 | full detail（本文セクション・コメント） | `getContentDetail()` | × （認可後のみ） |
 
-`getContentDetail()` は `canViewContent()` の allowed に通った後でのみ呼ぶ。これにより UI gate だけに依存せず、本文データそのものを認可前に渡さない。
+`getContentDetail()` は `routeAccessPolicy` と `canViewContent()` の allowed に通った後でのみ呼ぶ。detail API も同じ二段階の条件を確認し、UI gate だけに依存せず本文データそのものを認可前に渡さない。
 
-## 5. 詳細ページの処理順
+## 6. 詳細ページの処理順
 
 `(public)/contents/[id]/page.tsx` の評価順:
 
 1. `getContentMetadata(id)` を取得。存在しない、または `isPubliclyAccessibleContentMetadata()` が false（未公開・hidden）なら `notFound()`。
-2. 記事以外（資料）は本ルート対象外として `notFound()`。
-3. `getContentViewer()` で viewer を取得。
-4. `canViewContent(accessPolicy, viewer)` で判定。
-5. denied → `getContentPreview(id)` + `ContentAccessGate`。
-6. allowed → `getContentDetail(id)` + `ArticleDetail`（`free` は非会員でも本文表示。`currentUser` が null ならコメント投稿欄は出さない）。
+2. `routeAccessPolicy=loginRequired` の場合は、`<Suspense>` fallback を返す前に `getContentViewer()` と `canAccessContentRoute(routeAccessPolicy, viewer.user)` で URL 到達条件を最終確認する。
+3. `routeAccessPolicy=loginRequired` かつ anonymous → `/login?next=<content-path>` へ redirect。fallback や content-derived shell は返さない。
+4. 記事以外（資料）は詳細 UI 未実装のため Coming Soon を表示する。
+5. `<Suspense>` fallback を含む shell を返す。public content の viewer 取得は `ContentRouteGuardSlot` 内、loginRequired 通過済み content は取得済み viewer を `PersonalizedContentAccess` へ渡す。
+6. `PersonalizedContentAccess` が `canViewContent(accessPolicy, viewer)` で本文閲覧条件を判定する。
+7. denied → `getContentPreview(id)` + `ContentAccessGate`。
+8. allowed → `getContentDetail(id)` + `ArticleDetail`（`free` は非会員でも本文表示。`currentUser` が null ならコメント投稿欄は出さない）。
 
-## 6. 公開判定ユーティリティ
+## 7. 公開判定ユーティリティ
 
 [content-publication.ts](../src/features/contents/utils/content-publication.ts):
 

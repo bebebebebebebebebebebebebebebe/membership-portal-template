@@ -35,7 +35,7 @@
 |------|------|------|
 | Member Zone layout | `(member)` route group | sidebar/header/nav config と認証必須 layout（`requireCurrentUserForRoute`）は実装済み。未ログイン時は `/login?next=<original-path>` へ遷移。認証基盤はモック |
 | コンテンツカタログ | `/contents` | `(public)` 配下の公開カタログ。非会員も閲覧できる。データは `getContents()`（published+listed）経由。DB/API は未実装 |
-| コンテンツ詳細 | `/contents/[id]` | `(public)` 配下。`accessPolicy` を `canViewContent()` で判定し、閲覧可なら本文、不可なら `ContentAccessGate` を表示する Content Gate 付き。記事以外・hidden・未作成 ID は `notFound()` |
+| コンテンツ詳細 | `/contents/[id]` | `(public)` 配下。URL 自体は `routeAccessPolicy`、本文 full detail は `accessPolicy` で分離制御する。`routeAccessPolicy=loginRequired` の匿名 access は `/login?next=<content-path>` へ redirect。本文不可なら `ContentAccessGate`、記事以外は Coming Soon、hidden・未作成 ID は `notFound()` |
 
 ### 2-4. Coming Soon
 
@@ -84,16 +84,16 @@ pnpm run test:watch
 ```txt
 Root
 ├── Public Zone        認証不要。集客・認証導線・公開カタログ
-│   └── Content Catalog  /contents・/contents/[id]（非会員も閲覧可、本文は Content Gate で制御）
+│   └── Content Catalog  /contents・/contents/[id]（一覧は常に公開、詳細は routeAccessPolicy と Content Gate で制御）
 ├── Member Zone        ログイン必須。dashboard / bookmarks / notifications / settings
 └── Admin Zone         管理者専用。Admin Guard で制御し、CRUD は未実装
 ```
 
 - `src/app/(public)` は Public Zone の route group として扱い、`(public)/layout.tsx` が公開 shell（ヘッダー・背景・main コンテナ）を提供する。
-- `/contents` と `/contents/[id]` は Member Zone 専用ではなく、`(public)` 配下の公開条件つきカタログとして扱う。
+- `/contents` は常に Public Zone の公開カタログとして扱う。`/contents/[id]` は `(public)` 配下のまま、content 単位の `routeAccessPolicy` で URL 自体への到達可否を制御する。
 - `src/app/(member)` は Member Zone の route group として扱い、`(member)/layout.tsx` が認証必須 shell（sidebar/header）を提供する。`proxy.ts` は未ログイン時の早期 redirect を担当し、Server Component の layout guard が最終確認を行う。`/contents` への導線は Member sidebar にも「コンテンツカタログ」として残す。
 - `src/app/admin` は Admin Zone として扱い、`admin/layout.tsx` が `requireCurrentAdminForRoute()` で admin role を要求する。未ログインは `/login?next=...`、非 admin は `/forbidden` へ遷移する。
-- 領域への入場制御（Route Guard）と本文の閲覧制御（Content Gate）を分離する。`/dashboard` などは Route Guard、`/contents/[id]` の本文は `accessPolicy` ベースの Content Gate で制御する。
+- 領域・URL への入場制御（Route Guard）と本文の閲覧制御（Content Gate）を分離する。`/dashboard` などは Member Route Guard、`/contents/[id]` の URL 到達は `routeAccessPolicy`、本文は `accessPolicy` ベースの Content Gate で制御する。
 - `features/contents` はコンテンツ機能の UI・型・API・ロジックと mock data を持つ feature として扱う。
 - 現時点では DB・バックエンドが未確定のため、コンテンツ画面は静的モックを使う。
 
@@ -103,7 +103,7 @@ Root
 
 | 層 | 対象 | 依存してよい先 |
 |----|------|----------------|
-| shared | `src/components`, `src/hooks`, `src/lib`, `src/types`, `src/utils` | shared のみ |
+| shared | `src/components`, `src/config`, `src/hooks`, `src/lib`, `src/types`, `src/utils` | shared のみ |
 | features | `src/features/*` | 同一 feature、shared |
 | app | `src/app` | app 内部、features、shared |
 
@@ -130,10 +130,12 @@ Root
 
 コンテンツの閲覧制御は次の方針で `features/contents` に閉じて実装する。詳細は [docs/content-access.md](docs/content-access.md) を参照。
 
+- **routeAccessPolicy と accessPolicy の分離**: `ContentRouteAccessPolicy` は `/contents/[id]` の URL 到達条件だけを持ち、`ContentAccessPolicy` は本文 full detail の閲覧条件だけを持つ。
 - **accessPolicy と価格の分離**: `ContentAccessPolicy` は閲覧条件の判定に必要な情報だけを持ち、表示文言や価格を持たない。価格は `ProductOffer`（`getProductOffer()` 経由）から取得する。
-- **閲覧可否判定**: `canViewContent(policy, viewer)` が allowed / denied と理由を返す。admin は常に allowed。
-- **Route Guard と Content Gate の分離**: 領域への入場は Route Guard（`requireCurrentUserForRoute` など）、本文の閲覧は Content Gate（`canViewContent`）で制御する。Member Zone の未ログイン access は `/login?next=<original-path>` へ遷移する。
-- **データ境界**: metadata（`getContentMetadata`）と preview（`getContentPreview`）は認可前に取得してよい。full body を含む detail（`getContentDetail`）は `canViewContent()` の allowed に通った後でのみ取得する。
+- **URL 到達可否判定**: `canAccessContentRoute(policy, user)` が anonymous / authenticated のみで URL 到達可否を返す。Proxy は `src/config/content-route-access-manifest.ts` の静的 manifest だけを使う optimistic redirect に限定する。
+- **本文閲覧可否判定**: `canViewContent(policy, viewer)` が allowed / denied と理由を返す。admin は常に allowed。
+- **Route Guard と Content Gate の分離**: 領域への入場は Route Guard（`requireCurrentUserForRoute` など）、content detail URL は `routeAccessPolicy`、本文の閲覧は Content Gate（`canViewContent`）で制御する。未ログイン access は `/login?next=<original-path>` へ遷移する。
+- **データ境界**: metadata（`getContentMetadata`）と preview（`getContentPreview`）は認可前に取得してよい。full body を含む detail（`getContentDetail`）は `routeAccessPolicy` と `canViewContent()` の allowed に通った後でのみ取得する。
 - **ページの脱モック依存**: page は `mockContents` などを直接 import せず、API abstraction（`features/contents/api`）経由で取得する。
 - **mock auth scenario**: server 側は `AUTH_PROVIDER=mock` と `MOCK_AUTH_SCENARIO=anonymous` / `premium-member` / `admin` などで切り替える。browser MSW 側は `NEXT_PUBLIC_API_MOCKING=enabled` と `NEXT_PUBLIC_AUTH_MOCK_SCENARIO=admin` で表示確認用 viewer を切り替える。
 
@@ -173,7 +175,7 @@ Root
 |---|---------|------|------|:---:|----------|
 | 1 | ダッシュボード | `/dashboard` | 全体状況の把握 | ✅ | Coming Soon |
 | 2 | コンテンツ一覧 | `/contents` | 記事・資料・投稿の一覧 | ✅ | 部分実装（`(public)` で公開カタログ化。非会員も閲覧可） |
-| 3 | コンテンツ詳細 | `/contents/[id]` | 情報の閲覧 | ✅ | 部分実装（`(public)`。本文は accessPolicy ベースの Content Gate で制御） |
+| 3 | コンテンツ詳細 | `/contents/[id]` | 情報の閲覧 | ✅ | 部分実装（`(public)`。URL は routeAccessPolicy、本文は accessPolicy ベースの Content Gate で制御） |
 | 4 | お気に入り | `/bookmarks` | 保存済み情報の一覧 | ✅ | Coming Soon |
 | 5 | 通知 | `/notifications` | お知らせ・更新情報 | ✅ | Coming Soon |
 | 6 | プロフィール設定 | `/settings/profile` | 会員情報管理 | ✅ | Coming Soon |

@@ -200,12 +200,72 @@ const jsArticleDetail: ContentDetail = {
   ],
 };
 
+const memberOnlyBlueprintDetail: ContentDetail = {
+  viewCount: 321,
+  publishedDate: "2024/05/18",
+  updatedDate: "2024/05/19",
+  summary: {
+    title: "この記事の要点",
+    body: "会員限定コンテンツの URL 到達条件と本文閲覧条件を分け、公開カタログから認証必須詳細へ安全につなぐ設計を整理します。",
+  },
+  sections: [
+    {
+      id: "overview",
+      heading: "概要",
+      paragraphs: [
+        "このブループリントでは、コンテンツ詳細 URL 自体をログイン必須にしつつ、本文 full detail はプラン条件でさらに制御する構成を扱います。",
+      ],
+    },
+    {
+      id: "guard-design",
+      heading: "ガード設計",
+      paragraphs: [
+        "Proxy は軽量 manifest による早期 redirect だけを担当し、Server Component と API 境界で同じ条件を再確認します。",
+      ],
+      callout: {
+        title: "設計ポイント",
+        body: "URL 到達条件と本文閲覧条件を分けることで、公開 preview と会員限定本文の責務が明確になります。",
+      },
+    },
+  ],
+  steps: [
+    { title: "URL 条件を定義", description: "routeAccessPolicy で匿名到達可否を表す" },
+    { title: "本文条件を維持", description: "accessPolicy で full detail の閲覧条件を判定する" },
+    { title: "Proxy を軽量化", description: "静的 manifest と cookie 状態だけで早期 redirect する" },
+    { title: "Server で再確認", description: "ページと API で同じ方針を再チェックする" },
+    { title: "detail を遅延取得", description: "allowed 後にだけ本文データを取得する" },
+    { title: "テストで固定", description: "匿名・無料・プレミアム・admin の差分を検証する" },
+  ],
+  conclusion:
+    "routeAccessPolicy と accessPolicy を分離すると、URL 保護と本文保護をそれぞれ独立して拡張できます。",
+  cycleLabel: "会員限定アクセス設計のサイクル",
+  toc: [
+    { id: "overview", label: "概要" },
+    { id: "guard-design", label: "ガード設計" },
+    {
+      id: "steps",
+      label: "6つの確認ポイント",
+      children: [
+        { label: "URL 条件を定義" },
+        { label: "本文条件を維持" },
+        { label: "Proxy を軽量化" },
+        { label: "Server で再確認" },
+        { label: "detail を遅延取得" },
+        { label: "テストで固定" },
+      ],
+    },
+    { id: "conclusion", label: "まとめ" },
+  ],
+  comments: [],
+};
+
 /**
  * 記事 id をキーにした詳細モックデータ。デザイン原稿に一致する `id: "1"` を中心に、
- * 一覧の記事（id 4 / 7）にも同じテンプレートで本文を用意し、カードのリンクを機能させる。
+ * 一覧の記事（id 4 / 7）と会員限定検証用記事にも本文を用意し、カードや直リンクを機能させる。
  */
 export const mockContentDetails: Record<string, ContentDetail> = {
   "1": aiArticleDetail,
   "4": cloudArticleDetail,
   "7": jsArticleDetail,
+  "member-only-blueprint": memberOnlyBlueprintDetail,
 };
