@@ -1,4 +1,4 @@
-import { getMockContentPreview } from "@/features/contents/server/mock-content-repository";
+import { getPublicContentPreview } from "@/features/contents/server/content-read-service";
 
 type ContentPreviewRouteContext = {
   params: Promise<{ id: string }>;
@@ -16,7 +16,7 @@ export async function GET(
   context: ContentPreviewRouteContext
 ) {
   const { id } = await context.params;
-  const preview = getMockContentPreview(id);
+  const preview = await getPublicContentPreview(id);
 
   if (!preview) {
     return Response.json({ error: "Content preview not found" }, { status: 404 });

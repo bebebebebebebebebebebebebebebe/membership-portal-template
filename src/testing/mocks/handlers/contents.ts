@@ -1,26 +1,30 @@
 import { http, HttpResponse } from "msw";
 
-import { getContentViewer } from "@/features/contents/server/content-viewer";
 import {
-  getMockContentDetailForViewer,
-  getMockContentMetadata,
-  getMockContentPreview,
-  getMockContents,
-  getMockProductOffer,
-  getMockRelatedContents,
-} from "@/features/contents/server/mock-content-repository";
+  getAuthorizedContentDetail,
+  getContentCatalogItems,
+  getProductOffer,
+  getPublicContentMetadata,
+  getPublicContentPreview,
+  getPublicRelatedContents,
+} from "@/features/contents/server/content-read-service";
+import { getContentViewer } from "@/features/contents/server/content-viewer";
 
 /**
  * contents feature の HTTP API mock handlers。
  *
- * Route Handler と同じ mock repository を使い、Vitest でも実行時 API と同じ
+ * Route Handler と同じ server service を使い、Vitest でも実行時 API と同じ
  * response shape / status code を検証できるようにする。
  */
 export const contentHandlers = [
-  http.get("*/api/contents", () => HttpResponse.json(getMockContents())),
+  http.get("*/api/contents", async () => {
+    const items = await getContentCatalogItems();
 
-  http.get("*/api/contents/:id/metadata", ({ params }) => {
-    const content = getMockContentMetadata(String(params.id));
+    return HttpResponse.json(items.map((item) => item.content));
+  }),
+
+  http.get("*/api/contents/:id/metadata", async ({ params }) => {
+    const content = await getPublicContentMetadata(String(params.id));
 
     if (!content) {
       return HttpResponse.json({ error: "Content not found" }, { status: 404 });
@@ -29,8 +33,8 @@ export const contentHandlers = [
     return HttpResponse.json(content);
   }),
 
-  http.get("*/api/contents/:id/preview", ({ params }) => {
-    const preview = getMockContentPreview(String(params.id));
+  http.get("*/api/contents/:id/preview", async ({ params }) => {
+    const preview = await getPublicContentPreview(String(params.id));
 
     if (!preview) {
       return HttpResponse.json(
@@ -44,7 +48,7 @@ export const contentHandlers = [
 
   http.get("*/api/contents/:id/detail", async ({ params }) => {
     const viewer = await getContentViewer();
-    const result = getMockContentDetailForViewer(String(params.id), viewer);
+    const result = await getAuthorizedContentDetail(String(params.id), viewer);
 
     switch (result.status) {
       case "ok":
@@ -59,16 +63,18 @@ export const contentHandlers = [
     }
   }),
 
-  http.get("*/api/contents/:id/related", ({ params, request }) => {
+  http.get("*/api/contents/:id/related", async ({ params, request }) => {
     const { searchParams } = new URL(request.url);
     const requestedLimit = Number(searchParams.get("limit") ?? 4);
     const limit = Number.isFinite(requestedLimit) ? requestedLimit : 4;
 
-    return HttpResponse.json(getMockRelatedContents(String(params.id), limit));
+    return HttpResponse.json(
+      await getPublicRelatedContents(String(params.id), limit)
+    );
   }),
 
-  http.get("*/api/product-offers/:productId", ({ params }) => {
-    const offer = getMockProductOffer(String(params.productId));
+  http.get("*/api/product-offers/:productId", async ({ params }) => {
+    const offer = await getProductOffer(String(params.productId));
 
     if (!offer) {
       return HttpResponse.json(

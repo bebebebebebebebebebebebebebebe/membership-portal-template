@@ -1,4 +1,4 @@
-import { getMockContents } from "@/features/contents/server/mock-content-repository";
+import { getContentCatalogItems } from "@/features/contents/server/content-read-service";
 
 /**
  * コンテンツカタログ API。
@@ -6,5 +6,7 @@ import { getMockContents } from "@/features/contents/server/mock-content-reposit
  * @returns 一覧掲載対象のコンテンツ一覧。
  */
 export async function GET() {
-  return Response.json(getMockContents());
+  const items = await getContentCatalogItems();
+
+  return Response.json(items.map((item) => item.content));
 }

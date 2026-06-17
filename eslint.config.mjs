@@ -81,6 +81,33 @@ const eslintConfig = defineConfig([
           ],
         },
       ],
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "@/features/contents/server/mock-content-repository",
+              message:
+                "旧 mock-content-repository を直接 import しないでください。content-read-service 経由に移行してください。",
+            },
+            {
+              name: "@/features/contents/server/repositories/mock-content-repository",
+              message:
+                "mock-content-repository を直接 import しないでください。server では content-read-service、repository 差し替えでは content-repository-provider を使ってください。",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: [
+      "src/features/contents/server/repositories/content-repository-provider.ts",
+      "src/features/contents/server/repositories/mock-content-repository.ts",
+      "src/features/contents/server/repositories/__tests__/**/*.ts",
+    ],
+    rules: {
+      "no-restricted-imports": "off",
     },
   },
   // Override default ignores of eslint-config-next.

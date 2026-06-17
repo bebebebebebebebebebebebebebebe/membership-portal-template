@@ -1,29 +1,29 @@
 import { http, HttpResponse } from "msw";
 
-import { mockContentDetails } from "@/features/contents/data/mock-content-details";
-import { mockContents } from "@/features/contents/data/mock-contents";
-import { mockProductOffers } from "@/features/contents/data/mock-product-offers";
-import { canViewContent } from "@/features/contents/utils/content-access";
-import { canAccessContentRoute } from "@/features/contents/utils/content-route-access";
-import {
-  isListedPublishedContent,
-  isPubliclyAccessibleContentMetadata,
-} from "@/features/contents/utils/content-publication";
+import { createContentReadService } from "@/features/contents/services/content-read-service";
 import { getBrowserMockViewer } from "@/testing/mocks/auth-scenario";
+import { browserMockContentRepository } from "@/testing/mocks/browser-content-repository";
+
+const contentReadService = createContentReadService(browserMockContentRepository);
 
 /**
  * browser worker 用の client-safe contents handlers。
  *
  * Server Component 側の auth service や server repository は client bundle へ入れず、
- * 開発中の browser fetch mock に必要な response shape だけを返す。
+ * content read service に browser-safe repository / viewer を注入して Route Handler と
+ * 同じ response shape を返す。
  */
 export const browserContentHandlers = [
-  http.get("*/api/contents", () =>
-    HttpResponse.json(mockContents.filter(isListedPublishedContent))
-  ),
+  http.get("*/api/contents", async () => {
+    const items = await contentReadService.getContentCatalogItems();
 
-  http.get("*/api/contents/:id/metadata", ({ params }) => {
-    const content = mockContents.find((item) => item.id === String(params.id));
+    return HttpResponse.json(items.map((item) => item.content));
+  }),
+
+  http.get("*/api/contents/:id/metadata", async ({ params }) => {
+    const content = await contentReadService.getPublicContentMetadata(
+      String(params.id)
+    );
 
     if (!content) {
       return HttpResponse.json({ error: "Content not found" }, { status: 404 });
@@ -32,75 +32,55 @@ export const browserContentHandlers = [
     return HttpResponse.json(content);
   }),
 
-  http.get("*/api/contents/:id/preview", ({ params }) => {
-    const content = mockContents.find((item) => item.id === String(params.id));
+  http.get("*/api/contents/:id/preview", async ({ params }) => {
+    const preview = await contentReadService.getPublicContentPreview(
+      String(params.id)
+    );
 
-    if (!content) {
+    if (!preview) {
       return HttpResponse.json(
         { error: "Content preview not found" },
         { status: 404 }
       );
     }
 
-    return HttpResponse.json({
-      id: content.id,
-      introduction: content.description,
-    });
+    return HttpResponse.json(preview);
   }),
 
-  http.get("*/api/contents/:id/detail", ({ params }) => {
-    const id = String(params.id);
-    const metadata = mockContents.find((item) => item.id === id);
-
-    if (!metadata || !isPubliclyAccessibleContentMetadata(metadata)) {
-      return HttpResponse.json(
-        { error: "Content detail not found" },
-        { status: 404 }
-      );
-    }
-
+  http.get("*/api/contents/:id/detail", async ({ params }) => {
     const viewer = getBrowserMockViewer();
-    const routeDecision = canAccessContentRoute(
-      metadata.routeAccessPolicy,
-      viewer.user
+    const result = await contentReadService.getAuthorizedContentDetail(
+      String(params.id),
+      viewer
     );
 
-    if (!routeDecision.allowed) {
-      return HttpResponse.json({ error: "Forbidden" }, { status: 403 });
+    switch (result.status) {
+      case "ok":
+        return HttpResponse.json(result.detail);
+      case "forbidden":
+        return HttpResponse.json({ error: "Forbidden" }, { status: 403 });
+      case "notFound":
+        return HttpResponse.json(
+          { error: "Content detail not found" },
+          { status: 404 }
+        );
     }
-
-    const decision = canViewContent(metadata.accessPolicy, viewer);
-
-    if (!decision.allowed) {
-      return HttpResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-
-    const detail = mockContentDetails[id];
-
-    if (!detail) {
-      return HttpResponse.json(
-        { error: "Content detail not found" },
-        { status: 404 }
-      );
-    }
-
-    return HttpResponse.json(detail);
   }),
 
-  http.get("*/api/contents/:id/related", ({ params, request }) => {
+  http.get("*/api/contents/:id/related", async ({ params, request }) => {
     const { searchParams } = new URL(request.url);
     const requestedLimit = Number(searchParams.get("limit") ?? 4);
     const limit = Number.isFinite(requestedLimit) ? requestedLimit : 4;
-    const contents = mockContents
-      .filter(isListedPublishedContent)
-      .filter((item) => item.id !== String(params.id))
-      .slice(0, limit);
 
-    return HttpResponse.json(contents);
+    return HttpResponse.json(
+      await contentReadService.getPublicRelatedContents(String(params.id), limit)
+    );
   }),
 
-  http.get("*/api/product-offers/:productId", ({ params }) => {
-    const offer = mockProductOffers[String(params.productId)];
+  http.get("*/api/product-offers/:productId", async ({ params }) => {
+    const offer = await contentReadService.getProductOffer(
+      String(params.productId)
+    );
 
     if (!offer) {
       return HttpResponse.json(

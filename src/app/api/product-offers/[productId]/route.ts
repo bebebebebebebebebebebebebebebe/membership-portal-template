@@ -1,4 +1,4 @@
-import { getMockProductOffer } from "@/features/contents/server/mock-content-repository";
+import { getProductOffer } from "@/features/contents/server/content-read-service";
 
 type ProductOfferRouteContext = {
   params: Promise<{ productId: string }>;
@@ -16,7 +16,7 @@ export async function GET(
   context: ProductOfferRouteContext
 ) {
   const { productId } = await context.params;
-  const offer = getMockProductOffer(productId);
+  const offer = await getProductOffer(productId);
 
   if (!offer) {
     return Response.json({ error: "Product offer not found" }, { status: 404 });

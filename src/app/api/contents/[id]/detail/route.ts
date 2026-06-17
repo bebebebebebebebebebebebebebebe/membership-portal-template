@@ -1,5 +1,5 @@
 import { getContentViewer } from "@/features/contents/server/content-viewer";
-import { getMockContentDetailForViewer } from "@/features/contents/server/mock-content-repository";
+import { getAuthorizedContentDetail } from "@/features/contents/server/content-read-service";
 
 type ContentDetailRouteContext = {
   params: Promise<{ id: string }>;
@@ -21,7 +21,7 @@ export async function GET(
 ) {
   const { id } = await context.params;
   const viewer = await getContentViewer();
-  const result = getMockContentDetailForViewer(id, viewer);
+  const result = await getAuthorizedContentDetail(id, viewer);
 
   switch (result.status) {
     case "ok":

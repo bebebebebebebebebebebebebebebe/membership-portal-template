@@ -1,4 +1,4 @@
-import { getMockRelatedContents } from "@/features/contents/server/mock-content-repository";
+import { getPublicRelatedContents } from "@/features/contents/server/content-read-service";
 
 type RelatedContentsRouteContext = {
   params: Promise<{ id: string }>;
@@ -20,5 +20,5 @@ export async function GET(
   const requestedLimit = Number(searchParams.get("limit") ?? 4);
   const limit = Number.isFinite(requestedLimit) ? requestedLimit : 4;
 
-  return Response.json(getMockRelatedContents(id, limit));
+  return Response.json(await getPublicRelatedContents(id, limit));
 }

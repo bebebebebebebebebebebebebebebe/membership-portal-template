@@ -3,34 +3,18 @@ import "server-only";
 import { cache } from "react";
 
 import {
-  getMockContentDetailForViewer,
-  getMockContentMetadata,
-  getMockContentPreview,
-  getMockContents,
-  getMockProductOffer,
-  getMockRelatedContents,
-  type MockContentDetailAccessResult,
-} from "@/features/contents/server/mock-content-repository";
+  createContentReadService,
+  type AuthorizedContentDetailResult,
+} from "@/features/contents/services/content-read-service";
 import type { Content } from "@/features/contents/types/content";
 import type { ContentCatalogItem } from "@/features/contents/types/content-catalog";
 import type { ContentPreview } from "@/features/contents/types/content-preview";
 import type { ContentViewer } from "@/features/contents/types/content-viewer";
-import { isPubliclyAccessibleContentMetadata } from "@/features/contents/utils/content-publication";
+import type { ProductOffer } from "@/features/contents/types/product-offer";
 
-/**
- * 価格解決に使う productId を accessPolicy から取り出す。
- *
- * 価格表示が必要なのは単品購入を含む kind だけなので、それ以外は `null` を返す。
- */
-function getProductIdForAccess(policy: Content["accessPolicy"]): string | null {
-  switch (policy.kind) {
-    case "purchaseRequired":
-    case "planOrPurchase":
-      return policy.productId;
-    default:
-      return null;
-  }
-}
+import { getContentRepository } from "./repositories/content-repository-provider";
+
+const contentReadService = createContentReadService(getContentRepository());
 
 /**
  * カタログ掲載対象のコンテンツと、それぞれの販売 offer を解決して返す。
@@ -42,14 +26,7 @@ function getProductIdForAccess(policy: Content["accessPolicy"]): string | null {
  */
 export const getContentCatalogItems = cache(
   async (): Promise<ContentCatalogItem[]> => {
-    return getMockContents().map((content) => {
-      const productId = getProductIdForAccess(content.accessPolicy);
-
-      return {
-        content,
-        offer: productId ? getMockProductOffer(productId) : undefined,
-      };
-    });
+    return contentReadService.getContentCatalogItems();
   }
 );
 
@@ -62,27 +39,21 @@ export const getContentCatalogItems = cache(
  * @returns prerender 対象の content id 一覧。
  */
 export const getPrerenderableContentIds = cache(async (): Promise<string[]> => {
-  return getMockContents().map((content) => content.id);
+  return contentReadService.getPrerenderableContentIds();
 });
 
 /**
  * URL 到達可能な content の認可前 metadata を返す。
  *
- * unlisted-published も URL 解決可能にするため `getMockContentMetadata` を起点にし、
- * hidden / 未公開は除外する。
+ * unlisted-published も URL 解決可能にするため repository の raw metadata を起点にし、
+ * hidden / 未公開は content read service で除外する。
  *
  * @param id コンテンツ ID。
  * @returns 公開到達可能な metadata。到達不可・不在は `undefined`。
  */
 export const getPublicContentMetadata = cache(
   async (id: string): Promise<Content | undefined> => {
-    const content = getMockContentMetadata(id);
-
-    if (!content || !isPubliclyAccessibleContentMetadata(content)) {
-      return undefined;
-    }
-
-    return content;
+    return contentReadService.getPublicContentMetadata(id);
   }
 );
 
@@ -90,11 +61,11 @@ export const getPublicContentMetadata = cache(
  * 閲覧不可状態でも表示できる preview を返す。
  *
  * @param id コンテンツ ID。
- * @returns metadata 由来の安全な preview。存在しない場合は `undefined`。
+ * @returns metadata 由来の安全な preview。到達不可・不在は `undefined`。
  */
 export const getPublicContentPreview = cache(
   async (id: string): Promise<ContentPreview | undefined> => {
-    return getMockContentPreview(id);
+    return contentReadService.getPublicContentPreview(id);
   }
 );
 
@@ -107,15 +78,27 @@ export const getPublicContentPreview = cache(
  */
 export const getPublicRelatedContents = cache(
   async (id: string, limit = 4): Promise<Content[]> => {
-    return getMockRelatedContents(id, limit);
+    return contentReadService.getPublicRelatedContents(id, limit);
+  }
+);
+
+/**
+ * productId に対応する販売オファーを返す。
+ *
+ * @param productId 販売対象 ID。
+ * @returns 価格・販売可否を含む offer。存在しない場合は `undefined`。
+ */
+export const getProductOffer = cache(
+  async (productId: string): Promise<ProductOffer | undefined> => {
+    return contentReadService.getProductOffer(productId);
   }
 );
 
 /**
  * viewer の閲覧権限を確認したうえで full detail を取得する。
  *
- * full body は認可済みの場合だけ取得する。internal API を経由せず、server data access
- * から直接認可結果を得る。
+ * full body は認可済みの場合だけ取得する。viewer 依存のため永続 cache せず、
+ * request-time の認可処理として application service へ委譲する。
  *
  * @param id コンテンツ ID。
  * @param viewer 認可判定用の閲覧者状態。
@@ -124,6 +107,6 @@ export const getPublicRelatedContents = cache(
 export async function getAuthorizedContentDetail(
   id: string,
   viewer: ContentViewer
-): Promise<MockContentDetailAccessResult> {
-  return getMockContentDetailForViewer(id, viewer);
+): Promise<AuthorizedContentDetailResult> {
+  return contentReadService.getAuthorizedContentDetail(id, viewer);
 }

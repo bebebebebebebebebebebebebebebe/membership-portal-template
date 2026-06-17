@@ -1,4 +1,4 @@
-import { getMockContentMetadata } from "@/features/contents/server/mock-content-repository";
+import { getPublicContentMetadata } from "@/features/contents/server/content-read-service";
 
 type ContentMetadataRouteContext = {
   params: Promise<{ id: string }>;
@@ -16,7 +16,7 @@ export async function GET(
   context: ContentMetadataRouteContext
 ) {
   const { id } = await context.params;
-  const content = getMockContentMetadata(id);
+  const content = await getPublicContentMetadata(id);
 
   if (!content) {
     return Response.json({ error: "Content not found" }, { status: 404 });
