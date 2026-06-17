@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { proxy } from "../../proxy";
+import { proxy } from "@/proxy";
 
 function makeRequest(pathname: string) {
   return new NextRequest(`https://example.test${pathname}`);
