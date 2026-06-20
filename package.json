@@ -7,6 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "docs:api": "typedoc --options typedoc.json",
+    "docs:api:check": "typedoc --options typedoc.json --emit none",
+    "docs:api:serve": "node scripts/serve-code-reference.mjs",
     "typecheck": "next typegen && tsc --noEmit -p tsconfig.typecheck.json",
     "test": "vitest run",
     "test:watch": "vitest"
@@ -42,6 +45,7 @@
     "jsdom": "^29.1.1",
     "msw": "^2.14.6",
     "tailwindcss": "^4",
+    "typedoc": "^0.28.19",
     "typescript": "^5",
     "vitest": "^4.1.8"
   },

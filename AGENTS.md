@@ -24,5 +24,6 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - 具象レイヤーでは、抽象 contract と同じ説明を method ごとに再掲しない。public export / public method に差分を書く場合は JSDoc/TSDoc 形式で、server/client 境界、mock / DB / API 差し替え、cache、認可、fallback、副作用、transaction、retry、timeout など、具象実装固有かつ呼び出し側の判断に影響する差分だけを書く。
 - protocol boundary、transport lifecycle、pending request 管理、manual input、承認フロー、error isolation、shutdown behavior など、意図が読み取りにくい private helper には短い意図コメントを書く。
 - 実装をそのまま言い換えるだけのコメントは避け、目的・契約・制約・非自明な tradeoff を説明する。型で表現できることは型に書き、コメントでは型だけでは表現しにくい意味や判断理由を補足する。
+- TypeDoc のコードリファレンスは `pnpm run docs:api` で生成し、生成可否は `pnpm run docs:api:check` で確認する。ローカル閲覧は `pnpm run docs:api:serve` で静的配信する。TypeDoc に載せたくない public export には `@internal` を付ける。
 - テストファイルは原則として説明的な test name で仕様を表現する。コメントは、非自明な setup、race condition、timing behavior、微妙な protocol expectation がある場合だけ短く追加する。
 - この repository では documentation comment を日本語で書く。

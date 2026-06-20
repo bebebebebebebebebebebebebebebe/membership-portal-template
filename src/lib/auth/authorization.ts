@@ -4,7 +4,7 @@ import { createLoginRedirectPath } from "@/lib/auth/auth-redirect";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import type { AuthUser, UserRole } from "@/types/auth";
 
-type CurrentRouteGuardOptions = {
+export type CurrentRouteGuardOptions = {
   nextPath: string;
 };
 

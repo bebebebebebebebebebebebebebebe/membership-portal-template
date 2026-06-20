@@ -11,26 +11,26 @@ import type { ArticleContent } from "@/features/contents/types/content";
 import type { ContentViewer } from "@/features/contents/types/content-viewer";
 import { canViewContent } from "@/features/contents/utils/content-access";
 
+export type PersonalizedContentAccessProps = {
+  id: string;
+  content: ArticleContent;
+  viewer: ContentViewer;
+};
+
 /**
  * 認証済み viewer に合わせて本文または Content Gate を返す Server Component。
  *
  * full body は accessPolicy allowed のときだけ `getAuthorizedContentDetail` で取得し、
  * denied や認可 forbidden では本文を取得せず Content Gate（preview のみ）を返す。
  *
- * @param id - コンテンツ ID。
- * @param content - 認可前に取得済みの記事 metadata。
- * @param viewer - route guard を通過した閲覧者状態。
+ * @param props - コンテンツ ID、認可前 metadata、route guard を通過した閲覧者状態。
  * @returns 本文詳細、または本文を含まない Content Gate。
  */
-export async function PersonalizedContentAccess({
-  id,
-  content,
-  viewer,
-}: {
-  id: string;
-  content: ArticleContent;
-  viewer: ContentViewer;
-}) {
+export async function PersonalizedContentAccess(
+  props: PersonalizedContentAccessProps
+) {
+  const { id, content, viewer } = props;
+
   const decision = canViewContent(content.accessPolicy, viewer);
 
   if (!decision.allowed) {

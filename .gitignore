@@ -20,6 +20,9 @@
 # production
 /build
 
+# generated documentation
+/docs/code-reference/
+
 # misc
 .DS_Store
 *.pem
