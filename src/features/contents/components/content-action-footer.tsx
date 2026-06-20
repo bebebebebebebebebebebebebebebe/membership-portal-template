@@ -40,7 +40,8 @@ export function ContentActionFooter({ content, offer }: ContentActionFooterProps
     <div
       className={cn(
         "flex flex-col gap-2",
-        hasCondition && "rounded-xl border bg-muted/40 p-3"
+        hasCondition &&
+          "rounded-xl border border-foreground/20 bg-muted/40 p-3 shadow-xs"
       )}
     >
       {display.conditionLabel ? (
@@ -57,7 +58,11 @@ export function ContentActionFooter({ content, offer }: ContentActionFooterProps
         </div>
       ) : null}
 
-      <Button variant="outline" className="w-full py-4" asChild>
+      <Button
+        variant="outline"
+        className="w-full border-foreground/20 py-5 shadow-xs hover:border-foreground/30"
+        asChild
+      >
         <Link href={`/contents/${content.id}`}>
           {display.actionLabel}
           <HugeiconsIcon icon={ArrowRight01Icon} data-icon="inline-end" />
