@@ -12,6 +12,9 @@ import type { ContentRepository } from "@/features/contents/services/content-rep
  * 差し替える場合も同じ `ContentRepository` contract を満たす。
  */
 export const mockContentRepository: ContentRepository = {
+  /**
+   * 静的 fixture を raw metadata として返し、公開判定や認可判定は read service に委譲する。
+   */
   async listContents() {
     return mockContents;
   },
@@ -20,6 +23,9 @@ export const mockContentRepository: ContentRepository = {
     return mockContents.find((item) => item.id === id);
   },
 
+  /**
+   * full detail の body gate は repository ではなく content read service 側で行う。
+   */
   async findContentDetailById(id) {
     return mockContentDetails[id];
   },

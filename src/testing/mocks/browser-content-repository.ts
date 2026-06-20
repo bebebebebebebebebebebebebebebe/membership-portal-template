@@ -10,6 +10,9 @@ import type { ContentRepository } from "@/features/contents/services/content-rep
  * `ContentRepository` contract に合わせる。
  */
 export const browserMockContentRepository: ContentRepository = {
+  /**
+   * server-only 実装と同じ raw fixture を、browser bundle で読める形で返す。
+   */
   async listContents() {
     return mockContents;
   },
@@ -18,6 +21,9 @@ export const browserMockContentRepository: ContentRepository = {
     return mockContents.find((item) => item.id === id);
   },
 
+  /**
+   * browser MSW 側でも full detail の認可は repository ではなく read service に委譲する。
+   */
   async findContentDetailById(id) {
     return mockContentDetails[id];
   },
