@@ -6,7 +6,7 @@ import {
   getAuthorizedContentDetail,
   getPublicContentPreview,
   getPublicRelatedContents,
-} from "@/features/contents/server/content-read-service";
+} from "@/features/contents/server/content-read-queries";
 import type { ArticleContent } from "@/features/contents/types/content";
 import type { ContentViewer } from "@/features/contents/types/content-viewer";
 import { canViewContent } from "@/features/contents/utils/content-access";

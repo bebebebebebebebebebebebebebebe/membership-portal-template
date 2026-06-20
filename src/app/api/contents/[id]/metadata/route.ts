@@ -1,4 +1,4 @@
-import { getPublicContentMetadata } from "@/features/contents/server/content-read-service";
+import { getPublicContentMetadata } from "@/features/contents/server/content-read-queries";
 
 type ContentMetadataRouteContext = {
   params: Promise<{ id: string }>;

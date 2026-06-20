@@ -1,4 +1,4 @@
-import { getProductOffer } from "@/features/contents/server/content-read-service";
+import { getProductOffer } from "@/features/contents/server/content-read-queries";
 
 type ProductOfferRouteContext = {
   params: Promise<{ productId: string }>;

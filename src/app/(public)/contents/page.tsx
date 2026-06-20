@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { CategoryFilter } from "@/features/contents/components/category-filter";
 import { ContentGrid } from "@/features/contents/components/content-grid";
 import { ContentPagination } from "@/features/contents/components/content-pagination";
-import { getContentCatalogItems } from "@/features/contents/server/content-read-service";
+import { getContentCatalogItems } from "@/features/contents/server/content-read-queries";
 
 export const metadata: Metadata = {
   title: "コンテンツカタログ | Modular Member Portal",

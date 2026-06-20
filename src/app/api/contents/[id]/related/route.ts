@@ -1,4 +1,4 @@
-import { getPublicRelatedContents } from "@/features/contents/server/content-read-service";
+import { getPublicRelatedContents } from "@/features/contents/server/content-read-queries";
 
 type RelatedContentsRouteContext = {
   params: Promise<{ id: string }>;

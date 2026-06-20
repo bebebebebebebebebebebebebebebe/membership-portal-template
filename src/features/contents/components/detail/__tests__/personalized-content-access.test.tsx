@@ -16,7 +16,7 @@ const mocks = vi.hoisted(() => ({
   }),
 }));
 
-vi.mock("@/features/contents/server/content-read-service", () => ({
+vi.mock("@/features/contents/server/content-read-queries", () => ({
   getAuthorizedContentDetail: mocks.getAuthorizedContentDetail,
   getPublicContentPreview: mocks.getPublicContentPreview,
   getPublicRelatedContents: mocks.getPublicRelatedContents,

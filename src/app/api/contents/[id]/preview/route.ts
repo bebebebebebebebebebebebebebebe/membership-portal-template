@@ -1,4 +1,4 @@
-import { getPublicContentPreview } from "@/features/contents/server/content-read-service";
+import { getPublicContentPreview } from "@/features/contents/server/content-read-queries";
 
 type ContentPreviewRouteContext = {
   params: Promise<{ id: string }>;

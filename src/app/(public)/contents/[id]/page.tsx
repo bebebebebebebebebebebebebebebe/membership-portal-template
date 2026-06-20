@@ -8,7 +8,7 @@ import { ContentRouteGuardSlot } from "@/features/contents/components/detail/con
 import {
   getPrerenderableContentIds,
   getPublicContentMetadata,
-} from "@/features/contents/server/content-read-service";
+} from "@/features/contents/server/content-read-queries";
 
 type ContentDetailPageParams = { params: Promise<{ id: string }> };
 

@@ -1,5 +1,5 @@
 import { getContentViewer } from "@/features/contents/server/content-viewer";
-import { getAuthorizedContentDetail } from "@/features/contents/server/content-read-service";
+import { getAuthorizedContentDetail } from "@/features/contents/server/content-read-queries";
 
 type ContentDetailRouteContext = {
   params: Promise<{ id: string }>;

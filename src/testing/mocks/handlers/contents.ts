@@ -7,7 +7,7 @@ import {
   getPublicContentMetadata,
   getPublicContentPreview,
   getPublicRelatedContents,
-} from "@/features/contents/server/content-read-service";
+} from "@/features/contents/server/content-read-queries";
 import { getContentViewer } from "@/features/contents/server/content-viewer";
 
 /**

@@ -5,7 +5,7 @@ import {
   getContentCatalogItems,
   getPrerenderableContentIds,
   getPublicContentMetadata,
-} from "@/features/contents/server/content-read-service";
+} from "@/features/contents/server/content-read-queries";
 import type { ContentViewer } from "@/features/contents/types/content-viewer";
 
 const anonymousViewer: ContentViewer = {

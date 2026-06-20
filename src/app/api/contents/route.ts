@@ -1,4 +1,4 @@
-import { getContentCatalogItems } from "@/features/contents/server/content-read-service";
+import { getContentCatalogItems } from "@/features/contents/server/content-read-queries";
 
 /**
  * コンテンツカタログ API。
