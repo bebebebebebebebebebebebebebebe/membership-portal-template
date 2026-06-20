@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
  * 単品購入を含む閲覧条件。`purchaseRequired` と `planOrPurchase` だけを受け取り、
  * 価格解決に使う `productId` を必ず持つことを型で保証する。
  */
-type PurchasePolicy = Extract<
+export type PurchasePolicy = Extract<
   ContentAccessPolicy,
   { kind: "purchaseRequired" | "planOrPurchase" }
 >;

@@ -52,13 +52,16 @@
 
 ### 2-5. 利用可能な scripts
 
-`package.json` で確認できる scripts は次の 7 つです。`e2e` は現時点では定義されていません。
+`package.json` で確認できる scripts は次の 10 個です。`e2e` は現時点では定義されていません。
 
 ```bash
 pnpm run dev
 pnpm run build
 pnpm run start
 pnpm run lint
+pnpm run docs:api
+pnpm run docs:api:check
+pnpm run docs:api:serve
 pnpm run typecheck
 pnpm run test
 pnpm run test:watch

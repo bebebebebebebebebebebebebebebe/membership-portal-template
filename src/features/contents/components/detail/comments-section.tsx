@@ -35,7 +35,7 @@ function CommentItem({ comment }: { comment: ArticleComment }) {
   );
 }
 
-type CommentsSectionProps = {
+export type CommentsSectionProps = {
   comments: ArticleComment[];
   currentUser: AuthUser | null;
 };
@@ -48,13 +48,11 @@ type CommentsSectionProps = {
  * 投稿欄はログイン済みユーザー前提のため、非会員（`currentUser` が `null`）には
  * 入力欄を出さずログイン誘導を表示する。コメント一覧の表示は認証状態に依存しない。
  *
- * @param comments - 表示するコメント一覧
- * @param currentUser - コメント入力欄に表示する認証済みユーザー。非会員では `null`
+ * @param props - 表示するコメント一覧と、投稿欄に表示する認証済みユーザー。
  */
-export function CommentsSection({
-  comments,
-  currentUser,
-}: CommentsSectionProps) {
+export function CommentsSection(props: CommentsSectionProps) {
+  const { comments, currentUser } = props;
+
   return (
     <section className="flex flex-col gap-4">
       <h2 className="text-xl font-bold tracking-tight">

@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/card";
 
 /** 閲覧不可（denied）の理由。`canViewContent()` の decision から渡される。 */
-type DeniedReason = Extract<
+export type DeniedReason = Extract<
   ContentAccessDecision,
   { allowed: false }
 >["reason"];
@@ -110,15 +110,10 @@ async function GateActions({
  * full body は一切受け取らない。denied 理由に応じた説明と CTA を提示し、ログイン・プラン・
  * 購入のいずれかへ誘導する。preview は存在するときだけ概要セクションを描画する。
  *
- * @param content - 対象コンテンツのメタデータ
- * @param preview - 認可前に表示可能な概要（任意）
- * @param reason - `canViewContent()` が返した denied 理由
+ * @param props - 対象コンテンツのメタデータ、認可前 preview、denied 理由。
  */
-export async function ContentAccessGate({
-  content,
-  preview,
-  reason,
-}: ContentAccessGateProps) {
+export async function ContentAccessGate(props: ContentAccessGateProps) {
+  const { content, preview, reason } = props;
   const copy = deniedCopy[reason];
   const actions = await GateActions({ reason, policy: content.accessPolicy });
 

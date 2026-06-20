@@ -119,6 +119,7 @@ const eslintConfig = defineConfig([
     ".next/**",
     "out/**",
     "build/**",
+    "docs/code-reference/**",
     "next-env.d.ts",
     "public/mockServiceWorker.js",
     ".agents/**",

@@ -52,7 +52,7 @@ function RelatedMeta({ content }: { content: Content }) {
 /**
  * 関連コンテンツ用のコンパクトカード。
  *
- * 一覧の {@link ContentCard} と異なり説明文・「詳細を見る」ボタンを持たず、
+ * 一覧の ContentCard と異なり説明文・「詳細を見る」ボタンを持たず、
  * サムネ（種別バッジ＋ブックマーク）・タイトル・種別別メタのみで構成する。
  */
 export function RelatedContentCard({ content }: { content: Content }) {
