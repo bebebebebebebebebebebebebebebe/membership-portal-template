@@ -27,7 +27,7 @@ function getContentIdFromPathname(pathname: string): string | null {
  * `/contents` 一覧は Public Zone の公開カタログなので対象に含めない。
  * `/contents/[id]` は Proxy 用 manifest に登録された ID だけを保護対象にする。
  *
- * @param pathname 判定対象の URL path。
+ * @param pathname - 判定対象の URL path。
  * @returns ログイン必須 route なら `true`。
  */
 export function isMemberProtectedRoute(pathname: string): boolean {

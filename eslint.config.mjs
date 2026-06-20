@@ -2,6 +2,7 @@ import { existsSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { defineConfig, globalIgnores } from "eslint/config";
 import importPlugin from "eslint-plugin-import";
+import tsdocPlugin from "eslint-plugin-tsdoc";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 
@@ -57,6 +58,7 @@ const eslintConfig = defineConfig([
     files: ["src/**/*.{ts,tsx}"],
     plugins: {
       import: importPlugin,
+      tsdoc: tsdocPlugin,
     },
     settings: {
       "import/resolver": {
@@ -98,6 +100,7 @@ const eslintConfig = defineConfig([
           ],
         },
       ],
+      "tsdoc/syntax": "error",
     },
   },
   {

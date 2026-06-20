@@ -11,7 +11,7 @@ import { isMemberProtectedRoute } from "@/lib/auth/protected-routes";
  * Proxy では軽量な optimistic check だけを行い、最終的な認可判断は Server Component
  * や data source 近くの guard に委ねる。
  *
- * @param request Next.js Proxy request。
+ * @param request - Next.js Proxy request。
  * @returns redirect または通常継続の response。
  */
 export function proxy(request: NextRequest) {

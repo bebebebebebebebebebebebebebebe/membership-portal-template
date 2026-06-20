@@ -15,8 +15,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 /**
  * Server Component から渡された認証ユーザー DTO を Client Component に共有する。
  *
- * @param props.initialUser server-side auth service で解決済みのユーザー。
- * @param props.children 認証表示 state を参照する subtree。
+ * @param props - `initialUser` は server-side auth service で解決済みのユーザー、`children` は認証表示 state を参照する subtree。
  * @returns 認証表示 state を提供する context provider。
  */
 export function AuthProvider({

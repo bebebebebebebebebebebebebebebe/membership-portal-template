@@ -35,7 +35,7 @@ export class ForbiddenError extends Error {
 /**
  * 認証済みユーザーを要求する。
  *
- * @param user 検証対象の認証ユーザー
+ * @param user - 検証対象の認証ユーザー
  * @returns 認証済みユーザー
  * @throws UnauthorizedError `user` が `null` の場合
  */
@@ -50,8 +50,8 @@ export function requireAuthenticatedUser(user: AuthUser | null): AuthUser {
 /**
  * 指定ロールを持つ認証済みユーザーを要求する。
  *
- * @param user 検証対象の認証ユーザー
- * @param role 要求するロール
+ * @param user - 検証対象の認証ユーザー
+ * @param role - 要求するロール
  * @returns 要求ロールを持つ認証済みユーザー
  * @throws UnauthorizedError `user` が `null` の場合
  * @throws ForbiddenError `user.role` が要求ロールと一致しない場合
@@ -69,7 +69,7 @@ export function requireRole(user: AuthUser | null, role: UserRole): AuthUser {
 /**
  * Admin Zone 用に管理者ロールを要求する。
  *
- * @param user 検証対象の認証ユーザー
+ * @param user - 検証対象の認証ユーザー
  * @returns `admin` ロールを持つ認証済みユーザー
  * @throws UnauthorizedError `user` が `null` の場合
  * @throws ForbiddenError `user.role` が `admin` ではない場合
@@ -99,7 +99,7 @@ export async function requireCurrentUser(): Promise<AuthUser> {
  * 未ログイン時は login route に復帰先を付けて遷移する。Member layout などの
  * route guard から利用する。
  *
- * @param options.nextPath ログイン後に戻す Member route path。
+ * @param options - `nextPath` はログイン後に戻す Member route path。
  * @returns 認証済みユーザー。
  */
 export async function requireCurrentUserForRoute({
@@ -139,7 +139,7 @@ export async function requireCurrentAdmin(): Promise<AuthUser> {
  * 未ログイン時は login route に復帰先を付けて遷移し、非 admin ユーザーは安定した
  * `/forbidden` route へ遷移する。Admin layout などの route guard から利用する。
  *
- * @param options.nextPath ログイン後に戻す Admin route path。
+ * @param options - `nextPath` はログイン後に戻す Admin route path。
  * @returns `admin` ロールを持つ認証済みユーザー。
  */
 export async function requireCurrentAdminForRoute({

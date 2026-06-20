@@ -8,7 +8,7 @@ import { fetchOptionalJson } from "@/lib/api/fetch-json";
  * 通った場合だけ返る。存在しない場合は `undefined`、閲覧不可の場合は
  * fetch error として呼び出し側に伝播する。
  *
- * @param id 一覧コンテンツの id。
+ * @param id - 一覧コンテンツの id。
  * @returns 記事詳細データ。存在しなければ `undefined`。
  */
 export async function getContentDetail(

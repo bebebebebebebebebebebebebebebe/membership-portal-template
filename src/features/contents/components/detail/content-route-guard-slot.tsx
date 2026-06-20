@@ -12,8 +12,8 @@ import { createLoginRedirectPath } from "@/lib/auth/auth-redirect";
  * Proxy の早期 redirect を通過しても、Server Component 側で viewer を取得して
  * `routeAccessPolicy` を再確認する。
  *
- * @param id コンテンツ ID。
- * @param content 認可前に取得済みの記事 metadata。
+ * @param id - コンテンツ ID。
+ * @param content - 認可前に取得済みの記事 metadata。
  * @returns route access 通過後の personalized content。
  */
 export async function ContentRouteGuardSlot({

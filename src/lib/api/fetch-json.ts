@@ -3,9 +3,9 @@ import { createApiUrl } from "@/lib/api/api-url";
 /**
  * JSON API が 2xx 以外を返したときのエラー。
  *
- * @param message エラー概要。
- * @param status HTTP status code。
- * @param statusText HTTP status text。
+ * @param message - エラー概要。
+ * @param status - HTTP status code。
+ * @param statusText - HTTP status text。
  */
 export class FetchJsonError extends Error {
   status: number;
@@ -24,8 +24,8 @@ export class FetchJsonError extends Error {
  *
  * 404 を含む非 2xx は `FetchJsonError` として呼び出し側に渡す。
  *
- * @param path `/api` から始まる API path。
- * @param init `fetch` に渡す追加 options。
+ * @param path - `/api` から始まる API path。
+ * @param init - `fetch` に渡す追加 options。
  * @returns JSON として parse したレスポンス。
  * @throws `fetch` 失敗または非 2xx レスポンス。
  */
@@ -60,8 +60,8 @@ export async function fetchJson<T>(
 /**
  * 404 を `undefined` として扱う JSON API helper。
  *
- * @param path `/api` から始まる API path。
- * @param init `fetch` に渡す追加 options。
+ * @param path - `/api` から始まる API path。
+ * @param init - `fetch` に渡す追加 options。
  * @returns JSON として parse したレスポンス。404 の場合は `undefined`。
  * @throws 404 以外の非 2xx レスポンス。
  */

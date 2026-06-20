@@ -7,8 +7,8 @@ type RelatedContentsRouteContext = {
 /**
  * 関連コンテンツ API。
  *
- * @param request `limit` query を含み得る HTTP request。
- * @param context dynamic segment の params。
+ * @param request - `limit` query を含み得る HTTP request。
+ * @param context - dynamic segment の params。
  * @returns 一覧掲載対象に限定した関連コンテンツ。
  */
 export async function GET(

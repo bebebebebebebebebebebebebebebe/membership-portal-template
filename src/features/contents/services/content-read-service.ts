@@ -47,7 +47,7 @@ export type ContentReadService = {
   /**
    * URL 到達可能な content metadata を返す。
    *
-   * @param id コンテンツ ID。
+   * @param id - コンテンツ ID。
    * @returns 公開到達可能な metadata。到達不可・不在は `undefined`。
    */
   getPublicContentMetadata(id: string): Promise<Content | undefined>;
@@ -55,7 +55,7 @@ export type ContentReadService = {
   /**
    * 閲覧不可状態でも表示できる preview を返す。
    *
-   * @param id コンテンツ ID。
+   * @param id - コンテンツ ID。
    * @returns metadata 由来の安全な preview。到達不可・不在は `undefined`。
    */
   getPublicContentPreview(id: string): Promise<ContentPreview | undefined>;
@@ -63,8 +63,8 @@ export type ContentReadService = {
   /**
    * 関連コンテンツを返す。
    *
-   * @param id 現在表示中のコンテンツ ID。
-   * @param limit 返却件数の上限。
+   * @param id - 現在表示中のコンテンツ ID。
+   * @param limit - 返却件数の上限。
    * @returns published かつ listed に限定した関連コンテンツ一覧。
    */
   getPublicRelatedContents(id: string, limit?: number): Promise<Content[]>;
@@ -72,7 +72,7 @@ export type ContentReadService = {
   /**
    * productId に対応する販売オファーを返す。
    *
-   * @param productId 販売対象 ID。
+   * @param productId - 販売対象 ID。
    * @returns 価格・販売可否を含む offer。存在しない場合は `undefined`。
    */
   getProductOffer(productId: string): Promise<ProductOffer | undefined>;
@@ -80,8 +80,8 @@ export type ContentReadService = {
   /**
    * viewer の閲覧権限を確認したうえで full detail を取得する。
    *
-   * @param id コンテンツ ID。
-   * @param viewer 認可判定用の閲覧者状態。
+   * @param id - コンテンツ ID。
+   * @param viewer - 認可判定用の閲覧者状態。
    * @returns full detail 取得の認可結果。
    */
   getAuthorizedContentDetail(
@@ -106,7 +106,7 @@ function getProductIdForAccess(policy: Content["accessPolicy"]): string | null {
  * repository 実装を mock / DB / external API に差し替えても、公開判定・認可判定・HTTP 境界の
  * 呼び出し contract を維持する。
  *
- * @param repository raw data access を担当する repository。
+ * @param repository - raw data access を担当する repository。
  * @returns contents read use case 群。
  */
 export function createContentReadService(

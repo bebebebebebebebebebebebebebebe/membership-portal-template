@@ -10,8 +10,8 @@ import { SiteHeader } from "./site-header";
  * layout の static shell から切り離し、`<Suspense>` 内で stream する。Proxy の早期 redirect を
  * 通過しても、ここで最終的に認証を再確認する。
  *
- * @param nextPath 未ログイン時の login redirect 後に戻すパス。
- * @param children Member Zone の各ページ本文。
+ * @param nextPath - 未ログイン時の login redirect 後に戻すパス。
+ * @param children - Member Zone の各ページ本文。
  */
 export async function MemberAuthSlot({
   nextPath,

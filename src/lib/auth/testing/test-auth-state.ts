@@ -10,7 +10,7 @@ let currentTestAuthState: AuthState = anonymousAuthState;
 /**
  * Vitest 内で現在の認証状態を明示的に差し替える。
  *
- * @param state テスト対象へ返したい AuthState。
+ * @param state - テスト対象へ返したい AuthState。
  */
 export function setTestAuthState(state: AuthState): void {
   currentTestAuthState = state;

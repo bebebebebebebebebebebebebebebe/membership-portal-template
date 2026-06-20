@@ -7,7 +7,7 @@ import { fetchOptionalJson } from "@/lib/api/fetch-json";
  * full body や comments などの詳細データには触れず、HTTP API 境界から
  * metadata 由来の説明文だけを受け取る。
  *
- * @param id 取得対象のコンテンツ ID。
+ * @param id - 取得対象のコンテンツ ID。
  * @returns gate 表示用の概要。存在しない場合は undefined。
  */
 export async function getContentPreview(

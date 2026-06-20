@@ -68,8 +68,8 @@ const memberNavTitleByPath = new Map(
 /**
  * pathname がナビ項目の active 条件に一致するかを返す。
  *
- * @param pathname 現在の URL pathname
- * @param item 判定対象の Member Zone ナビ項目
+ * @param pathname - 現在の URL pathname
+ * @param item - 判定対象の Member Zone ナビ項目
  * @returns 完全一致、または segment 境界を保った prefix 一致なら true。
  */
 export function isMemberNavItemActive(
@@ -88,7 +88,7 @@ export function isMemberNavItemActive(
 /**
  * pathname に対応する Member Zone のページタイトルを返す。
  *
- * @param pathname 現在の URL pathname
+ * @param pathname - 現在の URL pathname
  * @returns ナビ定義に一致するタイトル。一致しない場合は "Member Zone"。
  */
 export function getMemberNavTitle(pathname: string): string {

@@ -23,8 +23,8 @@ export type ContentAccessDecision =
 /**
  * コンテンツ単位の閲覧可否を判定する。
  *
- * @param policy コンテンツに設定された閲覧条件。
- * @param viewer サーバー側で導出した閲覧者状態。
+ * @param policy - コンテンツに設定された閲覧条件。
+ * @param viewer - サーバー側で導出した閲覧者状態。
  * @returns 閲覧可否と、UI 分岐で使う理由。
  */
 export function canViewContent(

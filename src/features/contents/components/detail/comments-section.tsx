@@ -48,8 +48,8 @@ type CommentsSectionProps = {
  * 投稿欄はログイン済みユーザー前提のため、非会員（`currentUser` が `null`）には
  * 入力欄を出さずログイン誘導を表示する。コメント一覧の表示は認証状態に依存しない。
  *
- * @param comments 表示するコメント一覧
- * @param currentUser コメント入力欄に表示する認証済みユーザー。非会員では `null`
+ * @param comments - 表示するコメント一覧
+ * @param currentUser - コメント入力欄に表示する認証済みユーザー。非会員では `null`
  */
 export function CommentsSection({
   comments,

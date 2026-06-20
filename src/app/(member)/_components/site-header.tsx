@@ -52,7 +52,7 @@ type SiteHeaderProps = {
  * 現在ページ名は現在パス（usePathname）からナビ定義を引いて決定するため、
  * Member Zone のどのページに置いても同じ認証ユーザー表示で動作する。
  *
- * @param user ヘッダーに表示する認証済みユーザー
+ * @param user - ヘッダーに表示する認証済みユーザー
  */
 export function SiteHeader({ user }: SiteHeaderProps) {
   const pathname = usePathname();

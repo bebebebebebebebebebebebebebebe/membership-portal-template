@@ -11,8 +11,8 @@ type ContentDetailRouteContext = {
  * full body は閲覧条件を満たした場合だけ返す。metadata が非公開、または detail
  * が存在しない場合は 404、閲覧条件を満たさない場合は 403 を返す。
  *
- * @param _request 利用しない HTTP request。
- * @param context dynamic segment の params。
+ * @param _request - 利用しない HTTP request。
+ * @param context - dynamic segment の params。
  * @returns 認可済みの full detail。
  */
 export async function GET(

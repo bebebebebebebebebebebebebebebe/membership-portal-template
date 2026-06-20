@@ -7,7 +7,7 @@ import type { NextRequest } from "next/server";
  * DB、外部 API、Route Handler は呼ばない。最終的な認可は Server Component や
  * data source 近くの guard が担う。
  *
- * @param request Proxy に渡された Next.js request。
+ * @param request - Proxy に渡された Next.js request。
  * @returns Proxy 時点で認証済みと見なせる場合は `true`。
  */
 export function isAuthenticatedByProxy(request: NextRequest): boolean {

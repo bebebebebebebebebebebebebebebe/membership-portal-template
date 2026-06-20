@@ -71,7 +71,7 @@ const scenarioStates = {
 /**
  * 指定 scenario の AuthState を返す mock auth service を作成する。
  *
- * @param scenario 開発・デモ用に固定する認証シナリオ。
+ * @param scenario - 開発・デモ用に固定する認証シナリオ。
  * @returns provider 非依存の AuthService 実装。
  */
 export function createMockAuthService(scenario: AuthScenario): AuthService {

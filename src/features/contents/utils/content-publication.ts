@@ -7,7 +7,7 @@ import type { Content } from "@/features/contents/types/content";
  * 別概念なので両方を満たすものだけを掲載対象とする。draft / scheduled / archived や
  * unlisted / hidden は URL 直アクセスで扱い、一覧には出さない。
  *
- * @param content 判定対象のコンテンツ
+ * @param content - 判定対象のコンテンツ
  * @returns published かつ listed のとき true
  */
 export function isListedPublishedContent(content: Content): boolean {
@@ -25,7 +25,7 @@ export function isListedPublishedContent(content: Content): boolean {
  * archived や hidden は直アクセスでも `notFound()` に落とせる。本文の閲覧可否
  * （accessPolicy 判定）はこの後段の Content Gate が別途扱う。
  *
- * @param content 判定対象のコンテンツメタデータ
+ * @param content - 判定対象のコンテンツメタデータ
  * @returns published かつ discoverability が hidden でないとき true
  */
 export function isPubliclyAccessibleContentMetadata(content: Content): boolean {

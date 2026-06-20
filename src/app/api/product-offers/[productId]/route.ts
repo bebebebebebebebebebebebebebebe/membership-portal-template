@@ -7,8 +7,8 @@ type ProductOfferRouteContext = {
 /**
  * 販売オファー API。
  *
- * @param _request 利用しない HTTP request。
- * @param context dynamic segment の params。
+ * @param _request - 利用しない HTTP request。
+ * @param context - dynamic segment の params。
  * @returns 価格や販売可否を含む販売情報。
  */
 export async function GET(

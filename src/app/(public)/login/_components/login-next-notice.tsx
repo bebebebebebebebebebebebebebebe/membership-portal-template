@@ -7,7 +7,7 @@ import { normalizeInternalNextPath } from "@/lib/auth/auth-redirect";
  * `<Suspense>` 内のこの Server Component に隔離する。値は `normalizeInternalNextPath`
  * で内部パスへ正規化し、open redirect を避ける。
  *
- * @param searchParams 未解決の検索パラメータ Promise（page 本体では await しない）。
+ * @param searchParams - 未解決の検索パラメータ Promise（page 本体では await しない）。
  */
 export async function LoginNextNotice({
   searchParams,

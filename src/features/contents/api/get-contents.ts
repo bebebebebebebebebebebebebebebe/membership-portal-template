@@ -15,7 +15,7 @@ export async function getContents(): Promise<Content[]> {
 /**
  * id に一致するコンテンツ metadata を取得する。
  *
- * @param id コンテンツ id。
+ * @param id - コンテンツ id。
  * @returns 一致するコンテンツ。存在しなければ `undefined`。
  */
 export async function getContentById(id: string): Promise<Content | undefined> {
@@ -27,8 +27,8 @@ export async function getContentById(id: string): Promise<Content | undefined> {
 /**
  * 指定 id を除外した関連コンテンツを取得する。
  *
- * @param id 現在表示中のコンテンツ id。
- * @param limit 返却件数の上限。
+ * @param id - 現在表示中のコンテンツ id。
+ * @param limit - 返却件数の上限。
  * @returns 関連コンテンツ一覧。
  */
 export async function getRelatedContents(

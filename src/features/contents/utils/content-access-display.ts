@@ -20,7 +20,7 @@ export type ContentActionDisplay = {
 /**
  * 販売オファーの価格を日本語表記の金額文字列に整形する。
  *
- * @param offer 価格を持つ販売オファー
+ * @param offer - 価格を持つ販売オファー
  * @returns 例: `1,980円`
  */
 export function formatPrice(offer: ProductOffer): string {
@@ -48,8 +48,8 @@ const contentPrimaryActionLabels: Record<ContentAccessKind, string> = {
  * 「有料プラン」とだけ示し、プラン加入要否の出し分けは詳細ページ/gate に委ねる。
  * category には依存しない。
  *
- * @param policy 対象コンテンツの閲覧条件
- * @param offer purchaseRequired / planOrPurchase の場合の販売オファー（価格表示に使用）
+ * @param policy - 対象コンテンツの閲覧条件
+ * @param offer - purchaseRequired / planOrPurchase の場合の販売オファー（価格表示に使用）
  * @returns 閲覧条件行の文言（出さないときは `null`）と CTA 文言
  */
 export function getContentActionDisplay(

@@ -39,8 +39,8 @@ function nodePosition(index: number, total: number) {
  * 各ステップをアイコン付きノードとして円周上に等間隔配置し、中央にサイクル名を置く。
  * 背景の点線円が循環（継続的な改善）を示す。デザイン原稿の配置を近似再現する装飾要素。
  *
- * @param steps 円環に並べるステップ（先頭から時計回り）
- * @param centerLabel 中央に表示するサイクル名
+ * @param steps - 円環に並べるステップ（先頭から時計回り）
+ * @param centerLabel - 中央に表示するサイクル名
  */
 export function StepCycleDiagram({
   steps,

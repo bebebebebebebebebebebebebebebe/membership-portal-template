@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
  * `children` を持つ項目は番号付きサブ項目をインデント表示する。先頭項目を
  * アクティブ色（ティール）で強調し、現在位置の目安とする（静的表現）。
  *
- * @param items 目次項目（本文セクションの id と対応）
+ * @param items - 目次項目（本文セクションの id と対応）
  */
 export function ArticleToc({ items }: { items: TocItem[] }) {
   return (

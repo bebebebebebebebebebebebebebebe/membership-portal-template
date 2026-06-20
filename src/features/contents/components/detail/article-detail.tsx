@@ -22,10 +22,10 @@ import { ShareActionsCard } from "@/features/contents/components/detail/share-ac
  * 全幅の関連コンテンツ → コメント、の順に縦積みする。Member Zone 共通レイアウトの
  * `main` 内に配置される前提の静的 UI。
  *
- * @param content 記事の一覧用基本データ（タイトル・著者・サムネ・タグ等）
- * @param detail 記事の本文・統計・目次・コメント
- * @param related 関連コンテンツ（現在記事を除外済み）
- * @param currentUser コメント入力欄に表示する認証済みユーザー。非会員（free 閲覧）では `null`
+ * @param content - 記事の一覧用基本データ（タイトル・著者・サムネ・タグ等）
+ * @param detail - 記事の本文・統計・目次・コメント
+ * @param related - 関連コンテンツ（現在記事を除外済み）
+ * @param currentUser - コメント入力欄に表示する認証済みユーザー。非会員（free 閲覧）では `null`
  */
 export function ArticleDetail({
   content,

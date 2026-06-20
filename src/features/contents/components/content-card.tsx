@@ -107,9 +107,9 @@ export type ContentCardImageLoading = "eager" | "lazy";
 /**
  * コンテンツ一覧カードの入力。
  *
- * @param content 表示するコンテンツ本文・メタ情報
- * @param offer 価格表示に使う解決済み販売 offer（不要な kind では undefined）
- * @param imageLoading 初期表示内の LCP 候補だけ即時読み込みするための画像読み込み方針
+ * @param content - 表示するコンテンツ本文・メタ情報
+ * @param offer - 価格表示に使う解決済み販売 offer（不要な kind では undefined）
+ * @param imageLoading - 初期表示内の LCP 候補だけ即時読み込みするための画像読み込み方針
  */
 export type ContentCardProps = {
   content: Content;

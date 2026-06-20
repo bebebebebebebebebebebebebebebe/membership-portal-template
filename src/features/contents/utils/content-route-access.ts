@@ -11,8 +11,8 @@ export type ContentRouteAccessDecision =
  *
  * 本文の閲覧可否や購入状態は見ず、匿名か認証済みかだけで判定する。
  *
- * @param policy コンテンツ詳細 URL の到達条件。
- * @param user 現在の認証済みユーザー。匿名の場合は `null`。
+ * @param policy - コンテンツ詳細 URL の到達条件。
+ * @param user - 現在の認証済みユーザー。匿名の場合は `null`。
  * @returns URL への到達可否と、その理由。
  */
 export function canAccessContentRoute(

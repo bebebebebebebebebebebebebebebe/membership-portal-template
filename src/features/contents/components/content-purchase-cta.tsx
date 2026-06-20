@@ -26,7 +26,7 @@ export type ContentPurchaseCtaProps = {
  * 将来の checkout route へ差し替えやすいよう `/contents/purchase/[productId]` を指す。
  * オファーが見つからない場合は価格なしの汎用文言にフォールバックする。
  *
- * @param policy 単品購入を含む閲覧条件
+ * @param policy - 単品購入を含む閲覧条件
  */
 export async function ContentPurchaseCta({ policy }: ContentPurchaseCtaProps) {
   const offer = await getProductOffer(policy.productId);

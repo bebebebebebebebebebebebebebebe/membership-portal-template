@@ -5,7 +5,7 @@ import type { ContentCatalogItem } from "@/features/contents/types/content-catal
  * コンテンツカードのレスポンシブグリッド。
  * モバイル 1 列 / タブレット 2 列 / デスクトップ 3 列の 3 ブレークポイント。
  *
- * @param items 価格 offer を解決済みのカタログ項目（カード側で追加取得しない）
+ * @param items - 価格 offer を解決済みのカタログ項目（カード側で追加取得しない）
  */
 export function ContentGrid({ items }: { items: ContentCatalogItem[] }) {
   return (

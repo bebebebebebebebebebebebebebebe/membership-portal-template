@@ -30,11 +30,11 @@ function StepListItem({
 
 /**
  * 記事本文。要点コールアウト → 本文セクション（任意でポイントコールアウト）→
- * 「{stepsHeading}」ブロック（番号付きリスト＋サイクル図）→ まとめ、の順に縦積みする。
+ * `stepsHeading` ブロック（番号付きリスト＋サイクル図）→ まとめ、の順に縦積みする。
  *
  * 各セクションには目次アンカー用の `id` を付与し、右レールの目次から遷移できるようにする。
  *
- * @param detail 記事詳細データ（本文・ステップ・まとめ・目次を含む）
+ * @param detail - 記事詳細データ（本文・ステップ・まとめ・目次を含む）
  */
 export function ArticleBody({ detail }: { detail: ContentDetail }) {
   const stepsHeading =

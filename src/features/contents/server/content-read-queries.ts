@@ -48,7 +48,7 @@ export const getPrerenderableContentIds = cache(async (): Promise<string[]> => {
  * unlisted-published も URL 解決可能にするため repository の raw metadata を起点にし、
  * hidden / 未公開は content read service で除外する。
  *
- * @param id コンテンツ ID。
+ * @param id - コンテンツ ID。
  * @returns 公開到達可能な metadata。到達不可・不在は `undefined`。
  */
 export const getPublicContentMetadata = cache(
@@ -60,7 +60,7 @@ export const getPublicContentMetadata = cache(
 /**
  * 閲覧不可状態でも表示できる preview を返す。
  *
- * @param id コンテンツ ID。
+ * @param id - コンテンツ ID。
  * @returns metadata 由来の安全な preview。到達不可・不在は `undefined`。
  */
 export const getPublicContentPreview = cache(
@@ -72,8 +72,8 @@ export const getPublicContentPreview = cache(
 /**
  * 関連コンテンツを返す。
  *
- * @param id 現在表示中のコンテンツ ID。
- * @param limit 返却件数の上限。
+ * @param id - 現在表示中のコンテンツ ID。
+ * @param limit - 返却件数の上限。
  * @returns published かつ listed に限定した関連コンテンツ一覧。
  */
 export const getPublicRelatedContents = cache(
@@ -85,7 +85,7 @@ export const getPublicRelatedContents = cache(
 /**
  * productId に対応する販売オファーを返す。
  *
- * @param productId 販売対象 ID。
+ * @param productId - 販売対象 ID。
  * @returns 価格・販売可否を含む offer。存在しない場合は `undefined`。
  */
 export const getProductOffer = cache(
@@ -100,8 +100,8 @@ export const getProductOffer = cache(
  * full body は認可済みの場合だけ取得する。viewer 依存のため永続 cache せず、
  * request-time の認可処理として application service へ委譲する。
  *
- * @param id コンテンツ ID。
- * @param viewer 認可判定用の閲覧者状態。
+ * @param id - コンテンツ ID。
+ * @param viewer - 認可判定用の閲覧者状態。
  * @returns full detail 取得の認可結果。
  */
 export async function getAuthorizedContentDetail(

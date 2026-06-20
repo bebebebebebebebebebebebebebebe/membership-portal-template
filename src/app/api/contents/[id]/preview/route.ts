@@ -7,8 +7,8 @@ type ContentPreviewRouteContext = {
 /**
  * コンテンツ preview API。
  *
- * @param _request 利用しない HTTP request。
- * @param context dynamic segment の params。
+ * @param _request - 利用しない HTTP request。
+ * @param context - dynamic segment の params。
  * @returns 認可前に表示可能な preview。
  */
 export async function GET(

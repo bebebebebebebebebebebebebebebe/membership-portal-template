@@ -17,9 +17,9 @@ import { canViewContent } from "@/features/contents/utils/content-access";
  * full body は accessPolicy allowed のときだけ `getAuthorizedContentDetail` で取得し、
  * denied や認可 forbidden では本文を取得せず Content Gate（preview のみ）を返す。
  *
- * @param id コンテンツ ID。
- * @param content 認可前に取得済みの記事 metadata。
- * @param viewer route guard を通過した閲覧者状態。
+ * @param id - コンテンツ ID。
+ * @param content - 認可前に取得済みの記事 metadata。
+ * @param viewer - route guard を通過した閲覧者状態。
  * @returns 本文詳細、または本文を含まない Content Gate。
  */
 export async function PersonalizedContentAccess({

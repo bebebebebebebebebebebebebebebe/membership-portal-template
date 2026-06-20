@@ -6,7 +6,7 @@ const DEFAULT_MEMBER_AFTER_LOGIN_PATH = "/dashboard";
  * 外部 URL や protocol-relative URL は open redirect につながるため、既定の
  * Member Zone 入口にフォールバックする。
  *
- * @param value 検証対象の next path。
+ * @param value - 検証対象の next path。
  * @returns 内部遷移として安全に扱える path。
  */
 export function normalizeInternalNextPath(
@@ -22,7 +22,7 @@ export function normalizeInternalNextPath(
 /**
  * login route への redirect path を生成する。
  *
- * @param nextPath login 後に戻したい内部 path。
+ * @param nextPath - login 後に戻したい内部 path。
  * @returns URL encode 済みの `next` を含む login path。
  */
 export function createLoginRedirectPath(nextPath: string): string {

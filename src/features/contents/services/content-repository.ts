@@ -19,7 +19,7 @@ export type ContentRepository = {
   /**
    * id に一致するコンテンツ metadata を返す。
    *
-   * @param id コンテンツ ID。
+   * @param id - コンテンツ ID。
    * @returns 公開判定前の metadata。存在しない場合は `undefined`。
    */
   findContentById(id: string): Promise<Content | undefined>;
@@ -27,7 +27,7 @@ export type ContentRepository = {
   /**
    * id に一致する full detail を返す。
    *
-   * @param id コンテンツ ID。
+   * @param id - コンテンツ ID。
    * @returns 本文・コメントを含む詳細。存在しない場合は `undefined`。
    */
   findContentDetailById(id: string): Promise<ContentDetail | undefined>;
@@ -35,7 +35,7 @@ export type ContentRepository = {
   /**
    * productId に対応する販売オファーを返す。
    *
-   * @param productId 販売対象 ID。
+   * @param productId - 販売対象 ID。
    * @returns 価格・販売可否を含む offer。存在しない場合は `undefined`。
    */
   findProductOfferById(productId: string): Promise<ProductOffer | undefined>;

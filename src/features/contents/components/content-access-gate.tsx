@@ -110,9 +110,9 @@ async function GateActions({
  * full body は一切受け取らない。denied 理由に応じた説明と CTA を提示し、ログイン・プラン・
  * 購入のいずれかへ誘導する。preview は存在するときだけ概要セクションを描画する。
  *
- * @param content 対象コンテンツのメタデータ
- * @param preview 認可前に表示可能な概要（任意）
- * @param reason `canViewContent()` が返した denied 理由
+ * @param content - 対象コンテンツのメタデータ
+ * @param preview - 認可前に表示可能な概要（任意）
+ * @param reason - `canViewContent()` が返した denied 理由
  */
 export async function ContentAccessGate({
   content,

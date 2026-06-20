@@ -15,8 +15,8 @@ import { Button } from "@/components/ui/button";
  * policy だけでなく content 全体を受け取るのは、id（CTA リンク先）など複数フィールドを
  * 使うため。価格は呼び出し側で解決済みの `offer` を受け取り、component からはデータ取得しない。
  *
- * @param content 表示対象コンテンツ
- * @param offer 単品購入を含む kind で解決済みの販売 offer（不要な kind では undefined）
+ * @param content - 表示対象コンテンツ
+ * @param offer - 単品購入を含む kind で解決済みの販売 offer（不要な kind では undefined）
  */
 export type ContentActionFooterProps = {
   content: Content;

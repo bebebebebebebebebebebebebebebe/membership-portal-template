@@ -35,7 +35,7 @@ export function getApiOrigin(): string {
 /**
  * アプリ内 API の絶対 URL を作る。
  *
- * @param path `/api` から始まる API path。
+ * @param path - `/api` から始まる API path。
  * @returns 実行環境に合わせた絶対 URL。
  */
 export function createApiUrl(path: string): string {

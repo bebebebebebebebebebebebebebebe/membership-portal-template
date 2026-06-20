@@ -8,7 +8,7 @@ import { useEffect } from "react";
  * app layer から dev-only に合成される testing support。shared component 層へ
  * testing mocks への依存を持ち込まないよう、MSW 関連の実装を `src/testing` に閉じる。
  *
- * @param children アプリ本体。
+ * @param children - アプリ本体。
  */
 export function MswProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {

@@ -10,7 +10,7 @@ const contentRouteAccessManifest = {
  * Proxy では DB や repository を読まず、この静的 manifest だけで匿名ユーザーの
  * 早期 redirect 可否を判断する。未登録 ID は公開 URL として扱う。
  *
- * @param contentId `/contents/[id]` の content id。
+ * @param contentId - `/contents/[id]` の content id。
  * @returns Proxy で使う URL 到達条件。
  */
 export function getContentRouteAccessKindForProxy(

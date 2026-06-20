@@ -3,7 +3,7 @@ import type { ArticleContent } from "@/features/contents/types/content";
 /**
  * コンテンツ詳細の認可 slot が解決するまで表示する静的 fallback。
  *
- * @param content 認可前に取得済みの記事 metadata。
+ * @param content - 認可前に取得済みの記事 metadata。
  * @returns 本文領域の高さを確保する loading UI。
  */
 export function ContentAccessFallback({ content }: { content: ArticleContent }) {

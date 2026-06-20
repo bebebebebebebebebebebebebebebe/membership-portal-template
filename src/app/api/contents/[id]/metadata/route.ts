@@ -7,8 +7,8 @@ type ContentMetadataRouteContext = {
 /**
  * コンテンツ metadata API。
  *
- * @param _request 利用しない HTTP request。
- * @param context dynamic segment の params。
+ * @param _request - 利用しない HTTP request。
+ * @param context - dynamic segment の params。
  * @returns 認可前に取得可能な metadata。
  */
 export async function GET(

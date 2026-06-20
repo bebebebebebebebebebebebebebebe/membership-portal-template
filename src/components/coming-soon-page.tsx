@@ -38,7 +38,7 @@ export type ComingSoonPageProps = {
 /**
  * 未実装 route に表示する共通 Coming Soon ページ。
  *
- * @param props route 固有の表示文言、実装予定項目、戻り先 CTA。
+ * @param props - route 固有の表示文言、実装予定項目、戻り先 CTA。
  * @returns shadcn/ui の Card と CTA で構成した placeholder UI。
  */
 export function ComingSoonPage({
