@@ -2,7 +2,9 @@ import type {
   ContentAccessKind,
   ContentAccessPolicy,
 } from "@/features/contents/types/content-access";
+import type { ContentViewer } from "@/features/contents/types/content-viewer";
 import type { ProductOffer } from "@/features/contents/types/product-offer";
+import { canViewContent } from "@/features/contents/utils/content-access";
 
 /**
  * 一覧カード下部 action footer の表示モデル。
@@ -93,4 +95,33 @@ export function getContentActionDisplay(
       };
     }
   }
+}
+
+/**
+ * viewer の権限を加味して一覧カード下部 action の表示モデルを導出する。
+ *
+ * `canViewContent()` と同じ本文閲覧判定を使い、閲覧可能な viewer には条件パネルを出さず
+ * 通常の詳細導線だけを表示する。閲覧不可の場合は viewer 非依存の catalog 表示と同じ
+ * 条件・CTA 文言を返し、最終的な本文保護は詳細ページ/API 側の認可に委ねる。
+ *
+ * @param policy - 対象コンテンツの閲覧条件。
+ * @param viewer - サーバー側で正規化済みの閲覧者情報。
+ * @param offer - purchaseRequired / planOrPurchase の場合の販売オファー（価格表示に使用）。
+ * @returns viewer に応じた閲覧条件行の文言（出さないときは `null`）と CTA 文言。
+ */
+export function getPersonalizedContentActionDisplay(
+  policy: ContentAccessPolicy,
+  viewer: ContentViewer,
+  offer?: ProductOffer
+): ContentActionDisplay {
+  const decision = canViewContent(policy, viewer);
+
+  if (decision.allowed) {
+    return {
+      conditionLabel: null,
+      actionLabel: contentPrimaryActionLabels.free,
+    };
+  }
+
+  return getContentActionDisplay(policy, offer);
 }

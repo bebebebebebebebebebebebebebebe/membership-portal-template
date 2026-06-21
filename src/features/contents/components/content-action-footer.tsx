@@ -3,11 +3,16 @@ import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
 import type { Content } from "@/features/contents/types/content";
+import type { ContentViewer } from "@/features/contents/types/content-viewer";
 import type { ProductOffer } from "@/features/contents/types/product-offer";
-import { getContentActionDisplay } from "@/features/contents/utils/content-access-display";
+import {
+  getContentActionDisplay,
+  getPersonalizedContentActionDisplay,
+} from "@/features/contents/utils/content-access-display";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 /**
  * action footer の入力。
@@ -17,10 +22,12 @@ import { Button } from "@/components/ui/button";
  *
  * @param content - 表示対象コンテンツ
  * @param offer - 単品購入を含む kind で解決済みの販売 offer（不要な kind では undefined）
+ * @param viewer - 権限別表示に使う閲覧者情報。未指定時は viewer 非依存の catalog 表示を使う
  */
 export type ContentActionFooterProps = {
   content: Content;
   offer?: ProductOffer;
+  viewer?: ContentViewer;
 };
 
 /**
@@ -31,8 +38,14 @@ export type ContentActionFooterProps = {
  * 本文・footer をすっきりさせる。CTA 色は category / access kind で分岐させず
  * `variant="outline"` に統一する。
  */
-export function ContentActionFooter({ content, offer }: ContentActionFooterProps) {
-  const display = getContentActionDisplay(content.accessPolicy, offer);
+export function ContentActionFooter({
+  content,
+  offer,
+  viewer,
+}: ContentActionFooterProps) {
+  const display = viewer
+    ? getPersonalizedContentActionDisplay(content.accessPolicy, viewer, offer)
+    : getContentActionDisplay(content.accessPolicy, offer);
 
   const hasCondition = Boolean(display.conditionLabel);
 
@@ -68,6 +81,24 @@ export function ContentActionFooter({ content, offer }: ContentActionFooterProps
           <HugeiconsIcon icon={ArrowRight01Icon} data-icon="inline-end" />
         </Link>
       </Button>
+    </div>
+  );
+}
+
+/**
+ * 一覧カード footer の personalized CTA 読み込み中 fallback。
+ *
+ * 認証状態の解決前にログイン・購入・プラン確認などの具体的な行動文言を出さないことで、
+ * viewer 解決後の CTA と矛盾しない静的 skeleton として使う。
+ */
+export function ContentActionFooterFallback() {
+  return (
+    <div
+      className="flex flex-col gap-2"
+      aria-label="閲覧条件とアクションを読み込み中"
+    >
+      <Skeleton className="h-4 w-36" />
+      <Skeleton className="h-10 w-full rounded-md" />
     </div>
   );
 }

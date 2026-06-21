@@ -1,5 +1,13 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const mocks = vi.hoisted(() => ({
+  PersonalizedContentActionFooter: vi.fn(),
+}));
+
+vi.mock("@/features/contents/components/personalized-content-action-footer", () => ({
+  PersonalizedContentActionFooter: mocks.PersonalizedContentActionFooter,
+}));
 
 import { ContentCard } from "@/features/contents/components/content-card";
 import type { Content } from "@/features/contents/types/content";
@@ -24,6 +32,15 @@ function makeContent(accessPolicy: ContentAccessPolicy): Content {
 }
 
 describe("ContentCard", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.PersonalizedContentActionFooter.mockImplementation(
+      ({ content }: { content: Content }) => (
+        <div data-testid="personalized-footer">slot:{content.id}</div>
+      )
+    );
+  });
+
   it("タグは CardContent に表示し、本文側に閲覧条件を残さない", async () => {
     render(
       await ContentCard({
@@ -40,26 +57,37 @@ describe("ContentCard", () => {
     expect(cardContent).not.toHaveTextContent("有料プラン");
   });
 
-  it("閲覧条件と CTA は CardFooter に表示する", async () => {
+  it("閲覧条件と CTA は personalized footer slot に委譲する", async () => {
+    const content = makeContent({
+      kind: "planRequired",
+      requiredPlans: ["premium"],
+    });
+
     render(
       await ContentCard({
-        content: makeContent({ kind: "planRequired", requiredPlans: ["premium"] }),
+        content,
       })
     );
 
     const footer = screen
-      .getByText("閲覧条件")
+      .getByTestId("personalized-footer")
       .closest('[data-slot="card-footer"]');
 
     expect(footer).not.toBeNull();
-    expect(footer).toHaveTextContent("有料プラン加入で閲覧");
-    expect(footer).toHaveTextContent("プランを確認");
+    expect(footer).toHaveTextContent("slot:fixture");
+    expect(mocks.PersonalizedContentActionFooter).toHaveBeenCalledWith(
+      {
+        content,
+        offer: undefined,
+      },
+      undefined
+    );
   });
 
-  it("free は閲覧条件を出さず CTA だけ表示する", async () => {
+  it("カード本体は personalized footer の文言に依存しない", async () => {
     render(await ContentCard({ content: makeContent({ kind: "free" }) }));
 
     expect(screen.queryByText("閲覧条件")).not.toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /詳細を見る/ })).toBeInTheDocument();
+    expect(screen.getByTestId("personalized-footer")).toBeInTheDocument();
   });
 });

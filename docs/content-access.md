@@ -48,6 +48,8 @@ Proxy は [content-route-access-manifest.ts](../src/config/content-route-access-
 
 `ContentAccessGate`（[content-access-gate.tsx](../src/features/contents/components/content-access-gate.tsx)）は denied 理由に応じた説明と CTA（ログイン / プラン確認 / 単品購入）を表示する。単品購入 CTA は `ContentPurchaseCta` が `ProductOffer` 由来の価格で描画する。
 
+`/contents` の一覧カード CTA は `getContentViewer()` で組み立てた viewer と `canViewContent()` を使い、閲覧可能なユーザーには条件パネルを出さず「詳細を見る」を表示する。これは catalog UI の表示最適化であり、本文 full detail の取得可否は引き続き `/contents/[id]` の Server Component と detail API が `accessPolicy` で最終確認する。
+
 ## 5. データ境界
 
 | データ | 取得 API | 認可前に取得してよいか |

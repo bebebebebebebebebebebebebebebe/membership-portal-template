@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Image from "next/image";
 import {
   Bookmark02Icon,
@@ -9,7 +10,8 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
-import { ContentActionFooter } from "@/features/contents/components/content-action-footer";
+import { ContentActionFooterFallback } from "@/features/contents/components/content-action-footer";
+import { PersonalizedContentActionFooter } from "@/features/contents/components/personalized-content-action-footer";
 import { categoryMeta } from "@/features/contents/constants/content-category";
 import type { Content } from "@/features/contents/types/content";
 import type { ProductOffer } from "@/features/contents/types/product-offer";
@@ -122,7 +124,7 @@ export type ContentCardProps = {
  *
  * サムネイル（左上に種別色 Badge、右上にブックマークボタン、資料は形式ラベル）・
  * タイトル・説明・タグ行・種別別フッターで構成する。閲覧条件と CTA は本文から分離し、
- * footer の `ContentActionFooter` に「閲覧条件 + 行動」として集約する。
+ * Suspense 配下の personalized footer slot に「閲覧条件 + 行動」として集約する。
  * `imageLoading` は一覧先頭など above-the-fold の LCP 候補だけ eager にする。
  */
 export function ContentCard({ content, offer, imageLoading }: ContentCardProps) {
@@ -185,7 +187,9 @@ export function ContentCard({ content, offer, imageLoading }: ContentCardProps) 
         <div className="flex items-center justify-between gap-2 text-sm text-muted-foreground">
           <ContentMeta content={content} />
         </div>
-        <ContentActionFooter content={content} offer={offer} />
+        <Suspense fallback={<ContentActionFooterFallback />}>
+          <PersonalizedContentActionFooter content={content} offer={offer} />
+        </Suspense>
       </CardFooter>
     </Card>
   );
