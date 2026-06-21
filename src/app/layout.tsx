@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter, Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
+import { getPublicEnv } from "@/config/public-env";
 import { cn } from "@/lib/utils";
 import { MswProvider } from "@/testing/mocks/msw-provider";
 
@@ -35,7 +36,7 @@ export default function RootLayout({
 }>) {
   const shouldEnableMsw =
     process.env.NODE_ENV === "development" &&
-    process.env.NEXT_PUBLIC_API_MOCKING === "enabled";
+    getPublicEnv().NEXT_PUBLIC_API_MOCKING === "enabled";
 
   return (
     <html

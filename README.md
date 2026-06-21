@@ -140,7 +140,7 @@ Root
 - **Route Guard と Content Gate の分離**: 領域への入場は Route Guard（`requireCurrentUserForRoute` など）、content detail URL は `routeAccessPolicy`、本文の閲覧は Content Gate（`canViewContent`）で制御する。未ログイン access は `/login?next=<original-path>` へ遷移する。
 - **データ境界**: metadata（`getContentMetadata`）と preview（`getContentPreview`）は認可前に取得してよい。full body を含む detail（`getContentDetail`）は `routeAccessPolicy` と `canViewContent()` の allowed に通った後でのみ取得する。
 - **ページの脱モック依存**: page は `mockContents` などを直接 import せず、API abstraction（`features/contents/api`）経由で取得する。
-- **mock auth scenario**: server 側は `AUTH_PROVIDER=mock` と `MOCK_AUTH_SCENARIO=anonymous` / `premium-member` / `admin` などで切り替える。browser MSW 側は `NEXT_PUBLIC_API_MOCKING=enabled` と `NEXT_PUBLIC_AUTH_MOCK_SCENARIO=admin` で表示確認用 viewer を切り替える。
+- **mock auth scenario**: server 側は `AUTH_PROVIDER=mock` と `MOCK_AUTH_SCENARIO=anonymous` / `premium-member` / `admin` などで切り替える。browser MSW 側は `NEXT_PUBLIC_API_MOCKING=enabled` と `NEXT_PUBLIC_BROWSER_AUTH_SCENARIO=admin` で表示確認用 viewer を切り替える。
 
 ## 4. 未確定事項
 

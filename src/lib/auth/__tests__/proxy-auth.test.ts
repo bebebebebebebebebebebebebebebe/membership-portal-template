@@ -21,7 +21,13 @@ describe("isAuthenticatedByProxy", () => {
     expect(isAuthenticatedByProxy(makeRequest())).toBe(false);
   });
 
-  it.each(["free-member", "standard-member", "premium-member", "admin"])(
+  it.each([
+    "free-member",
+    "standard-member",
+    "premium-member",
+    "admin",
+    "purchased-member",
+  ])(
     "mock %s scenario は認証済みとして扱う",
     (scenario) => {
       vi.stubEnv("AUTH_PROVIDER", "mock");

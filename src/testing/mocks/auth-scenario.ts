@@ -1,15 +1,7 @@
+import { getPublicEnv } from "@/config/public-env";
 import type { MembershipPlan } from "@/features/contents/types/content-access";
 import type { ContentViewer } from "@/features/contents/types/content-viewer";
 import type { AuthScenario, AuthUser } from "@/types/auth";
-
-const browserAuthScenarios = [
-  "anonymous",
-  "free-member",
-  "standard-member",
-  "premium-member",
-  "admin",
-  "purchased-member",
-] as const satisfies AuthScenario[];
 
 const browserMockUsers = {
   "free-member": {
@@ -46,10 +38,6 @@ const browserMockUsers = {
   },
 } satisfies Record<Exclude<AuthScenario, "anonymous" | "purchased-member">, AuthUser>;
 
-function isBrowserAuthScenario(value: string): value is AuthScenario {
-  return browserAuthScenarios.includes(value as AuthScenario);
-}
-
 function toMembershipPlan(membership: string | undefined): MembershipPlan | null {
   switch (membership) {
     case "プレミアム会員":
@@ -66,16 +54,11 @@ function toMembershipPlan(membership: string | undefined): MembershipPlan | null
 /**
  * browser MSW handler 用の mock auth scenario を環境変数から解決する。
  *
- * @returns `NEXT_PUBLIC_AUTH_MOCK_SCENARIO` が有効値ならその値、不正または未指定なら `premium-member`。
+ * @returns `NEXT_PUBLIC_BROWSER_AUTH_SCENARIO` の検証済み scenario。
+ * @throws public env に許可されていない値が含まれる場合。
  */
 export function getBrowserAuthScenario(): AuthScenario {
-  const scenario = process.env.NEXT_PUBLIC_AUTH_MOCK_SCENARIO;
-
-  if (scenario && isBrowserAuthScenario(scenario)) {
-    return scenario;
-  }
-
-  return "premium-member";
+  return getPublicEnv().NEXT_PUBLIC_BROWSER_AUTH_SCENARIO;
 }
 
 /**

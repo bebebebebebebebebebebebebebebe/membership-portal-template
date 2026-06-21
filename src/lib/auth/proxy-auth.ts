@@ -1,5 +1,7 @@
 import type { NextRequest } from "next/server";
 
+import { getProxyEnv } from "@/config/proxy-env";
+
 /**
  * Proxy で使う軽量な認証済み判定を行う。
  *
@@ -11,17 +13,17 @@ import type { NextRequest } from "next/server";
  * @returns Proxy 時点で認証済みと見なせる場合は `true`。
  */
 export function isAuthenticatedByProxy(request: NextRequest): boolean {
-  const provider = process.env.AUTH_PROVIDER ?? "mock";
+  const env = getProxyEnv();
 
-  if (provider === "mock") {
-    return (process.env.MOCK_AUTH_SCENARIO ?? "premium-member") !== "anonymous";
+  if (env.AUTH_PROVIDER === "mock") {
+    return env.MOCK_AUTH_SCENARIO !== "anonymous";
   }
 
-  if (provider === "test") {
+  if (env.AUTH_PROVIDER === "test") {
     return request.cookies.get("__test_auth")?.value === "authenticated";
   }
 
-  if (provider === "real") {
+  if (env.AUTH_PROVIDER === "real") {
     return Boolean(request.cookies.get("session")?.value);
   }
 

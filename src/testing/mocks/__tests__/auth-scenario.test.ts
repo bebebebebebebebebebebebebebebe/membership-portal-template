@@ -11,7 +11,7 @@ describe("browser MSW auth scenario", () => {
   });
 
   it("未指定時は premium-member を返す", () => {
-    vi.stubEnv("NEXT_PUBLIC_AUTH_MOCK_SCENARIO", undefined);
+    vi.stubEnv("NEXT_PUBLIC_BROWSER_AUTH_SCENARIO", undefined);
 
     expect(getBrowserAuthScenario()).toBe("premium-member");
     expect(getBrowserMockViewer()).toMatchObject({
@@ -21,7 +21,7 @@ describe("browser MSW auth scenario", () => {
   });
 
   it("anonymous scenario は anonymous viewer を返す", () => {
-    vi.stubEnv("NEXT_PUBLIC_AUTH_MOCK_SCENARIO", "anonymous");
+    vi.stubEnv("NEXT_PUBLIC_BROWSER_AUTH_SCENARIO", "anonymous");
 
     expect(getBrowserMockViewer()).toEqual({
       user: null,
@@ -31,7 +31,7 @@ describe("browser MSW auth scenario", () => {
   });
 
   it("admin scenario は admin viewer を返す", () => {
-    vi.stubEnv("NEXT_PUBLIC_AUTH_MOCK_SCENARIO", "admin");
+    vi.stubEnv("NEXT_PUBLIC_BROWSER_AUTH_SCENARIO", "admin");
 
     expect(getBrowserMockViewer()).toMatchObject({
       user: {
@@ -44,7 +44,7 @@ describe("browser MSW auth scenario", () => {
   });
 
   it("purchased-member scenario は購入済み productId を返す", () => {
-    vi.stubEnv("NEXT_PUBLIC_AUTH_MOCK_SCENARIO", "purchased-member");
+    vi.stubEnv("NEXT_PUBLIC_BROWSER_AUTH_SCENARIO", "purchased-member");
 
     expect(getBrowserMockViewer()).toMatchObject({
       user: {
@@ -59,9 +59,9 @@ describe("browser MSW auth scenario", () => {
     });
   });
 
-  it("不正な scenario は premium-member に fallback する", () => {
-    vi.stubEnv("NEXT_PUBLIC_AUTH_MOCK_SCENARIO", "invalid");
+  it("不正な scenario は throw する", () => {
+    vi.stubEnv("NEXT_PUBLIC_BROWSER_AUTH_SCENARIO", "invalid");
 
-    expect(getBrowserAuthScenario()).toBe("premium-member");
+    expect(() => getBrowserAuthScenario()).toThrow();
   });
 });

@@ -30,12 +30,12 @@ describe("getAuthConfig", () => {
   it("不正な AUTH_PROVIDER は fallback せず error にする", () => {
     vi.stubEnv("AUTH_PROVIDER", "unknown");
 
-    expect(() => getAuthConfig()).toThrow("Invalid AUTH_PROVIDER: unknown");
+    expect(() => getAuthConfig()).toThrow();
   });
 
   it("不正な MOCK_AUTH_SCENARIO は fallback せず error にする", () => {
     vi.stubEnv("MOCK_AUTH_SCENARIO", "guest");
 
-    expect(() => getAuthConfig()).toThrow("Invalid MOCK_AUTH_SCENARIO: guest");
+    expect(() => getAuthConfig()).toThrow();
   });
 });

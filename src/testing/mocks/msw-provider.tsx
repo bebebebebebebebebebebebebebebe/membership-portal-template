@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 
+import { getPublicEnv } from "@/config/public-env";
+
 /**
  * 開発時だけ MSW browser worker を起動する provider。
  *
@@ -12,7 +14,7 @@ import { useEffect } from "react";
  */
 export function MswProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    if (process.env.NEXT_PUBLIC_API_MOCKING !== "enabled") {
+    if (getPublicEnv().NEXT_PUBLIC_API_MOCKING !== "enabled") {
       return;
     }
 
