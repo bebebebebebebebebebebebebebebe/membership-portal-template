@@ -9,7 +9,7 @@ import { fetchOptionalJson } from "@/lib/api/fetch-json";
  * fetch error として呼び出し側に伝播する。
  *
  * @param id - 一覧コンテンツの id。
- * @returns 記事詳細データ。存在しなければ `undefined`。
+ * @returns コンテンツ詳細データ。存在しなければ `undefined`。
  */
 export async function getContentDetail(
   id: string

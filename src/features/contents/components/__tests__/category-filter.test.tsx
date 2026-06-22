@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { CategoryFilter } from "@/features/contents/components/category-filter";
 
 describe("CategoryFilter", () => {
-  it("検索とカテゴリタブを主操作領域に表示する", () => {
+  it("キーワード検索を主操作領域に表示し、content type 固有のタブは持たない", () => {
     render(<CategoryFilter />);
 
     const searchInput = screen.getByRole("searchbox", {
@@ -13,9 +13,7 @@ describe("CategoryFilter", () => {
     const primaryRegion = searchInput.closest('[data-filter-region="primary"]');
 
     expect(primaryRegion).not.toBeNull();
-    expect(primaryRegion).toHaveTextContent("すべて");
-    expect(primaryRegion).toHaveTextContent("記事");
-    expect(primaryRegion).toHaveTextContent("資料");
+    expect(screen.queryByRole("tab")).not.toBeInTheDocument();
   });
 
   it("詳細フィルターとブックマーク切替を右側フィルター領域に表示する", () => {

@@ -29,12 +29,12 @@ function StepListItem({
 }
 
 /**
- * 記事本文。要点コールアウト → 本文セクション（任意でポイントコールアウト）→
+ * コンテンツ本文。要点コールアウト → 本文セクション（任意でポイントコールアウト）→
  * `stepsHeading` ブロック（番号付きリスト＋サイクル図）→ まとめ、の順に縦積みする。
  *
  * 各セクションには目次アンカー用の `id` を付与し、右レールの目次から遷移できるようにする。
  *
- * @param detail - 記事詳細データ（本文・ステップ・まとめ・目次を含む）
+ * @param detail - コンテンツ詳細データ（本文・ステップ・まとめ・目次を含む）
  */
 export function ArticleBody({ detail }: { detail: ContentDetail }) {
   const stepsHeading =
@@ -42,7 +42,7 @@ export function ArticleBody({ detail }: { detail: ContentDetail }) {
 
   return (
     <div className="flex flex-col gap-8">
-      {/* この記事の要点 */}
+      {/* このコンテンツの要点 */}
       <Alert className="gap-2 border-primary/20 bg-accent/50 px-4 py-3">
         <HugeiconsIcon icon={Idea01Icon} className="size-5 text-primary" />
         <AlertTitle className="text-sm font-semibold text-foreground">

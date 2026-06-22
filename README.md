@@ -1,12 +1,12 @@
-# Modular Member Portal
+# Modular CMS Skeleton
 
 最終確認日: 2026-06-10
 
 ## 1. プロジェクト概要
 
-ポートフォリオ・技術検証・将来的な実サービス化を並行して目指す、汎用的な会員制情報ポータルの Web アプリケーションです。
+認証・認可・公開状態・カタログ・詳細・管理領域を持つ、汎用 CMS アプリケーションの骨組み（skeleton）です。学習プラットフォーム、メディアサイト、ブログ、EC などへ派生させる前提で、具体的な content type を core に固定しません。
 
-コンテンツの種別を記事・資料などに限定しすぎず、Public / Member / Admin の 3 ゾーンを軸に、認証・RBAC・CRUD・検索・通知などを段階的に追加できる骨格を作ることを目的にしています。
+Public / Member / Admin の 3 ゾーンを軸に、`routeAccessPolicy` / `accessPolicy`、`publicationStatus` / `discoverability`、server query / repository 抽象を提供し、認証・RBAC・CRUD・検索・通知などを段階的に追加できる骨格を作ることを目的にしています。具体的な content type（講座・投稿・商品など）は派生先が独自に追加します。
 
 この README は開発者・検証者向けに、現在の実装状態と未実装の MVP 要件を分けて記録します。
 
@@ -35,7 +35,7 @@
 |------|------|------|
 | Member Zone layout | `(member)` route group | sidebar/header/nav config と認証必須 layout（`requireCurrentUserForRoute`）は実装済み。未ログイン時は `/login?next=<original-path>` へ遷移。認証基盤はモック |
 | コンテンツカタログ | `/contents` | `(public)` 配下の公開カタログ。非会員も閲覧できる。データは `getContents()`（published+listed）経由。DB/API は未実装 |
-| コンテンツ詳細 | `/contents/[id]` | `(public)` 配下。URL 自体は `routeAccessPolicy`、本文 full detail は `accessPolicy` で分離制御する。`routeAccessPolicy=loginRequired` の匿名 access は `/login?next=<content-path>` へ redirect。本文不可なら `ContentAccessGate`、記事以外は Coming Soon、hidden・未作成 ID は `notFound()` |
+| コンテンツ詳細 | `/contents/[id]` | `(public)` 配下。URL 自体は `routeAccessPolicy`、本文 full detail は `accessPolicy` で分離制御する。`routeAccessPolicy=loginRequired` の匿名 access は `/login?next=<content-path>` へ redirect。本文不可なら `ContentAccessGate`、hidden・未作成 ID は `notFound()` |
 
 ### 2-4. Coming Soon
 
@@ -177,7 +177,7 @@ Root
 | # | ページ名 | パス | 目的 | MVP | 実装状態 |
 |---|---------|------|------|:---:|----------|
 | 1 | ダッシュボード | `/dashboard` | 全体状況の把握 | ✅ | Coming Soon |
-| 2 | コンテンツ一覧 | `/contents` | 記事・資料・投稿の一覧 | ✅ | 部分実装（`(public)` で公開カタログ化。非会員も閲覧可） |
+| 2 | コンテンツ一覧 | `/contents` | コンテンツの一覧 | ✅ | 部分実装（`(public)` で公開カタログ化。非会員も閲覧可） |
 | 3 | コンテンツ詳細 | `/contents/[id]` | 情報の閲覧 | ✅ | 部分実装（`(public)`。URL は routeAccessPolicy、本文は accessPolicy ベースの Content Gate で制御） |
 | 4 | お気に入り | `/bookmarks` | 保存済み情報の一覧 | ✅ | Coming Soon |
 | 5 | 通知 | `/notifications` | お知らせ・更新情報 | ✅ | Coming Soon |

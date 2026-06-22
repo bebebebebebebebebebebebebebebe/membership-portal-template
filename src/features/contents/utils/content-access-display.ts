@@ -32,7 +32,7 @@ export function formatPrice(offer: ProductOffer): string {
 /**
  * 一覧カード下部 CTA の文言。閲覧条件に応じて次に取るべき行動を示す。
  *
- * category（記事/資料）には依存させず、accessPolicy.kind だけで一元的に決める。
+ * content type には依存させず、accessPolicy.kind だけで一元的に決める。
  */
 const contentPrimaryActionLabels: Record<ContentAccessKind, string> = {
   free: "詳細を見る",

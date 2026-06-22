@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { ArticleContent } from "@/features/contents/types/content";
+import type { Content } from "@/features/contents/types/content";
 import type { ContentDetail } from "@/features/contents/types/content-detail";
 import type { ContentViewer } from "@/features/contents/types/content-viewer";
 
@@ -63,11 +63,10 @@ const detailFixture: ContentDetail = {
   updatedDate: "2026/06/01",
 };
 
-function makeContent(accessPolicy: ArticleContent["accessPolicy"]): ArticleContent {
+function makeContent(accessPolicy: Content["accessPolicy"]): Content {
   return {
     id: "member-only-blueprint",
-    category: "記事",
-    title: "会員限定ブループリント",
+    title: "会員限定コンテンツ",
     description: "説明",
     thumbnail: "/images/contents/sample.png",
     tags: ["会員限定"],
@@ -75,9 +74,6 @@ function makeContent(accessPolicy: ArticleContent["accessPolicy"]): ArticleConte
     discoverability: "unlisted",
     routeAccessPolicy: { kind: "loginRequired" },
     accessPolicy,
-    author: { name: "著者", avatar: "/images/avatar.png", initials: "AB" },
-    date: "2026-06-01",
-    readMinutes: 5,
   };
 }
 

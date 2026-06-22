@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 /**
  * 右レール「共有・保存」カード。
- * リンクをコピー・ブックマークに追加・この記事を報告 の操作を縦並びの ghost ボタンで提供する。
+ * リンクをコピー・ブックマークに追加・このコンテンツを報告 の操作を縦並びの ghost ボタンで提供する。
  * 静的 UI のためハンドラは持たない見た目のみのモック。
  */
 export function ShareActionsCard() {
@@ -30,7 +30,7 @@ export function ShareActionsCard() {
         </Button>
         <Button variant="ghost" className="justify-start">
           <HugeiconsIcon icon={Flag02Icon} data-icon="inline-start" />
-          この記事を報告
+          このコンテンツを報告
         </Button>
       </CardContent>
     </Card>

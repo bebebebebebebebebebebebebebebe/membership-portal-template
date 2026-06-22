@@ -36,7 +36,7 @@ const viewer: ContentViewer = {
 
 const content: Content = {
   id: "fixture",
-  title: "サンプル記事",
+  title: "サンプルコンテンツ",
   description: "説明",
   thumbnail: "/images/contents/sample.png",
   tags: ["タグ"],
@@ -44,10 +44,6 @@ const content: Content = {
   discoverability: "listed",
   routeAccessPolicy: { kind: "public" },
   accessPolicy: { kind: "planRequired", requiredPlans: ["premium"] },
-  category: "記事",
-  author: { name: "著者", avatar: "/images/avatar.png", initials: "AB" },
-  date: "2026-06-01",
-  readMinutes: 5,
 };
 
 describe("PersonalizedContentActionFooter", () => {

@@ -1,4 +1,3 @@
-import type { ArticleContent } from "@/features/contents/types/content";
 import type { ContentDetail } from "@/features/contents/types/content-detail";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -13,27 +12,19 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 
 /**
- * 右レール「この記事について」カード。
- * 種別・公開日・更新日・閲覧数・想定読了時間を一覧表示する。
+ * 右レール「このコンテンツについて」カード。
+ * 公開日・更新日・閲覧数を一覧表示する。content type 固有のメタ（種別・読了時間など）は持たない。
  */
-export function ArticleAboutCard({
-  content,
-  detail,
-}: {
-  content: ArticleContent;
-  detail: ContentDetail;
-}) {
+export function ArticleAboutCard({ detail }: { detail: ContentDetail }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">この記事について</CardTitle>
+        <CardTitle className="text-base">このコンテンツについて</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
-        <InfoRow label="種別" value={content.category} />
         <InfoRow label="公開日" value={detail.publishedDate} />
         <InfoRow label="更新日" value={detail.updatedDate} />
         <InfoRow label="閲覧数" value={detail.viewCount.toLocaleString("ja-JP")} />
-        <InfoRow label="想定読了時間" value={`約${content.readMinutes}分`} />
       </CardContent>
     </Card>
   );

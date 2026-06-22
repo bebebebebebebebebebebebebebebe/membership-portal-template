@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { ComingSoonPage } from "@/components/coming-soon-page";
 import { ContentAccessFallback } from "@/features/contents/components/content-access-fallback";
 import { ContentRouteGuardSlot } from "@/features/contents/components/detail/content-route-guard-slot";
 import {
@@ -25,8 +24,8 @@ export async function generateStaticParams() {
 }
 
 /**
- * 記事詳細ルートのメタデータ。認可前に取得してよい metadata だけを使い、記事タイトルを
- * `<title>` に反映する。記事が見つからない場合は汎用タイトルにフォールバックする。
+ * コンテンツ詳細ルートのメタデータ。認可前に取得してよい metadata だけを使い、タイトルを
+ * `<title>` に反映する。見つからない場合は汎用タイトルにフォールバックする。
  */
 export async function generateMetadata({
   params,
@@ -46,8 +45,7 @@ export async function generateMetadata({
  *
  * page 本体は認可前 metadata だけで static shell を構成する。viewer 取得・route guard・
  * accessPolicy 判定・full detail 取得は Suspense 内の `ContentRouteGuardSlot` 以下に隔離し、
- * request time に stream する。資料は詳細 UI 未実装のため Coming Soon を返し、
- * hidden/未公開・未作成 id は 404。
+ * request time に stream する。hidden/未公開・未作成 id は 404。
  */
 export default async function ContentDetailPage({
   params,
@@ -58,24 +56,6 @@ export default async function ContentDetailPage({
 
   if (!content) {
     notFound();
-  }
-
-  if (content.category !== "記事") {
-    return (
-      <ComingSoonPage
-        eyebrow="Content Catalog"
-        title="資料ページは準備中です"
-        description={`${content.title} は現在、資料閲覧ページの準備中です。資料ファイルのプレビュー、購入導線、ダウンロード体験を整備してから公開します。`}
-        plannedItems={[
-          "資料ファイルのプレビュー表示",
-          "閲覧条件に応じた購入・プラン導線",
-          "ダウンロード数やページ数などの資料メタ情報表示",
-          "資料カテゴリに最適化した関連コンテンツ導線",
-        ]}
-        primaryHref="/contents"
-        primaryLabel="コンテンツカタログを見る"
-      />
-    );
   }
 
   return (

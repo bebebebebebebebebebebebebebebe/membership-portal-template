@@ -67,11 +67,10 @@ Proxy は [content-route-access-manifest.ts](../src/config/content-route-access-
 1. `getContentMetadata(id)` を取得。存在しない、または `isPubliclyAccessibleContentMetadata()` が false（未公開・hidden）なら `notFound()`。
 2. `routeAccessPolicy=loginRequired` の場合は、`<Suspense>` fallback を返す前に `getContentViewer()` と `canAccessContentRoute(routeAccessPolicy, viewer.user)` で URL 到達条件を最終確認する。
 3. `routeAccessPolicy=loginRequired` かつ anonymous → `/login?next=<content-path>` へ redirect。fallback や content-derived shell は返さない。
-4. 記事以外（資料）は詳細 UI 未実装のため Coming Soon を表示する。
-5. `<Suspense>` fallback を含む shell を返す。public content の viewer 取得は `ContentRouteGuardSlot` 内、loginRequired 通過済み content は取得済み viewer を `PersonalizedContentAccess` へ渡す。
-6. `PersonalizedContentAccess` が `canViewContent(accessPolicy, viewer)` で本文閲覧条件を判定する。
-7. denied → `getContentPreview(id)` + `ContentAccessGate`。
-8. allowed → `getContentDetail(id)` + `ArticleDetail`（`free` は非会員でも本文表示。`currentUser` が null ならコメント投稿欄は出さない）。
+4. `<Suspense>` fallback を含む shell を返す。public content の viewer 取得は `ContentRouteGuardSlot` 内、loginRequired 通過済み content は取得済み viewer を `PersonalizedContentAccess` へ渡す。
+5. `PersonalizedContentAccess` が `canViewContent(accessPolicy, viewer)` で本文閲覧条件を判定する。
+6. denied → `getContentPreview(id)` + `ContentAccessGate`。
+7. allowed → `getContentDetail(id)` + `ArticleDetail`（`free` は非会員でも本文表示。`currentUser` が null ならコメント投稿欄は出さない）。
 
 ## 7. 公開判定ユーティリティ
 

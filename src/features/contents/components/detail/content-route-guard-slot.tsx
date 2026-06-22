@@ -2,13 +2,13 @@ import { redirect } from "next/navigation";
 
 import { getContentViewer } from "@/features/contents/server/content-viewer";
 import { PersonalizedContentAccess } from "@/features/contents/components/detail/personalized-content-access";
-import type { ArticleContent } from "@/features/contents/types/content";
+import type { Content } from "@/features/contents/types/content";
 import { canAccessContentRoute } from "@/features/contents/utils/content-route-access";
 import { createLoginRedirectPath } from "@/lib/auth/auth-redirect";
 
 export type ContentRouteGuardSlotProps = {
   id: string;
-  content: ArticleContent;
+  content: Content;
 };
 
 /**
@@ -17,7 +17,7 @@ export type ContentRouteGuardSlotProps = {
  * Proxy の早期 redirect を通過しても、Server Component 側で viewer を取得して
  * `routeAccessPolicy` を再確認する。
  *
- * @param props - コンテンツ ID と、認可前に取得済みの記事 metadata。
+ * @param props - コンテンツ ID と、認可前に取得済みの metadata。
  * @returns route access 通過後の personalized content。
  */
 export async function ContentRouteGuardSlot(props: ContentRouteGuardSlotProps) {

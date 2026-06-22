@@ -16,7 +16,7 @@ import type { ContentAccessPolicy } from "@/features/contents/types/content-acce
 function makeContent(accessPolicy: ContentAccessPolicy): Content {
   return {
     id: "fixture",
-    title: "サンプル記事",
+    title: "サンプルコンテンツ",
     description: "説明",
     thumbnail: "/images/contents/sample.png",
     tags: ["セキュリティ"],
@@ -24,10 +24,6 @@ function makeContent(accessPolicy: ContentAccessPolicy): Content {
     discoverability: "listed",
     routeAccessPolicy: { kind: "public" },
     accessPolicy,
-    category: "記事",
-    author: { name: "著者", avatar: "/images/avatar.png", initials: "AB" },
-    date: "2026-06-01",
-    readMinutes: 5,
   };
 }
 

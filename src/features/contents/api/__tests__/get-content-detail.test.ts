@@ -35,7 +35,7 @@ describe("getContentDetail", () => {
     vi.unstubAllEnvs();
   });
 
-  it("記事 id に対して full detail（本文セクション・コメント）を返す", async () => {
+  it("コンテンツ id に対して full detail（本文セクション・コメント）を返す", async () => {
     const detail = await getContentDetail("1");
 
     expect(detail).toBeDefined();
@@ -93,7 +93,7 @@ describe("getContentDetail", () => {
 
     const detail = await getContentDetail("4");
 
-    expect(detail?.summary.body).toContain("クラウドインフラ設計");
+    expect(detail?.summary.body).toContain("planRequired");
   });
 
   it("premium-member viewer は loginRequired route の premium detail を取得できる", async () => {
@@ -102,7 +102,7 @@ describe("getContentDetail", () => {
 
     const detail = await getContentDetail("member-only-blueprint");
 
-    expect(detail?.summary.body).toContain("会員限定コンテンツ");
+    expect(detail?.summary.body).toContain("loginRequired");
   });
 
   it("purchased-member viewer は購入済み productId の planOrPurchase detail を取得できる", async () => {
@@ -114,7 +114,7 @@ describe("getContentDetail", () => {
 
     const detail = await getContentDetail("7");
 
-    expect(detail?.summary.body).toContain("モダンJavaScript開発");
+    expect(detail?.summary.body).toContain("planOrPurchase");
   });
 
   it("admin viewer は protected detail を取得できる", async () => {
@@ -123,6 +123,6 @@ describe("getContentDetail", () => {
 
     const detail = await getContentDetail("7");
 
-    expect(detail?.summary.body).toContain("モダンJavaScript開発");
+    expect(detail?.summary.body).toContain("planOrPurchase");
   });
 });

@@ -15,7 +15,7 @@ import {
 const features: { title: string; description: string }[] = [
   {
     title: "コンテンツカタログ",
-    description: "記事・資料を公開条件つきで一覧表示します。",
+    description: "コンテンツを公開条件つきで一覧表示します。",
   },
   {
     title: "コンテンツ詳細",

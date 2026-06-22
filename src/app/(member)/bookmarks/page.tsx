@@ -15,7 +15,7 @@ export default function BookmarksPage() {
     <ComingSoonPage
       eyebrow="Member Zone"
       title="お気に入り機能は準備中です"
-      description="保存した記事・資料を後から見返せる会員向けページになります。"
+      description="保存したコンテンツを後から見返せる会員向けページになります。"
       plannedItems={[
         "コンテンツカードからの保存・解除",
         "保存済みコンテンツ一覧",

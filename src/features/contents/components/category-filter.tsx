@@ -3,7 +3,6 @@
 import { Bookmark02Icon, Search01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
-import { contentCategories } from "@/features/contents/constants/content-category";
 import {
   InputGroup,
   InputGroupAddon,
@@ -17,16 +16,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toggle } from "@/components/ui/toggle";
 
 const resultCount = 24;
 
 /**
- * 種別タブ・キーワード検索・絞り込み Select・件数表示をまとめたフィルタ領域。
+ * キーワード検索・タグ/更新日/並び順の絞り込み Select・件数表示をまとめたフィルタ領域。
  *
- * 認証/DB 未確定のため実フィルタリングは行わず、見た目と基本操作のみのモック。
- * 左に検索とカテゴリ、右に詳細フィルターとブックマーク切替を置く。
+ * 認証/DB 未確定のため実フィルタリングは行わず、見た目と基本操作のみのモック。content type
+ * 固有のタブは持たない汎用 CMS フィルタ。左に検索、右に詳細フィルターと
+ * ブックマーク切替を置く。
  */
 export function CategoryFilter() {
   return (
@@ -36,7 +35,7 @@ export function CategoryFilter() {
           className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-center"
           data-filter-region="primary"
         >
-          <InputGroup className="h-9 w-full lg:max-w-xs">
+          <InputGroup className="h-9 w-full lg:max-w-md">
             <InputGroupAddon>
               <HugeiconsIcon icon={Search01Icon} />
             </InputGroupAddon>
@@ -46,26 +45,6 @@ export function CategoryFilter() {
               aria-label="キーワードで検索"
             />
           </InputGroup>
-
-          <Tabs defaultValue="all">
-            <TabsList className="w-full sm:w-auto">
-              <TabsTrigger
-                value="all"
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-none"
-              >
-                すべて
-              </TabsTrigger>
-              {contentCategories.map((category) => (
-                <TabsTrigger
-                  key={category}
-                  value={category}
-                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-none"
-                >
-                  {category}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
         </div>
 
         <div

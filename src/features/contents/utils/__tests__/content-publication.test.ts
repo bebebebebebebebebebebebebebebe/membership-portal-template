@@ -16,8 +16,7 @@ function makeContent(
 ): Content {
   return {
     id: "test",
-    category: "記事",
-    title: "テスト記事",
+    title: "テストコンテンツ",
     description: "公開判定の検証用データ。",
     thumbnail: "/images/contents/thumb-01.jpg",
     tags: ["確認用"],
@@ -25,9 +24,6 @@ function makeContent(
     discoverability,
     routeAccessPolicy: { kind: "public" },
     accessPolicy: { kind: "free" },
-    author: { name: "管理者", avatar: "/images/avatars/avatar-02.jpg", initials: "管" },
-    date: "2024/05/20",
-    readMinutes: 5,
   };
 }
 

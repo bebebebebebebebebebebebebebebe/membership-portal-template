@@ -7,13 +7,13 @@ import {
   getPublicContentPreview,
   getPublicRelatedContents,
 } from "@/features/contents/server/content-read-queries";
-import type { ArticleContent } from "@/features/contents/types/content";
+import type { Content } from "@/features/contents/types/content";
 import type { ContentViewer } from "@/features/contents/types/content-viewer";
 import { canViewContent } from "@/features/contents/utils/content-access";
 
 export type PersonalizedContentAccessProps = {
   id: string;
-  content: ArticleContent;
+  content: Content;
   viewer: ContentViewer;
 };
 

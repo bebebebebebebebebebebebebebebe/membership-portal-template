@@ -6,14 +6,14 @@ import type { Content } from "@/features/contents/types/content";
 import type { ContentAccessPolicy } from "@/features/contents/types/content-access";
 
 /**
- * accessPolicy だけを差し替えた記事コンテンツ fixture。
+ * accessPolicy だけを差し替えた汎用コンテンツ fixture。
  * 購入系の価格は ContentPurchaseCta 内部の getProductOffer() に依存するため、
  * 実在する mock productId を指す policy を渡す。
  */
 function makeContent(accessPolicy: ContentAccessPolicy): Content {
   return {
     id: "fixture",
-    title: "サンプル記事",
+    title: "サンプルコンテンツ",
     description: "説明文",
     thumbnail: "/images/contents/sample.png",
     tags: ["タグ"],
@@ -21,10 +21,6 @@ function makeContent(accessPolicy: ContentAccessPolicy): Content {
     discoverability: "listed",
     routeAccessPolicy: { kind: "public" },
     accessPolicy,
-    category: "記事",
-    author: { name: "著者", avatar: "/images/avatar.png", initials: "AB" },
-    date: "2026-06-01",
-    readMinutes: 5,
   };
 }
 

@@ -33,7 +33,7 @@ export type TocItem = {
   children?: { label: string }[];
 };
 
-/** 記事へのコメント 1 件。 */
+/** コンテンツへのコメント 1 件。 */
 export type ArticleComment = {
   author: CommentAuthor;
   /** 表示用の投稿日時（例: "2024/05/11 10:23"）。 */
@@ -42,18 +42,18 @@ export type ArticleComment = {
 };
 
 /**
- * 記事詳細の本文・統計・目次・コメント。
+ * コンテンツ詳細の本文・統計・目次・コメント。
  *
  * 一覧の Content と `id` で対応づけ、詳細ページで両者を結合して描画する。
  */
 export type ContentDetail = {
-  /** 閲覧数（メタ行・「この記事について」で表示）。 */
+  /** 閲覧数（メタ行・「このコンテンツについて」で表示）。 */
   viewCount: number;
   /** 公開日。 */
   publishedDate: string;
   /** 更新日。 */
   updatedDate: string;
-  /** 冒頭の「この記事の要点」コールアウト。 */
+  /** 冒頭の「このコンテンツの要点」コールアウト。 */
   summary: { title: string; body: string };
   /** 「6つのステップ」ブロックの直前までに並ぶ本文セクション。 */
   sections: ArticleSection[];

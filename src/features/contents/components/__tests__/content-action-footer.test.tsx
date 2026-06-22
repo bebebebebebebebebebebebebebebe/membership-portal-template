@@ -12,13 +12,13 @@ import type { ProductOffer } from "@/features/contents/types/product-offer";
 import type { AuthUser } from "@/types/auth";
 
 /**
- * accessPolicy だけを差し替えて footer を描画するための記事コンテンツ fixture。
+ * accessPolicy だけを差し替えて footer を描画するための汎用コンテンツ fixture。
  * 価格は呼び出し側で解決した offer を props で渡すため、footer 自身はデータ取得しない。
  */
 function makeContent(accessPolicy: ContentAccessPolicy): Content {
   return {
     id: "fixture",
-    title: "サンプル記事",
+    title: "サンプルコンテンツ",
     description: "説明",
     thumbnail: "/images/contents/sample.png",
     tags: ["タグ"],
@@ -26,10 +26,6 @@ function makeContent(accessPolicy: ContentAccessPolicy): Content {
     discoverability: "listed",
     routeAccessPolicy: { kind: "public" },
     accessPolicy,
-    category: "記事",
-    author: { name: "著者", avatar: "/images/avatar.png", initials: "AB" },
-    date: "2026-06-01",
-    readMinutes: 5,
   };
 }
 

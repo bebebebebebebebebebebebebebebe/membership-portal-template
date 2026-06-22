@@ -186,7 +186,7 @@ describe("content data boundaries", () => {
     expect(preview).toEqual({
       id: "1",
       introduction:
-        "企画から運用までの実践プロセスを解説。すぐに使えるプロンプト例も紹介します。",
+        "ログイン不要で全文を閲覧できる公開コンテンツです。free アクセスの基本動作を確認できます。",
     });
     expect(preview).not.toHaveProperty("sections");
     expect(preview).not.toHaveProperty("steps");

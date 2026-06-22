@@ -5,7 +5,7 @@ import {
   type AuthorizedContentDetailResult,
 } from "@/features/contents/services/content-read-service";
 import type { ContentRepository } from "@/features/contents/services/content-repository";
-import type { ArticleContent, Content } from "@/features/contents/types/content";
+import type { Content } from "@/features/contents/types/content";
 import type { ContentDetail } from "@/features/contents/types/content-detail";
 import type { ContentViewer } from "@/features/contents/types/content-viewer";
 import type { ProductOffer } from "@/features/contents/types/product-offer";
@@ -65,12 +65,11 @@ const adminViewer: ContentViewer = {
 
 function makeContent(
   id: string,
-  overrides: Partial<ArticleContent> = {}
-): ArticleContent {
+  overrides: Partial<Content> = {}
+): Content {
   return {
     id,
-    category: "記事",
-    title: `記事 ${id}`,
+    title: `コンテンツ ${id}`,
     description: `説明 ${id}`,
     thumbnail: "/images/contents/sample.png",
     tags: ["タグ"],
@@ -78,9 +77,6 @@ function makeContent(
     discoverability: "listed",
     routeAccessPolicy: { kind: "public" },
     accessPolicy: { kind: "free" },
-    author: { name: "著者", avatar: "/images/avatar.png", initials: "AB" },
-    date: "2026-06-01",
-    readMinutes: 5,
     ...overrides,
   };
 }

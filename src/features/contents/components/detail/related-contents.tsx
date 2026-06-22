@@ -9,7 +9,7 @@ import { RelatedContentCard } from "@/features/contents/components/detail/relate
 /**
  * 全幅「関連コンテンツ」セクション。見出し＋「すべて見る」リンク＋コンパクトカードのグリッド。
  *
- * @param contents - 表示する関連コンテンツ（呼び出し側で現在記事を除外済み）
+ * @param contents - 表示する関連コンテンツ（呼び出し側で現在のコンテンツを除外済み）
  */
 export function RelatedContents({ contents }: { contents: Content[] }) {
   return (

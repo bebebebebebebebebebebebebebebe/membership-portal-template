@@ -1,10 +1,8 @@
 import Image from "next/image";
 
-import { categoryMeta } from "@/features/contents/constants/content-category";
-import type { ArticleContent, Content } from "@/features/contents/types/content";
+import type { Content } from "@/features/contents/types/content";
 import type { ContentDetail } from "@/features/contents/types/content-detail";
 import type { AuthUser } from "@/types/auth";
-import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { ArticleAboutCard } from "@/features/contents/components/detail/article-about-card";
 import { ArticleBody } from "@/features/contents/components/detail/article-body";
@@ -16,20 +14,20 @@ import { RelatedContents } from "@/features/contents/components/detail/related-c
 import { ShareActionsCard } from "@/features/contents/components/detail/share-actions-card";
 
 export type ArticleDetailProps = {
-  content: ArticleContent;
+  content: Content;
   detail: ContentDetail;
   related: Content[];
   currentUser: AuthUser | null;
 };
 
 /**
- * 記事詳細ページ全体の組み立て。
+ * コンテンツ詳細ページ全体の組み立て。
  *
- * パンくず → ヘッダー → 2カラム（左: hero/本文/タグ、右: この記事について/目次/共有・保存）→
+ * パンくず → ヘッダー → 2カラム（左: hero/本文/タグ、右: このコンテンツについて/目次/共有・保存）→
  * 全幅の関連コンテンツ → コメント、の順に縦積みする。Member Zone 共通レイアウトの
  * `main` 内に配置される前提の静的 UI。
  *
- * @param props - 記事 metadata、本文詳細、関連コンテンツ、コメント欄の viewer 状態。
+ * @param props - コンテンツ metadata、本文詳細、関連コンテンツ、コメント欄の viewer 状態。
  */
 export function ArticleDetail(props: ArticleDetailProps) {
   const { content, detail, related, currentUser } = props;
@@ -61,10 +59,7 @@ export function ArticleDetail(props: ArticleDetailProps) {
                 <Badge
                   key={tag}
                   variant="secondary"
-                  className={cn(
-                    "rounded-md px-2 py-0.5 text-xs font-normal",
-                    categoryMeta[content.category].tagClass
-                  )}
+                  className="rounded-md px-2 py-0.5 text-xs font-normal"
                 >
                   {tag}
                 </Badge>
@@ -74,7 +69,7 @@ export function ArticleDetail(props: ArticleDetailProps) {
         </div>
 
         <aside className="flex flex-col gap-6 lg:sticky lg:top-20 lg:self-start">
-          <ArticleAboutCard content={content} detail={detail} />
+          <ArticleAboutCard detail={detail} />
           <ArticleToc items={detail.toc} />
           <ShareActionsCard />
         </aside>
